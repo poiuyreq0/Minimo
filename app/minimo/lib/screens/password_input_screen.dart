@@ -23,6 +23,7 @@ class _PasswordInputScreenState extends State<PasswordInputScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text('비밀번호 변경'),
       ),

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -49,6 +47,7 @@ class _LetterInputScreenState extends State<LetterInputScreen> {
     Decoration decoration = AppStyle.getMainBoxDecoration(Theme.of(context).colorScheme.onPrimary);
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text('유리병 편지 띄우기'),
       ),
@@ -219,7 +218,7 @@ class _LetterInputScreenState extends State<LetterInputScreen> {
             )
         );
 
-      } on DioException catch (e) {
+      } on DioException catch (_) {
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('편지 전송에 실패했습니다.'),

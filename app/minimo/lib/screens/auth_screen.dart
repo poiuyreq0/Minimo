@@ -24,6 +24,7 @@ class AuthScreen extends StatelessWidget {
         debugPrint('snapshot data : ${snapshot.data}');
         if (!snapshot.hasData) {
           return Scaffold(
+            resizeToAvoidBottomInset: true,
             body: SignInScreen(
               providers: [
                 EmailAuthProvider(),

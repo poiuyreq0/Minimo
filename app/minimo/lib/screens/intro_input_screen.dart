@@ -13,7 +13,6 @@ import 'package:minimo/models/user_info_model.dart';
 import 'package:minimo/models/user_model.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/auth_screen.dart';
-import 'package:minimo/screens/root_screen.dart';
 import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/form_validate_util.dart';
 import 'package:provider/provider.dart';
@@ -44,6 +43,7 @@ class _IntroInputScreenState extends State<IntroInputScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text('사용자 정보 입력'),
       ),

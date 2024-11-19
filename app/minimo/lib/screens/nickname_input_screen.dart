@@ -32,6 +32,7 @@ class _NicknameInputScreenState extends State<NicknameInputScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text('닉네임 변경'),
       ),

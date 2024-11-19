@@ -24,6 +24,7 @@ class _UserDeleteScreenState extends State<UserDeleteScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text('회원 탈퇴'),
       ),

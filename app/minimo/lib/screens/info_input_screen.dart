@@ -51,6 +51,7 @@ class _InfoInputScreenState extends State<InfoInputScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text('수신 정보 변경'),
       ),
@@ -163,7 +164,7 @@ class _InfoInputScreenState extends State<InfoInputScreen> {
             )
         );
 
-      } on DioException catch (e) {
+      } on DioException catch (_) {
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text("수신 정보 변경에 실패했습니다."),
