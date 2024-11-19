@@ -77,7 +77,7 @@ public class UserService {
             }
         }
         for (Letter letter: findUser.getReceivedLetters()) {
-            letter.removeReceiver();;
+            letter.removeReceiver();
             if(letter.getSender() == null) {
                 letterRepository.deleteLetter(letter);
             }
