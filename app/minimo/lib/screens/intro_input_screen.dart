@@ -116,12 +116,16 @@ class _IntroInputScreenState extends State<IntroInputScreen> {
                         onChanged: (value) => selectedGender = value,
                         validator: (value) => FormValidateUtil.validateNotNull<Gender>(value),
                       ),
-                      TextFormComponent(
-                        label: '생일',
-                        hintText: '생일을 선택해 주세요.',
-                        controller: birthdayController,
+                      GestureDetector(
                         onTap: () => selectDate(context),
-                        validator: (value) => FormValidateUtil.validateLength(value),
+                        child: AbsorbPointer(
+                          child: TextFormComponent(
+                            label: '생일',
+                            hintText: '생일을 선택해 주세요.',
+                            controller: birthdayController,
+                            validator: (value) => FormValidateUtil.validateLength(value),
+                          ),
+                        ),
                       ),
                     ],
                   ),

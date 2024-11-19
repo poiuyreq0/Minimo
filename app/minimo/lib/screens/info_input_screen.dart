@@ -33,11 +33,11 @@ class _InfoInputScreenState extends State<InfoInputScreen> {
   void initState() {
     super.initState();
 
-    UserProvider userProvider = context.read<UserProvider>();
-    selectedName = userProvider.userCache!.userInfo.name;
-    selectedMbti = userProvider.userCache!.userInfo.mbti;
-    selectedGender = userProvider.userCache!.userInfo.gender;
-    selectedBirthday = userProvider.userCache!.userInfo.birthday;
+    final userInfo = context.read<UserProvider>().userCache!.userInfo;
+    selectedName = userInfo.name;
+    selectedMbti = userInfo.mbti;
+    selectedGender = userInfo.gender;
+    selectedBirthday = userInfo.birthday;
 
     birthdayController.text = DateFormat('yyyy-MM-dd').format(selectedBirthday!);
   }
@@ -99,12 +99,16 @@ class _InfoInputScreenState extends State<InfoInputScreen> {
                         onChanged: (value) => selectedGender = value,
                         validator: (value) => FormValidateUtil.validateNotNull<Gender>(value),
                       ),
-                      TextFormComponent(
-                        label: '생일',
-                        hintText: '생일을 선택해 주세요.',
-                        controller: birthdayController,
+                      GestureDetector(
                         onTap: () => selectDate(context),
-                        validator: (value) => FormValidateUtil.validateLength(value),
+                        child: AbsorbPointer(
+                          child: TextFormComponent(
+                            label: '생일',
+                            hintText: '생일을 선택해 주세요.',
+                            controller: birthdayController,
+                            validator: (value) => FormValidateUtil.validateLength(value),
+                          ),
+                        ),
                       ),
                     ],
                   ),
