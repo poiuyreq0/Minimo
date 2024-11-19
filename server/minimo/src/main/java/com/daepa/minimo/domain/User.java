@@ -36,6 +36,9 @@ public class User extends BaseTimeEntity {
     private List<Letter> sentLetters = new ArrayList<>();
     @OneToMany(mappedBy = "receiver")
     private List<Letter> receivedLetters = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatRoomUser> chatRoomUserList = new ArrayList<>();
+
 
     // User 생성 시, 초기화
     @Column(nullable = false)

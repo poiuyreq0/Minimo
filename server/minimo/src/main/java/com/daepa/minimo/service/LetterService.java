@@ -62,7 +62,7 @@ public class LetterService {
         findLetter.changeReceiver(receiver);
         receivedRecordRepository.saveReceivedRecord(ReceivedRecord.builder()
                         .letter(findLetter)
-                        .nickname(receiver.getNickname())
+                        .receiverId(receiver.getId())
                         .build());
         return findLetter;
     }
@@ -93,6 +93,10 @@ public class LetterService {
         validateLetterOwner(findLetter, userId, userRole);
 
         findLetter.connectLetter();
+        
+        // 채팅방 생성 로직
+        // 편지에 연결된 유저가 모두 있는지 점검
+        
         return findLetter.getId();
     }
 

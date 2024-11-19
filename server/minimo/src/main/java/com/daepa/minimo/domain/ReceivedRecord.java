@@ -20,5 +20,5 @@ public class ReceivedRecord {
     @JoinColumn(name = "letter_id")
     private Letter letter;
 
-    private String nickname;
+    private Long receiverId;
 }

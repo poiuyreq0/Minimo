@@ -126,7 +126,7 @@ public class LetterRepository {
                 JPAExpressions
                         .select(receivedRecord.letter.id)
                         .from(receivedRecord)
-                        .where(receivedRecord.nickname.eq(receiver.getNickname()))
+                        .where(receivedRecord.receiverId.eq(receiver.getId()))
         );
     }
 
