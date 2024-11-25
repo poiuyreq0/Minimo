@@ -3,7 +3,8 @@ import 'package:minimo/components/little_title_component.dart';
 import 'package:minimo/components/title_component.dart';
 import 'package:minimo/consts/letter_state.dart';
 import 'package:minimo/consts/user_role.dart';
-import 'package:minimo/screens/letter_list_screen.dart';
+
+import 'letter_list_screen.dart';
 
 class LetterBoxScreen extends StatelessWidget {
   const LetterBoxScreen({super.key});

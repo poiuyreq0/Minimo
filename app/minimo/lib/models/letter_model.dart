@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:json_annotation/json_annotation.dart';
 import 'package:minimo/consts/letter_option.dart';
 import 'package:minimo/consts/letter_state.dart';
 

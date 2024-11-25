@@ -14,10 +14,10 @@ import 'package:minimo/models/user_info_model.dart';
 import 'package:minimo/models/user_model.dart';
 import 'package:minimo/providers/letter_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
-import 'package:minimo/screens/letter_detail_screen.dart';
+import 'package:minimo/screens/home/letter_box/letter_detail_screen.dart';
 import 'package:provider/provider.dart';
 
-import 'splash_screen.dart';
+import '../splash_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

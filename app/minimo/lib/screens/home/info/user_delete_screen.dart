@@ -4,11 +4,10 @@ import 'package:minimo/components/text_form_component.dart';
 import 'package:minimo/components/title_component.dart';
 import 'package:minimo/providers/letter_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
+import 'package:minimo/screens/auth_screen.dart';
 import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/form_validate_util.dart';
 import 'package:provider/provider.dart';
-
-import 'auth_screen.dart';
 
 class UserDeleteScreen extends StatefulWidget {
   const UserDeleteScreen({super.key});

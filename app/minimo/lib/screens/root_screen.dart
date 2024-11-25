@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:minimo/components/heart_icon_component.dart';
 import 'package:minimo/providers/user_provider.dart';
-import 'package:minimo/screens/home_screen.dart';
-import 'package:minimo/screens/info_screen.dart';
-import 'package:minimo/screens/letter_input_screen.dart';
+import 'package:minimo/screens/home/home_screen.dart';
+import 'package:minimo/screens/home/info/info_screen.dart';
+import 'package:minimo/screens/home/letter_input_screen.dart';
 import 'package:minimo/styles/app_style.dart';
 import 'package:provider/provider.dart';
 
-import 'letter_box_screen.dart';
+import 'chat/chat_list_screen.dart';
+import 'home/letter_box/letter_box_screen.dart';
 
 class RootScreen extends StatefulWidget {
   const RootScreen({super.key});
@@ -59,7 +60,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
     return [
       HomeScreen(),
       Placeholder(),
-      Placeholder(),
+      ChatListScreen(),
     ];
   }
 

@@ -1,5 +1,3 @@
-import 'package:dio/dio.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:minimo/components/divided_element_component.dart';
@@ -8,14 +6,14 @@ import 'package:minimo/components/little_title_component.dart';
 import 'package:minimo/components/title_component.dart';
 import 'package:minimo/providers/letter_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
-import 'package:minimo/screens/info_input_screen.dart';
-import 'package:minimo/screens/password_input_screen.dart';
-import 'package:minimo/screens/user_delete_screen.dart';
+import 'package:minimo/screens/home/info/info_input_screen.dart';
 import 'package:minimo/styles/app_style.dart';
 import 'package:provider/provider.dart';
 
-import 'auth_screen.dart';
+import '../../auth_screen.dart';
 import 'nickname_input_screen.dart';
+import 'password_input_screen.dart';
+import 'user_delete_screen.dart';
 
 class InfoScreen extends StatelessWidget {
   InfoScreen({super.key});

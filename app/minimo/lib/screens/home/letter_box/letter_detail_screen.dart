@@ -6,6 +6,7 @@ import 'package:minimo/models/letter_model.dart';
 import 'package:minimo/models/user_role_model.dart';
 import 'package:minimo/providers/letter_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
+import 'package:minimo/screens/chat/chat_room_screen.dart';
 import 'package:minimo/styles/app_style.dart';
 import 'package:provider/provider.dart';
 
@@ -118,13 +119,7 @@ class ActionButton extends StatelessWidget {
                 foregroundColor: Theme.of(context).colorScheme.onPrimary,
               ),
               onPressed: () async {
-                if (letterState == LetterState.CONNECTED && userRole == UserRole.SENDER) {
-
-
-                } else if (letterState == LetterState.CONNECTED && userRole == UserRole.RECEIVER) {
-
-
-                } else {
+                if (letterState != LetterState.CONNECTED) {
                   await letterProvider.connectLetter(id: letter.id, userRoleModel: UserRoleModel(id: userId, userRole: userRole));
                   ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -134,6 +129,9 @@ class ActionButton extends StatelessWidget {
                 }
 
                 // 채팅방 이동
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => ChatRoomScreen(),)
+                );
               },
               child: Builder(
                 builder: (context) {
