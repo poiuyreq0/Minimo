@@ -83,12 +83,20 @@ class LetterProvider extends ChangeNotifier {
     required UserRoleModel userRoleModel,
     required LetterState letterState,
   }) async {
-    final List<LetterModel> resp = await letterRepository.getLetters(userRoleModel: userRoleModel, letterState: letterState);
+    final resp = await letterRepository.getLetters(userRoleModel: userRoleModel, letterState: letterState);
 
     return resp;
   }
 
   void logout() {
     _letterElementsCache = {};
+  }
+
+  Future<int> getChatRoomId({
+    required int id,
+  }) async {
+    final resp = await letterRepository.getChatRoomId(id: id);
+
+    return resp;
   }
 }

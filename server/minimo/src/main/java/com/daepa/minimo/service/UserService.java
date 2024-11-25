@@ -21,7 +21,7 @@ public class UserService {
     public Long createUser(User user) {
         validateNicknameConflict(user.getNickname());
 
-        userRepository.createUser(user);
+        userRepository.saveUser(user);
         return user.getId();
     }
 

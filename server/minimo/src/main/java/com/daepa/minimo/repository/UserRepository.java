@@ -14,7 +14,7 @@ public class UserRepository {
     private final EntityManager em;
     private final JPAQueryFactory queryFactory;
 
-    public void createUser(User user) {
+    public void saveUser(User user) {
         em.persist(user);
     }
 

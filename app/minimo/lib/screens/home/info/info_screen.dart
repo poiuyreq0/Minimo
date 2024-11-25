@@ -132,6 +132,7 @@ class InfoScreen extends StatelessWidget {
                     );
                   },
                 ),
+                const SizedBox(height: 32,),
               ],
             ),
           );

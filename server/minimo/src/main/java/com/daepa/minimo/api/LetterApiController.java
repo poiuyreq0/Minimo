@@ -74,4 +74,10 @@ public class LetterApiController {
         List<LetterDto> letters = letterService.findLetters(userId, userRole, letterState);
         return ResponseEntity.ok(letters);
     }
+
+    @GetMapping("/{id}/chat-room-id")
+    public ResponseEntity<Map<String, Long>> getChatRoomId(@PathVariable("id") Long id) {
+        Long chatRoomId = letterService.findChatRoomId(id);
+        return ResponseEntity.ok(Map.of("chatRoomId", chatRoomId));
+    }
 }

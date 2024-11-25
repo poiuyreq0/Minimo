@@ -39,6 +39,7 @@ class _TextFormComponentState extends State<TextFormComponent> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      keyboardType: widget.isContent ? TextInputType.multiline : TextInputType.text,
       maxLength: widget.isContent ? 1000 : (widget.isPassword ? null : 20),
       maxLines: widget.isContent ? null : 1,
       maxLengthEnforcement: MaxLengthEnforcement.enforced,

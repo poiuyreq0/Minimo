@@ -11,7 +11,7 @@ class IntroScreen extends StatefulWidget {
 }
 
 class _IntroScreenState extends State<IntroScreen> {
-  late PageController _pageController;
+  late final PageController _pageController;
   int _currentPage = 0;
 
   @override

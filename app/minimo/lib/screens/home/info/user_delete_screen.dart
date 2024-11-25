@@ -98,7 +98,7 @@ class _UserDeleteScreenState extends State<UserDeleteScreen> {
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('회원 탈퇴에 실패했습니다.'),
+              content: Text('회원 탈퇴에 실패했습니다.\n비밀번호가 올바르게 입력되었는지 확인해 주세요.'),
             )
         );
       }

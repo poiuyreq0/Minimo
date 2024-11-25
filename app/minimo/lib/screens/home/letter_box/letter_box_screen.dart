@@ -121,6 +121,7 @@ class LetterBoxScreen extends StatelessWidget {
                 );
               },
             ),
+            const SizedBox(height: 32,),
           ],
         ),
       ),

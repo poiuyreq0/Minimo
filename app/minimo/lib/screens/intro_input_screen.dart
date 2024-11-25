@@ -207,7 +207,7 @@ class _IntroInputScreenState extends State<IntroInputScreen> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('사용자 정보 입력에 실패했습니다.'),
+                content: Text('요청 처리 중 오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.'),
               )
           );
         }

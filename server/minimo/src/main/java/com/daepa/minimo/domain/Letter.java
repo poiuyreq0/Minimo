@@ -50,9 +50,7 @@ public class Letter extends BaseTimeEntity {
     @OneToMany(mappedBy = "letter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReceivedRecord> receivedRecordList = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chat_room_id")
-    private ChatRoom chatRoom;
+    private Long chatRoomId;
 
     // Letter 생성 시, 초기화
     @Embedded
@@ -89,10 +87,10 @@ public class Letter extends BaseTimeEntity {
         letterState = LetterState.SENT;
     }
 
-    // 채팅 기능 도입 후 수정 필요
-    public void connectLetter() {
+    public void connectLetter(Long chatRoomId) {
         connectedDate = LocalDateTime.now();
         letterState = LetterState.CONNECTED;
+        this.chatRoomId = chatRoomId;
     }
 
     public void removeSender() {

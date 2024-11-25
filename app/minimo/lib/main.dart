@@ -3,8 +3,10 @@ import 'package:firebase_ui_localizations/firebase_ui_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:minimo/localizations/firebase_ui_localization.dart';
+import 'package:minimo/providers/chat_provider.dart';
 import 'package:minimo/providers/letter_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
+import 'package:minimo/repositories/chat_repository.dart';
 import 'package:minimo/repositories/letter_repository.dart';
 import 'package:minimo/repositories/user_repository.dart';
 import 'package:minimo/screens/auth_screen.dart';
@@ -26,12 +28,15 @@ void main() async {
   final userProvider = UserProvider(userRepository: userRepository);
   final letterRepository = LetterRepository();
   final letterProvider = LetterProvider(letterRepository: letterRepository);
+  final chatRepository = ChatRepository();
+  final chatProvider = ChatProvider(chatRepository: chatRepository);
 
   runApp(
       MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => letterProvider),
           ChangeNotifierProvider(create: (_) => userProvider),
+          ChangeNotifierProvider(create: (_) => chatProvider),
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,

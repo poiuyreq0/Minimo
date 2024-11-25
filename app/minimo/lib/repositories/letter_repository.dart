@@ -119,4 +119,14 @@ class LetterRepository {
             (letter) => LetterModel.fromJson(letter)
     ).toList();
   }
+
+  Future<int> getChatRoomId({
+    required int id,
+  }) async {
+    final resp = await _dio.get(
+      '$_targetUrl/$id/chat-room-id',
+    );
+
+    return resp.data['chatRoomId'];
+  }
 }

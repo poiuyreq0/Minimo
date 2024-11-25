@@ -24,12 +24,22 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler(LetterUndeletableException.class)
-    public ResponseEntity<RuntimeException> handleLetterConflictException(LetterUndeletableException e) {
+    public ResponseEntity<RuntimeException> handleLetterUndeletableException(LetterUndeletableException e) {
+        return ResponseEntity.badRequest().body(e);
+    }
+
+    @ExceptionHandler(LetterUnconnectableException.class)
+    public ResponseEntity<RuntimeException> handleLetterUnconnectableException(LetterUnconnectableException e) {
         return ResponseEntity.badRequest().body(e);
     }
 
     @ExceptionHandler(UserInvalidException.class)
-    public ResponseEntity<RuntimeException> handleLetterConflictException(UserInvalidException e) {
+    public ResponseEntity<RuntimeException> handleUserInvalidException(UserInvalidException e) {
+        return ResponseEntity.badRequest().body(e);
+    }
+
+    @ExceptionHandler(ChatRoomNotFoundException.class)
+    public ResponseEntity<RuntimeException> handleChatRoomNotFoundException(ChatRoomNotFoundException e) {
         return ResponseEntity.badRequest().body(e);
     }
 
