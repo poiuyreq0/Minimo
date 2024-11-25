@@ -102,19 +102,19 @@ class AppStyle {
     color: mainColorScheme.secondary,
   );
 
-  static BoxDecoration getMainBoxDecoration(Color color) => BoxDecoration(
-    color: color,
+  static BoxDecoration getMainBoxDecoration(BuildContext context) => BoxDecoration(
+    color: Theme.of(context).colorScheme.onPrimary,
     border: Border.all(
-      color: Colors.lightGreen,
-      width: 2,
+      color: Theme.of(context).colorScheme.inversePrimary,
+      width: 3,
     ),
     borderRadius: BorderRadius.circular(10),
-    boxShadow: const [
-      BoxShadow(
-        color: Colors.grey,
-        blurRadius: 0.5,
-        blurStyle: BlurStyle.outer,
-      ),
-    ],
+    // boxShadow: [
+    //   BoxShadow(
+    //     color: Theme.of(context).colorScheme.shadow,
+    //     blurRadius: 0,
+    //     blurStyle: BlurStyle.outer,
+    //   ),
+    // ],
   );
 }

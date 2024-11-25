@@ -41,7 +41,7 @@ class _PasswordInputScreenState extends State<PasswordInputScreen> {
                 Container(
                   padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 16),
                   alignment: Alignment.center,
-                  decoration: AppStyle.getMainBoxDecoration(Theme.of(context).colorScheme.onPrimary),
+                  decoration: AppStyle.getMainBoxDecoration(context),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -65,7 +65,7 @@ class _PasswordInputScreenState extends State<PasswordInputScreen> {
                 Container(
                   padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 16),
                   alignment: Alignment.center,
-                  decoration: AppStyle.getMainBoxDecoration(Theme.of(context).colorScheme.onPrimary),
+                  decoration: AppStyle.getMainBoxDecoration(context),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [

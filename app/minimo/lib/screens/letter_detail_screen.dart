@@ -34,7 +34,7 @@ class LetterDetailScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 alignment: Alignment.center,
-                decoration: AppStyle.getMainBoxDecoration(Theme.of(context).colorScheme.onPrimary),
+                decoration: AppStyle.getMainBoxDecoration(context),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(

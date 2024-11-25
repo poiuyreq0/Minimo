@@ -44,7 +44,7 @@ class _LetterInputScreenState extends State<LetterInputScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Decoration decoration = AppStyle.getMainBoxDecoration(Theme.of(context).colorScheme.onPrimary);
+    Decoration decoration = AppStyle.getMainBoxDecoration(context);
 
     return Scaffold(
       resizeToAvoidBottomInset: true,

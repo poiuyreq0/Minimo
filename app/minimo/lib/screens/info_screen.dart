@@ -50,7 +50,7 @@ class InfoScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(16),
                         alignment: Alignment.center,
-                        decoration: AppStyle.getMainBoxDecoration(Theme.of(context).colorScheme.onPrimary),
+                        decoration: AppStyle.getMainBoxDecoration(context),
                         child: Column(
                           children: [
                             DividedElementComponent(

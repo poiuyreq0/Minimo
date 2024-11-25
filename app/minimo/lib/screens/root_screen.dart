@@ -107,7 +107,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
                   onTap: () {},
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: AppStyle.getMainBoxDecoration(Theme.of(context).colorScheme.onPrimary),
+                    decoration: AppStyle.getMainBoxDecoration(context),
                     child: Row(
                       children: [
                         HeartIconComponent(),
