@@ -14,10 +14,11 @@ public class ChatController {
     @MessageMapping("/chat/sendMessage")
     public ChatMessageDto sendMessage(ChatMessageDto message) {
         
-        // 데이터베이스 저장 로직
+        // 데이터베이스 저장 로직 필요
+        System.out.println("sendMessage: 동작 확인");
         
         messagingTemplate.convertAndSend(
-                "/queue/room/" + message.getRoomId() + "/receiver/" + message.getReceiverId(),
+                "/topic/room/" + message.getRoomId(),
                 message
         );
         return message;

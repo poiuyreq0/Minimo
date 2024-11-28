@@ -1,14 +1,45 @@
 import 'package:flutter/material.dart';
 
-class BottomTextFormComponent extends StatelessWidget {
-  final VoidCallback onPressed;
+class BottomTextFormComponent extends StatefulWidget {
   final String hintText;
+  final TextEditingController controller;
+  final VoidCallback? onPressed;
 
   const BottomTextFormComponent({
     required this.hintText,
+    required this.controller,
     required this.onPressed,
     super.key
   });
+
+  @override
+  State<BottomTextFormComponent> createState() => _BottomTextFormComponentState();
+}
+
+class _BottomTextFormComponentState extends State<BottomTextFormComponent> {
+  bool isShowIconButton = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_textChangeListener);
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_textChangeListener);
+    super.dispose();
+  }
+
+  void _textChangeListener() {
+    setState(() {
+      if (widget.controller.text.isEmpty) {
+        isShowIconButton = false;
+      } else {
+        isShowIconButton = true;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +62,14 @@ class BottomTextFormComponent extends StatelessWidget {
                   fillColor: Theme.of(context).colorScheme.surfaceContainerLowest,
                   suffixIconColor: Theme.of(context).colorScheme.primary,
                   border: OutlineInputBorder(),
-                  hintText: hintText,
+                  hintText: widget.hintText,
                   counterText: '',
-                  suffixIcon: IconButton(
+                  suffixIcon: isShowIconButton ? IconButton(
                     icon: Icon(Icons.send),
-                    onPressed: onPressed,
-                  ),
+                    onPressed: widget.onPressed,
+                  ) : null,
                 ),
+                controller: widget.controller,
               ),
             ),
           ),

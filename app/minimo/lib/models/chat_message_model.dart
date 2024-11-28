@@ -6,11 +6,11 @@ part 'chat_message_model.g.dart';
 @freezed
 class ChatMessageModel with _$ChatMessageModel {
   const factory ChatMessageModel({
+    required int id,
+    required int roomId,
     required int senderId,
-    required int receiverId,
     required String content,
     required DateTime timeStamp,
-    required bool isRead,
   }) = _ChatMessageModel;
 
   factory ChatMessageModel.fromJson(Map<String, dynamic> json) => _$ChatMessageModelFromJson(json);

@@ -143,9 +143,12 @@ class ActionButton extends StatelessWidget {
                   // 편지와 연결된 채팅방 Id 가져오기
                   final chatRoomId = await letterProvider.getChatRoomId(id: letter.id);
 
+                  // 상대방 닉네임
+                  final otherUserNickname = userRole == UserRole.SENDER ? letter.senderNickname : letter.receiverNickname;
+
                   // 채팅방 이동
                   Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => ChatRoomScreen(id: chatRoomId),)
+                      MaterialPageRoute(builder: (context) => ChatRoomScreen(id: chatRoomId, userId: userId, otherUserNickname: otherUserNickname!,),)
                   );
 
                 } on DioException catch (e) {

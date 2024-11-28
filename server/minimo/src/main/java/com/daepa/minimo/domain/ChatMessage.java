@@ -27,8 +27,6 @@ public class ChatMessage {
     private ChatRoom chatRoom;
 
     private Long senderId;
-    private Long receiverId;
     private String content;
     private LocalDateTime timeStamp;
-    private Boolean isRead;
 }
