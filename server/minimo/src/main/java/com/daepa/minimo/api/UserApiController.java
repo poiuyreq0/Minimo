@@ -13,16 +13,9 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/user")
 public class UserApiController {
     private final UserService userService;
-
-    @PostMapping
-    public ResponseEntity<Map<String, Long>> createUser(@RequestBody UserDto userDto) {
-        User user = userDto.toUser();
-        Long userId = userService.createUser(user);
-        return ResponseEntity.ok(Map.of("id", userId));
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUser(@PathVariable("id") Long id) {
@@ -34,6 +27,13 @@ public class UserApiController {
     public ResponseEntity<UserDto> getUserByEmail(@RequestParam("email") String email) {
         User user = userService.findUserByEmail(email);
         return ResponseEntity.ok(UserDto.fromUser(user));
+    }
+
+    @PostMapping
+    public ResponseEntity<Map<String, Long>> createUser(@RequestBody UserDto userDto) {
+        User user = userDto.toUser();
+        Long userId = userService.createUser(user);
+        return ResponseEntity.ok(Map.of("id", userId));
     }
 
     @GetMapping("/{id}/heart-num")

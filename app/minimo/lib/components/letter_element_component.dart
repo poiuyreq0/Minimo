@@ -3,11 +3,11 @@ import 'package:minimo/consts/user_role.dart';
 import 'package:minimo/models/letter_model.dart';
 import 'package:minimo/screens/home/letter_box/letter_detail_screen.dart';
 
-class LetterComponent extends StatelessWidget {
+class LetterElementComponent extends StatelessWidget {
   final LetterModel letter;
   final UserRole userRole;
 
-  const LetterComponent({
+  const LetterElementComponent({
     required this.letter,
     required this.userRole,
     super.key
@@ -15,14 +15,14 @@ class LetterComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => LetterDetailScreen(letter: letter, userRole: userRole),)
         );
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

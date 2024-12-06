@@ -40,29 +40,29 @@ var letter = LetterModel(
 
 void main() async {
   // user api test
-  // final UserRepository userRepository = UserRepository();
-  //
-  // try {
-  //   final resp = await userRepository.createUser(user: user);
-  //   debugPrint('createUser resp: $resp');
-  // } on DioException catch (e) {
-  //   debugPrint('createUser: $e');
-  // }
-  //
-  // try {
-  //   final resp = await userRepository.getUserByEmail(email: 'asdf@gmail.com');
-  //   debugPrint('getUserByEmail resp: $resp');
-  // } on DioException catch (e) {
-  //   debugPrint('getUserByEmail: $e');
-  // }
-
-  // letter api test
-  final LetterRepository letterRepository = LetterRepository();
+  final UserRepository userRepository = UserRepository();
 
   try {
-    final resp = await letterRepository.getLettersByEveryOption(userId: 2, count: 5);
-    debugPrint('getLettersByEveryOption resp: $resp');
+    final resp = await userRepository.createUser(user: user);
+    debugPrint('createUser resp: $resp');
   } on DioException catch (e) {
-    debugPrint('getLettersByEveryOption: $e');
+    debugPrint('createUser: $e');
   }
+
+  try {
+    final resp = await userRepository.getUserByEmail(email: '');
+    debugPrint('getUserByEmail resp: $resp');
+  } on DioException catch (e) {
+    debugPrint('getUserByEmail: $e');
+  }
+
+  // letter api test
+  // final LetterRepository letterRepository = LetterRepository();
+  //
+  // try {
+  //   final resp = await letterRepository.getLettersByEveryOption(userId: 2, count: 5);
+  //   debugPrint('getLettersByEveryOption resp: $resp');
+  // } on DioException catch (e) {
+  //   debugPrint('getLettersByEveryOption: $e');
+  // }
 }

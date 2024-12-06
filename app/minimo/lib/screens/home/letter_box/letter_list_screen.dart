@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:minimo/components/letter_component.dart';
+import 'package:minimo/components/letter_element_component.dart';
 import 'package:minimo/components/title_component.dart';
 import 'package:minimo/consts/letter_state.dart';
 import 'package:minimo/consts/user_role.dart';
@@ -44,14 +44,16 @@ class _LetterListScreenState extends State<LetterListScreen> {
               ),
             ),
             const Divider(
+              height: 0,
               indent: 16,
               endIndent: 16,
             ),
+            const SizedBox(height: 8,),
             Consumer<LetterProvider>(
               builder: (context, letterProvider, child) {
                 UserProvider userProvider = context.read<UserProvider>();
                 return FutureBuilder(
-                  future: letterProvider.getLetters(userRoleModel: UserRoleModel(id: userProvider.userCache!.id, userRole: widget.userRole), letterState: widget.letterState),
+                  future: letterProvider.getLettersByUser(userRoleModel: UserRoleModel(id: userProvider.userCache!.id, userRole: widget.userRole), letterState: widget.letterState),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
                       return const CircularProgressIndicator();
@@ -61,20 +63,14 @@ class _LetterListScreenState extends State<LetterListScreen> {
                         style: Theme.of(context).textTheme.titleSmall,
                       );
                     } else {
-                      return ListView.separated(
+                      return ListView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         itemCount: snapshot.data!.length,
                         itemBuilder: (context, index) {
-                          return LetterComponent(
+                          return LetterElementComponent(
                             letter: snapshot.data![index],
                             userRole: widget.userRole,
-                          );
-                        },
-                        separatorBuilder: (context, index) {
-                          return const Divider(
-                            indent: 16,
-                            endIndent: 16,
                           );
                         },
                       );
@@ -82,10 +78,6 @@ class _LetterListScreenState extends State<LetterListScreen> {
                   },
                 );
               }
-            ),
-            const Divider(
-              indent: 16,
-              endIndent: 16,
             ),
           ],
         ),

@@ -1,11 +1,7 @@
 package com.daepa.minimo.domain;
 
-import com.daepa.minimo.common.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -29,4 +25,9 @@ public class ChatMessage {
     private Long senderId;
     private String content;
     private LocalDateTime timeStamp;
+
+    public void changeChatRoom(@NonNull ChatRoom chatRoom) {
+        this.chatRoom = chatRoom;
+        chatRoom.getMessages().add(this);
+    }
 }

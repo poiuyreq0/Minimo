@@ -5,6 +5,7 @@ import 'package:minimo/components/title_component.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/form_validate_util.dart';
+import 'package:minimo/utils/snack_bar_util.dart';
 import 'package:provider/provider.dart';
 
 class PasswordInputScreen extends StatefulWidget {
@@ -119,18 +120,10 @@ class _PasswordInputScreenState extends State<PasswordInputScreen> {
       try {
         await userProvider.updatePassword(password: password!, newPassword: newPassword!);
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('비밀번호가 변경되었습니다.'),
-            )
-        );
+        SnackBarUtil.showSnackBar(context, '비밀번호가 변경되었습니다.');
 
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('비밀번호 변경에 실패했습니다.\n비밀번호가 올바르게 입력되었는지 확인해 주세요.'),
-            )
-        );
+        SnackBarUtil.showSnackBar(context, '비밀번호 변경에 실패했습니다.\n비밀번호가 올바르게 입력되었는지 확인해 주세요.');
       }
     }
   }

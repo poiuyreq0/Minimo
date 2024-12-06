@@ -11,6 +11,7 @@ import 'package:minimo/models/user_info_model.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/form_validate_util.dart';
+import 'package:minimo/utils/snack_bar_util.dart';
 import 'package:provider/provider.dart';
 
 class InfoInputScreen extends StatefulWidget {
@@ -162,18 +163,10 @@ class _InfoInputScreenState extends State<InfoInputScreen> {
       try {
         await userProvider.updateUserInfo(userInfoModel: userInfoModel);
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('수신 정보가 변경되었습니다.'),
-            )
-        );
+        SnackBarUtil.showSnackBar(context, '수신 정보가 변경되었습니다.');
 
-      } on DioException catch (_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('요청 처리 중 오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.'),
-            )
-        );
+      } catch (e) {
+        SnackBarUtil.showCommonErrorSnackBar(context);
       }
     }
   }

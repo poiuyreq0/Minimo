@@ -74,16 +74,15 @@ class AppStyle {
 
       // List Screen
       displayLarge: mainTextStyle.copyWith(
-        fontWeight: FontWeight.bold,
         fontSize: 14,
         color: mainColorScheme.primary,
       ),
       displayMedium: mainTextStyle.copyWith(
-        fontSize: 14,
+        fontSize: 12,
         color: mainColorScheme.secondary,
       ),
       displaySmall: mainTextStyle.copyWith(
-        fontSize: 12,
+        fontSize: 10,
         color: mainColorScheme.tertiary,
       ),
     );

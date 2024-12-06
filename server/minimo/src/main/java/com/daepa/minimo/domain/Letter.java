@@ -50,8 +50,6 @@ public class Letter extends BaseTimeEntity {
     @OneToMany(mappedBy = "letter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReceivedRecord> receivedRecordList = new ArrayList<>();
 
-    private Long chatRoomId;
-
     // Letter 생성 시, 초기화
     @Embedded
     private LetterContent letterContent;
@@ -90,7 +88,6 @@ public class Letter extends BaseTimeEntity {
     public void connectLetter(Long chatRoomId) {
         connectedDate = LocalDateTime.now();
         letterState = LetterState.CONNECTED;
-        this.chatRoomId = chatRoomId;
     }
 
     public void removeSender() {

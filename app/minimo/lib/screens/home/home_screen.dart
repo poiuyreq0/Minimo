@@ -1,20 +1,16 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:minimo/components/heart_icon_component.dart';
 import 'package:minimo/components/little_letter_list_component.dart';
-import 'package:minimo/consts/gender.dart';
 import 'package:minimo/consts/letter_option.dart';
-import 'package:minimo/consts/letter_state.dart';
-import 'package:minimo/consts/mbti.dart';
 import 'package:minimo/consts/user_role.dart';
-import 'package:minimo/models/letter_content_model.dart';
 import 'package:minimo/models/letter_element_model.dart';
-import 'package:minimo/models/letter_model.dart';
-import 'package:minimo/models/user_info_model.dart';
-import 'package:minimo/models/user_model.dart';
 import 'package:minimo/providers/letter_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/home/letter_box/letter_detail_screen.dart';
+import 'package:minimo/utils/snack_bar_util.dart';
 import 'package:provider/provider.dart';
 
 import '../splash_screen.dart';
@@ -32,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Consumer2<UserProvider, LetterProvider>(
       builder: (context, userProvider, letterProvider, child) {
         return FutureBuilder<Map<LetterOption, List<LetterElementModel>>>(
-            future: letterProvider.getLettersByEveryOption(userId: userProvider.userCache!.id, count: 5),
+            future: letterProvider.getEveryNewLetters(userId: userProvider.userCache!.id, count: 5),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return SplashScreen();
@@ -122,16 +118,15 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () async {
                 if (userProvider.userCache!.heartNum <= 0) {
                   Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Row(
-                          children: [
-                            HeartIconComponent(),
-                            Text('가 부족합니다.'),
-                          ],
-                        ),
-                      )
-                  );
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Row(
+                      children: [
+                        HeartIconComponent(),
+                        Text('가 부족합니다.'),
+                      ],
+                    ),
+                  ),);
+
                 } else {
                   try {
                     final letter = await letterProvider.receiveLetter(receiverId: userProvider.userCache!.id, letterOption: letterOption);
@@ -143,19 +138,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       (route) => route.isFirst,
                     );
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('건지기에 성공했습니다!\n유리병 편지는 편지함에서 확인할 수 있습니다.'),
-                        )
-                    );
+                    SnackBarUtil.showSnackBar(context, '건지기에 성공했습니다!\n유리병 편지는 편지함에서 확인할 수 있습니다.');
 
-                  } on DioException catch (e) {
+                  } catch (e) {
                     Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('아직 나에게 온 유리병이 없습니다.'),
-                        )
-                    );
+                    if (e is DioException && e.response?.statusCode == HttpStatus.notFound) {
+                      SnackBarUtil.showSnackBar(context, '아직 나에게 온 유리병이 없습니다.');
+                    } else {
+                      SnackBarUtil.showCommonErrorSnackBar(context);
+                    }
                   }
                 }
               },

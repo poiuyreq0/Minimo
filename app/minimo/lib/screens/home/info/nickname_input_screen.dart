@@ -8,6 +8,7 @@ import 'package:minimo/components/title_component.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/form_validate_util.dart';
+import 'package:minimo/utils/snack_bar_util.dart';
 import 'package:provider/provider.dart';
 
 class NicknameInputScreen extends StatefulWidget {
@@ -94,25 +95,13 @@ class _NicknameInputScreenState extends State<NicknameInputScreen> {
       try {
         await userProvider.updateNickname(nickname: selectedNickname!);
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('닉네임이 변경되었습니다.'),
-            )
-        );
+        SnackBarUtil.showSnackBar(context, '닉네임이 변경되었습니다.');
 
-      } on DioException catch (e) {
-        if (e.response?.statusCode == HttpStatus.conflict) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(e.response!.data['message']),
-              )
-          );
+      } catch (e) {
+        if (e is DioException && e.response?.statusCode == HttpStatus.conflict) {
+          SnackBarUtil.showSnackBar(context, '이미 사용 중인 닉네임입니다.');
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('요청 처리 중 오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.'),
-              )
-          );
+          SnackBarUtil.showCommonErrorSnackBar(context);
         }
       }
     }

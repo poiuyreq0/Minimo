@@ -104,29 +104,6 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
             padding: const EdgeInsets.only(right: 16.0),
             child: Row(
               children: [
-                GestureDetector(
-                  onTap: () {},
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: AppStyle.getMainBoxDecoration(context),
-                    child: Row(
-                      children: [
-                        HeartIconComponent(),
-                        const SizedBox(width: 8),
-                        Selector<UserProvider, int>(
-                          selector: (context, userProvider) => userProvider.userCache!.heartNum,
-                          builder: (context, heartNum, child) {
-                            return Text(
-                              '$heartNum',
-                              style: Theme.of(context).textTheme.displayMedium,
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
                 IconButton(
                   icon: Icon(Icons.mail),
                   onPressed: () {
@@ -144,13 +121,66 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
           ),
         ],
         leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Image.asset('assets/icons/icon_clear.png'),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+          child: Row(
+            children: [
+              Image.asset('assets/icons/icon_clear.png'),
+              SizedBox(width: 8,),
+              InkWell(
+                onTap: () {},
+                borderRadius: BorderRadius.circular(10),
+                child: Ink(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: AppStyle.getMainBoxDecoration(context).copyWith(
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.secondaryFixedDim,
+                      width: 2,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      HeartIconComponent(),
+                      const SizedBox(width: 8),
+                      Selector<UserProvider, int>(
+                        selector: (context, userProvider) => userProvider.userCache!.heartNum,
+                        builder: (context, heartNum, child) {
+                          return Text(
+                            '$heartNum',
+                            style: Theme.of(context).textTheme.displayMedium,
+                          );
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                      SizedBox(
+                        height: 16,
+                        child: VerticalDivider(),
+                      ),
+                      Icon(
+                        Icons.add_circle,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 18,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-        leadingWidth: 90,
+        leadingWidth: 200,
       ),
       null,
-      null,
+      AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+          child: Text(
+            '채팅',
+            maxLines: 1,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
+        leadingWidth: 200,
+      ),
     ];
 
     return appBars[index];

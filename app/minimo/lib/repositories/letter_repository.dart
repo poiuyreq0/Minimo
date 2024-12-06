@@ -9,7 +9,7 @@ import 'package:minimo/models/user_role_model.dart';
 
 class LetterRepository {
   final _dio = Dio();
-  final _targetUrl = 'http://${Platform.isAndroid ? '10.0.2.2' : 'localhost'}:8080/api/letters';
+  final _targetUrl = 'http://${Platform.isAndroid ? '10.0.2.2' : 'localhost'}:8080/api/letter';
 
   Future<int> sendLetter({
     required LetterModel letterModel,
@@ -21,12 +21,12 @@ class LetterRepository {
     return resp.data['id'];
   }
 
-  Future<Map<LetterOption, List<LetterElementModel>>> getLettersByEveryOption({
+  Future<Map<LetterOption, List<LetterElementModel>>> getEveryNewLetters({
     required int userId,
     required int count,
   }) async {
     final resp = await _dio.get(
-      '$_targetUrl/option/every',
+      '$_targetUrl/new/every',
       queryParameters: {
         'userId': userId,
         'count': count,
@@ -80,17 +80,6 @@ class LetterRepository {
     return resp.data['id'];
   }
 
-  Future<int> connectLetter({
-    required int id,
-    required UserRoleModel userRoleModel,
-  }) async {
-    final resp = await _dio.post(
-      '$_targetUrl/$id/connect',
-      data: userRoleModel.toJson(),
-    );
-    return resp.data['id'];
-  }
-
   Future<int> disconnectLetter({
     required int id,
     required UserRoleModel userRoleModel,
@@ -102,12 +91,23 @@ class LetterRepository {
     return resp.data['id'];
   }
 
-  Future<List<LetterModel>> getLetters({
+  Future<int> connectLetter({
+    required int id,
+    required UserRoleModel userRoleModel,
+  }) async {
+    final resp = await _dio.post(
+      '$_targetUrl/$id/connect',
+      data: userRoleModel.toJson(),
+    );
+    return resp.data['id'];
+  }
+
+  Future<List<LetterModel>> getLettersByUser({
     required UserRoleModel userRoleModel,
     required LetterState letterState,
   }) async {
     final resp = await _dio.get(
-        _targetUrl,
+        '$_targetUrl/user',
         queryParameters: {
           'userId': userRoleModel.id,
           'userRole': userRoleModel.userRole.name,
@@ -118,15 +118,5 @@ class LetterRepository {
     return resp.data.map<LetterModel>(
             (letter) => LetterModel.fromJson(letter)
     ).toList();
-  }
-
-  Future<int> getChatRoomId({
-    required int id,
-  }) async {
-    final resp = await _dio.get(
-      '$_targetUrl/$id/chat-room-id',
-    );
-
-    return resp.data['chatRoomId'];
   }
 }

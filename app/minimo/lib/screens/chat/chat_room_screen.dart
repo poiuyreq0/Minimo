@@ -46,51 +46,80 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   Widget build(BuildContext context) {
     ChatProvider chatProvider = context.read<ChatProvider>();
 
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        title: Text(widget.otherUserNickname),
-      ),
-      body: FutureBuilder<void>(
-        future: chatProvider.enterChatRoom(roomId: widget.id, userId: widget.userId),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
-          } else {
-            return Column(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      FocusScope.of(context).unfocus();
-                    },
-                    child: Container(
-                      color: Theme.of(context).colorScheme.surface,
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: Selector<ChatProvider, List<ChatMessageModel>?>(
-                          selector: (context, chatProvider) => chatProvider.chatRoomsCache[widget.id],
-                          builder: (BuildContext context, chatMessages, Widget? child) {
-                            return ListView.separated(
-                              reverse: true,
-                              shrinkWrap: true,
-                              itemCount: chatMessages != null ? chatMessages.length : 0,
-                              itemBuilder: (context, index) {
-
-                                debugPrint('chatMessages: ${chatMessages}');
-
-                                late final bool isShowTimeStamp;
-                                if (index > 0) {
-                                  isShowTimeStamp = !(DateFormat('yyyy-MM-dd HH:mm').format(chatMessages![index].timeStamp) ==
-                                      DateFormat('yyyy-MM-dd HH:mm').format(chatMessages[index-1].timeStamp));
-                                } else {
-                                  isShowTimeStamp = true;
-                                }
-                                return Column(
-                                  children: [
-                                    if (index == chatMessages!.length - 1)
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
+    return PopScope(
+      onPopInvoked: (didPop) {
+        chatProvider.exitChatRoom();
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        appBar: AppBar(
+          title: Text(widget.otherUserNickname),
+        ),
+        body: FutureBuilder<void>(
+          future: chatProvider.enterChatRoom(roomId: widget.id, userId: widget.userId),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else {
+              return Column(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        FocusScope.of(context).unfocus();
+                      },
+                      child: Container(
+                        color: Theme.of(context).colorScheme.surface,
+                        child: Align(
+                          alignment: Alignment.topCenter,
+                          child: Selector<ChatProvider, List<ChatMessageModel>?>(
+                            selector: (context, chatProvider) => chatProvider.chatRoomScreenCache[widget.id],
+                            builder: (BuildContext context, chatMessages, Widget? child) {
+                              return ListView.separated(
+                                reverse: true,
+                                shrinkWrap: true,
+                                itemCount: chatMessages != null ? chatMessages.length : 0,
+                                itemBuilder: (context, index) {
+                                  late final bool isShowTimeStamp;
+                                  if (index > 0) {
+                                    isShowTimeStamp = !(DateFormat('yyyy-MM-dd HH:mm').format(chatMessages![index].timeStamp) ==
+                                        DateFormat('yyyy-MM-dd HH:mm').format(chatMessages[index-1].timeStamp));
+                                  } else {
+                                    isShowTimeStamp = true;
+                                  }
+                                  return Column(
+                                    children: [
+                                      if (index == chatMessages!.length - 1)
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            DateFormat('yyyy년 M월 d일 EEEE', 'ko_KR').format(chatMessages[index].timeStamp),
+                                            style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                                              fontSize: 10,
+                                            ),
+                                          ),
+                                        ),
+                                      ChatMessageComponent(
+                                          chatMessage: chatMessages[index],
+                                          isShowTimeStamp: isShowTimeStamp
+                                      ),
+                                      if (index == 0 || isShowTimeStamp)
+                                        const SizedBox(height: 8,),
+                                    ],
+                                  );
+                                },
+                                separatorBuilder: (context, index) {
+                                  late final bool isSameTime;
+                                  if (index < chatMessages!.length - 1) {
+                                    isSameTime = DateFormat('yyyy-MM-dd').format(chatMessages[index].timeStamp) ==
+                                        DateFormat('yyyy-MM-dd').format(chatMessages[index+1].timeStamp);
+                                  } else {
+                                    isSameTime = false;
+                                  }
+                                  if (!isSameTime) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Center(
                                         child: Text(
                                           DateFormat('yyyy년 M월 d일 EEEE', 'ko_KR').format(chatMessages[index].timeStamp),
                                           style: Theme.of(context).textTheme.displaySmall!.copyWith(
@@ -98,58 +127,31 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                                           ),
                                         ),
                                       ),
-                                    ChatMessageComponent(
-                                        chatMessage: chatMessages[index],
-                                        isShowTimeStamp: isShowTimeStamp
-                                    ),
-                                    if (index == 0 || isShowTimeStamp)
-                                      const SizedBox(height: 8,),
-                                  ],
-                                );
-                              },
-                              separatorBuilder: (context, index) {
-                                late final bool isSameTime;
-                                if (index < chatMessages!.length - 1) {
-                                  isSameTime = DateFormat('yyyy-MM-dd').format(chatMessages[index].timeStamp) ==
-                                      DateFormat('yyyy-MM-dd').format(chatMessages[index+1].timeStamp);
-                                } else {
-                                  isSameTime = false;
-                                }
-                                if (!isSameTime) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Center(
-                                      child: Text(
-                                        DateFormat('yyyy년 M월 d일 EEEE', 'ko_KR').format(chatMessages[index].timeStamp),
-                                        style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                                          fontSize: 10,
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                } else {
-                                  return const SizedBox(height: 4,);
-                                }
-                              },
-                              controller: _scrollController,
-                            );
-                          },
+                                    );
+                                  } else {
+                                    return const SizedBox(height: 4,);
+                                  }
+                                },
+                                controller: _scrollController,
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                BottomTextFormComponent(
-                  hintText: '메시지 입력',
-                  controller: _textEditingController,
-                  onPressed: () {
-                    onSendPressed(context);
-                  },
-                ),
-              ],
-            );
+                  BottomTextFormComponent(
+                    hintText: '메시지 입력',
+                    controller: _textEditingController,
+                    onPressed: () {
+                      onSendPressed(context);
+                    },
+                  ),
+                ],
+              );
+            }
           }
-        }
+        ),
       ),
     );
   }

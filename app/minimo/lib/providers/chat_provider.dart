@@ -1,17 +1,12 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:minimo/models/chat_message_model.dart';
+import 'package:minimo/models/chat_room_model.dart';
 import 'package:minimo/repositories/chat_repository.dart';
-import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 class ChatProvider extends ChangeNotifier {
   final ChatRepository chatRepository;
-
-  Map<int, List<ChatMessageModel>> chatRoomsCache = {};
-  late StompClient stompClient;
-  late StompFrame stompFrame;
+  List<ChatRoomModel> chatListScreenCache = [];
+  Map<int, List<ChatMessageModel>> chatRoomScreenCache = {};
 
   ChatProvider({
     required this.chatRepository,
@@ -21,36 +16,23 @@ class ChatProvider extends ChangeNotifier {
     required int roomId,
     required int userId,
   }) async {
-    // await getMessages(roomId: roomId);
-
-    stompClient = StompClient(
-      config: StompConfig.sockJS(
-        url: 'http://${Platform.isAndroid ? '10.0.2.2' : 'localhost'}:8080/ws-chat',
-        onConnect: (frame) => _onWebSocketConnect(frame, roomId, userId),
-        onDisconnect: _onWebSocketDisconnect,
-      ),
-    );
-
-    stompClient.activate();
+    await getMessages(roomId: roomId);
+    chatRepository.enterChatRoom(roomId: roomId, userId: userId, updateCache: _updateCache);
   }
 
-  void _onWebSocketConnect(StompFrame frame, int roomId, int userId) {
-    stompClient.subscribe(
-      destination: '/topic/room/$roomId',
-      callback: (frame) {
-        final message = frame.body;
-        if (message != null) {
-          final chatMessage = ChatMessageModel.fromJson(jsonDecode(message));
-          if (userId != chatMessage.senderId) {
-            _updateCache(chatMessage);
-          }
-        }
-      },
-    );
+  void exitChatRoom() {
+    chatRepository.exitChatRoom();
+  }
+
+  void sendMessage({
+    required ChatMessageModel chatMessage,
+  }) {
+    chatRepository.sendMessage(chatMessage: chatMessage);
+    _updateCache(chatMessage);
   }
 
   void _updateCache(ChatMessageModel chatMessage) {
-    chatRoomsCache.update(
+    chatRoomScreenCache.update(
       chatMessage.roomId,
       (value) => [
         chatMessage,
@@ -62,42 +44,41 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _onWebSocketDisconnect(StompFrame frame) {
-    debugPrint('_onWebSocketDisconnect: 연결 해제');
-  }
+  Future<void> getMessages({
+    required int roomId,
+  }) async {
+    final resp = await chatRepository.getMessages(roomId: roomId);
 
-  void exitChatRoom() {
-    stompClient.deactivate();
-  }
-
-  void sendMessage({
-    required ChatMessageModel chatMessage,
-  }) {
-    stompClient.send(
-      destination: '/app/chat/sendMessage',
-      body: jsonEncode(chatMessage.toJson()),
+    chatRoomScreenCache.update(
+      roomId,
+      (value) => [
+        ...resp,
+      ]..sort((a, b) => b.timeStamp.compareTo(a.timeStamp),),
+      ifAbsent: () => [
+        ...resp,
+      ],
     );
-    _updateCache(chatMessage);
 
     notifyListeners();
   }
 
-  // Future<void> getMessages({
-  //   required int roomId,
-  // }) async {
-  //   final resp = await chatRepository.getMessages(roomId: roomId);
-  //
-  //   chatRoomsCache.update(
-  //     roomId,
-  //         (value) => [
-  //       ...value,
-  //       ...resp
-  //     ]..sort((a, b) => b.timeStamp.compareTo(a.timeStamp),),
-  //     ifAbsent: () => [
-  //       ...resp,
-  //     ],
-  //   );
-  //
-  //   notifyListeners();
-  // }
+  Future<int> getChatRoomIdByLetterId({
+    required int letterId,
+  }) async {
+    final resp = await chatRepository.getChatRoomIdByLetterId(letterId: letterId);
+
+    return resp;
+  }
+
+  Future<void> getChatRooms({
+    required userId,
+  }) async {
+    debugPrint("getChatRooms before: $chatListScreenCache");
+
+    final resp = await chatRepository.getChatRooms(userId: userId);
+
+    chatListScreenCache = resp;
+
+    debugPrint("getChatRooms: $chatListScreenCache");
+  }
 }

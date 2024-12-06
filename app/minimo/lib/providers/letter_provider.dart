@@ -9,9 +9,7 @@ import 'package:minimo/repositories/letter_repository.dart';
 
 class LetterProvider extends ChangeNotifier {
   final LetterRepository letterRepository;
-
-  Map<LetterOption, List<LetterElementModel>> _letterElementsCache = {};
-  Map<LetterOption, List<LetterElementModel>> get letterElementsCache => _letterElementsCache;
+  Map<LetterOption, List<LetterElementModel>> letterElementsCache = {};
 
   LetterProvider({
     required this.letterRepository,
@@ -23,14 +21,14 @@ class LetterProvider extends ChangeNotifier {
     await letterRepository.sendLetter(letterModel: letterModel);
   }
 
-  Future<Map<LetterOption, List<LetterElementModel>>> getLettersByEveryOption({
+  Future<Map<LetterOption, List<LetterElementModel>>> getEveryNewLetters({
     required int userId,
     required int count,
   }) async {
-    final resp = await letterRepository.getLettersByEveryOption(userId: userId, count: count);
-    _letterElementsCache = resp;
+    final resp = await letterRepository.getEveryNewLetters(userId: userId, count: count);
+    letterElementsCache = resp;
 
-    return _letterElementsCache;
+    return letterElementsCache;
   }
 
   Future<LetterModel> receiveLetter({
@@ -61,15 +59,6 @@ class LetterProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> connectLetter({
-    required int id,
-    required UserRoleModel userRoleModel,
-  }) async {
-    await letterRepository.connectLetter(id: id, userRoleModel: userRoleModel);
-
-    notifyListeners();
-  }
-
   Future<void> disconnectLetter({
     required int id,
     required UserRoleModel userRoleModel,
@@ -79,24 +68,25 @@ class LetterProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<LetterModel>> getLetters({
+  Future<void> connectLetter({
+    required int id,
+    required UserRoleModel userRoleModel,
+  }) async {
+    await letterRepository.connectLetter(id: id, userRoleModel: userRoleModel);
+
+    notifyListeners();
+  }
+
+  Future<List<LetterModel>> getLettersByUser({
     required UserRoleModel userRoleModel,
     required LetterState letterState,
   }) async {
-    final resp = await letterRepository.getLetters(userRoleModel: userRoleModel, letterState: letterState);
+    final resp = await letterRepository.getLettersByUser(userRoleModel: userRoleModel, letterState: letterState);
 
     return resp;
   }
 
   void logout() {
-    _letterElementsCache = {};
-  }
-
-  Future<int> getChatRoomId({
-    required int id,
-  }) async {
-    final resp = await letterRepository.getChatRoomId(id: id);
-
-    return resp;
+    letterElementsCache = {};
   }
 }

@@ -18,7 +18,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/letters")
+@RequestMapping("/api/letter")
 public class LetterApiController {
     private final LetterService letterService;
 
@@ -29,11 +29,11 @@ public class LetterApiController {
         return ResponseEntity.ok(Map.of("id", letterId));
     }
 
-    @GetMapping("/option/every")
-    public ResponseEntity<Map<LetterOption, List<LetterElementDto>>> getLettersByEveryOption(@RequestParam("userId") Long userId, @RequestParam("count") Integer count) {
+    @GetMapping("/new/every")
+    public ResponseEntity<Map<LetterOption, List<LetterElementDto>>> getEveryNewLetters(@RequestParam("userId") Long userId, @RequestParam("count") Integer count) {
         Map<LetterOption, List<LetterElementDto>> result = new HashMap<>();
         for (LetterOption letterOption: LetterOption.values()) {
-            List<LetterElementDto> letters = letterService.findLettersByOption(userId, letterOption, count);
+            List<LetterElementDto> letters = letterService.findNewLettersByOption(userId, letterOption, count);
             result.put(letterOption, letters);
         }
         return ResponseEntity.ok(result);
@@ -57,27 +57,21 @@ public class LetterApiController {
         return ResponseEntity.ok(Map.of("id", letterId));
     }
 
-    @PostMapping("/{id}/connect")
-    public ResponseEntity<Map<String, Long>> connectLetter(@PathVariable("id") Long id, @RequestBody UserRoleDto userRoleDto) {
-        Long letterId = letterService.connectLetter(id, userRoleDto.getId(), userRoleDto.getUserRole());
-        return ResponseEntity.ok(Map.of("id", letterId));
-    }
-
     @PostMapping("/{id}/disconnect")
     public ResponseEntity<Map<String, Long>> disconnectLetter(@PathVariable("id") Long id, @RequestBody UserRoleDto userRoleDto) {
         Long letterId = letterService.disconnectLetter(id, userRoleDto.getId(), userRoleDto.getUserRole());
         return ResponseEntity.ok(Map.of("id", letterId));
     }
 
-    @GetMapping
-    public ResponseEntity<List<LetterDto>> getLetters(@RequestParam("userId") Long userId, @RequestParam("userRole") UserRole userRole, @RequestParam("letterState") LetterState letterState) {
-        List<LetterDto> letters = letterService.findLetters(userId, userRole, letterState);
-        return ResponseEntity.ok(letters);
+    @PostMapping("/{id}/connect")
+    public ResponseEntity<Map<String, Long>> connectLetter(@PathVariable("id") Long id, @RequestBody UserRoleDto userRoleDto) {
+        Long letterId = letterService.connectLetter(id, userRoleDto.getId(), userRoleDto.getUserRole());
+        return ResponseEntity.ok(Map.of("id", letterId));
     }
 
-    @GetMapping("/{id}/chat-room-id")
-    public ResponseEntity<Map<String, Long>> getChatRoomId(@PathVariable("id") Long id) {
-        Long chatRoomId = letterService.findChatRoomId(id);
-        return ResponseEntity.ok(Map.of("chatRoomId", chatRoomId));
+    @GetMapping("/user")
+    public ResponseEntity<List<LetterDto>> getLettersByUser(@RequestParam("userId") Long userId, @RequestParam("userRole") UserRole userRole, @RequestParam("letterState") LetterState letterState) {
+        List<LetterDto> letters = letterService.findLettersByUser(userId, userRole, letterState);
+        return ResponseEntity.ok(letters);
     }
 }

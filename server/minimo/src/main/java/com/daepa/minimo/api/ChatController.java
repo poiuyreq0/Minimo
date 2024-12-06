@@ -1,6 +1,7 @@
 package com.daepa.minimo.api;
 
 import com.daepa.minimo.dto.ChatMessageDto;
+import com.daepa.minimo.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -10,17 +11,17 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class ChatController {
     private final SimpMessagingTemplate messagingTemplate;
+    private final ChatService chatService;
 
-    @MessageMapping("/chat/sendMessage")
+    @MessageMapping("/chat/send")
     public ChatMessageDto sendMessage(ChatMessageDto message) {
-        
-        // 데이터베이스 저장 로직 필요
-        System.out.println("sendMessage: 동작 확인");
+        chatService.sendMessage(message.getRoomId(), message.toChatMessage());
         
         messagingTemplate.convertAndSend(
                 "/topic/room/" + message.getRoomId(),
                 message
         );
+
         return message;
     }
 }

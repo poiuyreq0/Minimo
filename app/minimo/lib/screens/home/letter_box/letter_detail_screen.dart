@@ -1,15 +1,19 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:minimo/consts/letter_state.dart';
 import 'package:minimo/consts/user_role.dart';
 import 'package:minimo/models/letter_model.dart';
+import 'package:minimo/models/user_model.dart';
 import 'package:minimo/models/user_role_model.dart';
 import 'package:minimo/providers/chat_provider.dart';
 import 'package:minimo/providers/letter_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/chat/chat_room_screen.dart';
 import 'package:minimo/styles/app_style.dart';
+import 'package:minimo/utils/snack_bar_util.dart';
 import 'package:provider/provider.dart';
 
 class LetterDetailScreen extends StatelessWidget {
@@ -107,7 +111,7 @@ class ActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     LetterProvider letterProvider = context.read<LetterProvider>();
-    int userId = context.read<UserProvider>().userCache!.id;
+    UserModel user = context.read<UserProvider>().userCache!;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -121,42 +125,44 @@ class ActionButton extends StatelessWidget {
                 foregroundColor: Theme.of(context).colorScheme.onPrimary,
               ),
               onPressed: () async {
+                // 편지 연결
                 if (letterState != LetterState.CONNECTED) {
                   try {
-                    await letterProvider.connectLetter(id: letter.id, userRoleModel: UserRoleModel(id: userId, userRole: userRole));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('연결에 성공했습니다!\n상대방과 대화를 시작해 보세요.'),
-                        )
-                    );
+                    await letterProvider.connectLetter(id: letter.id, userRoleModel: UserRoleModel(id: user.id, userRole: userRole));
+                    Navigator.of(context).pop();
+                    SnackBarUtil.showSnackBar(context, '연결에 성공했습니다!\n상대방과 대화를 시작해 보세요.');
 
-                  } on DioException catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('요청 처리 중 오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.'),
-                        )
-                    );
+                  } catch (e) {
+                    if (e is DioException && e.response?.statusCode == HttpStatus.notFound) {
+                      SnackBarUtil.showSnackBar(context, '연결이 끊긴 상대방입니다.\n편지를 연결할 수 없습니다.');
+                    } else if (e is DioException && e.response?.statusCode == HttpStatus.forbidden) {
+                      SnackBarUtil.showSnackBar(context, '유효한 사용자가 아닙니다.');
+                    } else {
+                      SnackBarUtil.showCommonErrorSnackBar(context);
+                    }
+                    
+                    // 연결 실패 시 종료
+                    return ;
                   }
                 }
 
+                // 채팅방 이동
                 try {
                   // 편지와 연결된 채팅방 Id 가져오기
-                  final chatRoomId = await letterProvider.getChatRoomId(id: letter.id);
+                  final chatRoomId = await context.read<ChatProvider>().getChatRoomIdByLetterId(letterId: letter.id);
 
-                  // 상대방 닉네임
                   final otherUserNickname = userRole == UserRole.SENDER ? letter.senderNickname : letter.receiverNickname;
 
-                  // 채팅방 이동
                   Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => ChatRoomScreen(id: chatRoomId, userId: userId, otherUserNickname: otherUserNickname!,),)
+                      MaterialPageRoute(builder: (context) => ChatRoomScreen(id: chatRoomId, userId: user.id, otherUserNickname: otherUserNickname!,),)
                   );
 
-                } on DioException catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('사라진 채팅방입니다.'),
-                      )
-                  );
+                } catch (e) {
+                  if (e is DioException && e.response?.statusCode == HttpStatus.notFound) {
+                    SnackBarUtil.showSnackBar(context, '사라진 채팅방입니다.');
+                  } else {
+                    SnackBarUtil.showCommonErrorSnackBar(context);
+                  }
                 }
               },
               child: Builder(
@@ -178,37 +184,27 @@ class ActionButton extends StatelessWidget {
           onPressed: () async {
             try {
               if (letterState == LetterState.SENT && userRole == UserRole.SENDER) {
-                await letterProvider.sinkLetter(id: letter.id, userRoleModel: UserRoleModel(id: userId, userRole: userRole));
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('유리병이 가라앉았습니다.'),
-                    )
-                );
+                await letterProvider.sinkLetter(id: letter.id, userRoleModel: UserRoleModel(id: user.id, userRole: userRole));
+                SnackBarUtil.showSnackBar(context, '유리병이 가라앉았습니다.');
 
               } else if (letterState == LetterState.LOCKED && userRole == UserRole.RECEIVER) {
-                await letterProvider.returnLetter(id: letter.id, userRoleModel: UserRoleModel(id: userId, userRole: userRole));
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('유리병을 다시 바다로 보냈습니다.'),
-                    )
-                );
+                await letterProvider.returnLetter(id: letter.id, userRoleModel: UserRoleModel(id: user.id, userRole: userRole));
+                SnackBarUtil.showSnackBar(context, '유리병을 바다로 돌려보냈습니다.');
 
               } else {
-                await letterProvider.disconnectLetter(id: letter.id, userRoleModel: UserRoleModel(id: userId, userRole: userRole));
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('상대방과의 연결을 끊었습니다.'),
-                    )
-                );
+                await letterProvider.disconnectLetter(id: letter.id, userRoleModel: UserRoleModel(id: user.id, userRole: userRole));
+                SnackBarUtil.showSnackBar(context, '상대방과의 연결을 끊었습니다.');
               }
               Navigator.of(context).pop();
 
-            } on DioException catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('요청 처리 중 오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.'),
-                  )
-              );
+            } catch (e) {
+              if (e is DioException && e.response?.statusCode == HttpStatus.notFound) {
+                SnackBarUtil.showSnackBar(context, '편지를 찾을 수 없습니다.');
+              } else if (e is DioException && e.response?.statusCode == HttpStatus.forbidden) {
+                SnackBarUtil.showSnackBar(context, '유효한 사용자가 아닙니다.');
+              } else {
+                SnackBarUtil.showCommonErrorSnackBar(context);
+              }
             }
           },
           child: Builder(

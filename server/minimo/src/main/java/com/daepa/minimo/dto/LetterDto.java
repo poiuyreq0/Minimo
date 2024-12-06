@@ -19,7 +19,6 @@ public class LetterDto {
     private String senderNickname;
     private Long receiverId;
     private String receiverNickname;
-    private Long chatRoomId;
     private LetterContent letterContent;
     private LetterOption letterOption;
     private UserInfo userInfo;
@@ -35,7 +34,6 @@ public class LetterDto {
                 .senderNickname(letter.getSender() != null ? letter.getSender().getNickname() : null)
                 .receiverId(letter.getReceiver() != null ? letter.getReceiver().getId() : null)
                 .receiverNickname(letter.getReceiver() != null ? letter.getReceiver().getNickname() : null)
-                .chatRoomId(letter.getChatRoomId())
                 .letterContent(letter.getLetterContent())
                 .letterOption(letter.getLetterOption())
                 .userInfo(letter.getUserInfo())

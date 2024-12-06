@@ -15,6 +15,7 @@ import 'package:minimo/providers/letter_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/form_validate_util.dart';
+import 'package:minimo/utils/snack_bar_util.dart';
 import 'package:provider/provider.dart';
 
 class LetterInputScreen extends StatefulWidget {
@@ -216,18 +217,10 @@ class _LetterInputScreenState extends State<LetterInputScreen> {
       try {
         await letterProvider.sendLetter(letterModel: letterModel);
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('띄우기에 성공했습니다!\n유리병 편지는 편지함에서 확인할 수 있습니다.'),
-            )
-        );
+        SnackBarUtil.showSnackBar(context, '띄우기에 성공했습니다!\n유리병 편지는 편지함에서 확인할 수 있습니다.');
 
-      } on DioException catch (_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('요청 처리 중 오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.'),
-            )
-        );
+      } catch (e) {
+        SnackBarUtil.showCommonErrorSnackBar(context);
       }
     }
   }

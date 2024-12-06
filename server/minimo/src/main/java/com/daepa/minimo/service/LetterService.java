@@ -21,38 +21,30 @@ public class LetterService {
     private final LetterRepository letterRepository;
     private final UserRepository userRepository;
     private final ReceivedRecordRepository receivedRecordRepository;
-    private final ChatRoomRepository chatRoomRepository;
-    private final ChatRoomUserRepository chatRoomUserRepository;
-
-    public Long sendLetter(Long senderId, Letter letter) {
-        User sender = userRepository.findUser(senderId);
-        validateUserNotNull(sender);
-
-        letter.changeSender(sender);
-        letterRepository.saveLetter(letter);
-        return letter.getId();
-    }
+    private final ChatRepository chatRepository;
 
     @Transactional(readOnly = true)
     public Letter findLetter(Long id) {
         return letterRepository.findLetter(id);
     }
 
-    @Transactional(readOnly = true)
-    public List<LetterElementDto> findLettersByOption(Long userId, LetterOption letterOption, Integer count) {
-        User user = userRepository.findUser(userId);
-        validateUserNotNull(user);
+    public Long sendLetter(Long senderId, Letter letter) {
+        User sender = userRepository.findUser(senderId);
+        letter.changeSender(sender);
+        letterRepository.saveLetter(letter);
+        return letter.getId();
+    }
 
-        return letterRepository.findLettersByOption(user, letterOption, count);
+    @Transactional(readOnly = true)
+    public List<LetterElementDto> findNewLettersByOption(Long userId, LetterOption letterOption, Integer count) {
+        User user = userRepository.findUser(userId);
+        return letterRepository.findNewLettersByOption(user, letterOption, count);
     }
 
     public Letter receiveLetter(Long receiverId, LetterOption letterOption) {
         User receiver = userRepository.findUser(receiverId);
-        validateUserNotNull(receiver);
-
-        Letter findLetter = letterRepository.findLetterByOption(receiver, letterOption);
+        Letter findLetter = letterRepository.findNewLetterByOption(receiver, letterOption);
         validateLetterNotNull(findLetter);
-        System.out.println("findLetter: " + findLetter.getUserInfo());
 
         findLetter.changeReceiver(receiver);
         receivedRecordRepository.saveReceivedRecord(ReceivedRecord.builder()
@@ -65,7 +57,6 @@ public class LetterService {
     public Long sinkLetter(Long id, Long userId, UserRole userRole) {
         Letter findLetter = letterRepository.findLetter(id);
         validateLetterNotNull(findLetter);
-        validateLetterDeletable(findLetter.getLetterState());
         validateLetterOwner(findLetter, userId, userRole);
 
         letterRepository.deleteLetter(findLetter);
@@ -78,31 +69,8 @@ public class LetterService {
         validateLetterOwner(findLetter, userId, userRole);
 
         findLetter.returnLetter();
-        validateOwnerlessAndDeleteLetter(findLetter);
-        return findLetter.getId();
-    }
+        deleteLetterIfOwnerless(findLetter);
 
-    public Long connectLetter(Long id, Long userId, UserRole userRole) {
-        Letter findLetter = letterRepository.findLetter(id);
-        validateLetterNotNull(findLetter);
-        validateLetterOwner(findLetter, userId, userRole);
-        validateLetterConnectable(findLetter);
-
-        // 채팅방 생성 로직
-        // 편지에 연결된 유저가 모두 있는지 점검
-        ChatRoom chatRoom = ChatRoom.builder().build();
-        chatRoomRepository.saveChatRoom(chatRoom);
-
-        for (User user : List.of(findLetter.getSender(), findLetter.getReceiver())) {
-            ChatRoomUser chatRoomUser = ChatRoomUser.builder()
-                    .chatRoom(chatRoom)
-                    .user(user)
-                    .build();
-            chatRoomUserRepository.saveChatRoomUser(chatRoomUser);
-        }
-
-        findLetter.connectLetter(chatRoom.getId());
-        
         return findLetter.getId();
     }
 
@@ -116,39 +84,43 @@ public class LetterService {
         } else {
             findLetter.removeReceiver();
         }
-        validateOwnerlessAndDeleteLetter(findLetter);
+        deleteLetterIfOwnerless(findLetter);
+
+        return findLetter.getId();
+    }
+
+    public Long connectLetter(Long id, Long userId, UserRole userRole) {
+        Letter findLetter = letterRepository.findLetter(id);
+        validateLetterNotNull(findLetter);
+        validateLetterOwner(findLetter, userId, userRole);
+        validateOtherOwnerNotNull(findLetter);
+
+        // 채팅방 생성 로직
+        ChatRoom chatRoom = ChatRoom.builder().build();
+        chatRoom.changeLetterId(id);
+        chatRepository.saveChatRoom(chatRoom);
+
+        for (User user : List.of(findLetter.getSender(), findLetter.getReceiver())) {
+            ChatRoomUser chatRoomUser = ChatRoomUser.builder()
+                    .chatRoom(chatRoom)
+                    .user(user)
+                    .build();
+            chatRepository.saveChatRoomUser(chatRoomUser);
+        }
+
+        findLetter.connectLetter(chatRoom.getId());
+
         return findLetter.getId();
     }
 
     @Transactional(readOnly = true)
-    public List<LetterDto> findLetters(Long userId, UserRole userRole, LetterState letterState) {
+    public List<LetterDto> findLettersByUser(Long userId, UserRole userRole, LetterState letterState) {
         return letterRepository.findLettersByUser(userId, userRole, letterState);
-    }
-
-    @Transactional(readOnly = true)
-    public Long findChatRoomId(Long id) {
-        Letter findLetter = letterRepository.findLetter(id);
-        validateLetterNotNull(findLetter);
-        validateChatRoomNotNull(findLetter);
-
-        return findLetter.getChatRoomId();
-    }
-
-    private void validateUserNotNull(User user) {
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
     }
 
     private void validateLetterNotNull(Letter letter) {
         if (letter == null) {
             throw new LetterNotFoundException();
-        }
-    }
-
-    private void validateLetterDeletable(LetterState letterState) {
-        if (letterState != LetterState.SENT) {
-            throw new LetterUndeletableException();
         }
     }
 
@@ -159,21 +131,15 @@ public class LetterService {
         }
     }
 
-    private void validateOwnerlessAndDeleteLetter(Letter letter) {
+    private void deleteLetterIfOwnerless(Letter letter) {
         if (letter.getSender() == null && letter.getReceiver() == null) {
             letterRepository.deleteLetter(letter);
         }
     }
 
-    private void validateLetterConnectable(Letter letter) {
+    private void validateOtherOwnerNotNull(Letter letter) {
         if (letter.getSender() == null || letter.getReceiver() == null) {
-            throw new LetterUnconnectableException();
-        }
-    }
-
-    private void validateChatRoomNotNull(Letter letter) {
-        if (letter.getChatRoomId() == null) {
-            throw new ChatRoomNotFoundException();
+            throw new UserNotFoundException();
         }
     }
 }

@@ -18,13 +18,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final LetterRepository letterRepository;
 
-    public Long createUser(User user) {
-        validateNicknameConflict(user.getNickname());
-
-        userRepository.saveUser(user);
-        return user.getId();
-    }
-
     @Transactional(readOnly = true)
     public User findUser(Long id) {
         User findUser = userRepository.findUser(id);
@@ -41,25 +34,27 @@ public class UserService {
         return findUser;
     }
 
+    public Long createUser(User user) {
+        validateNicknameConflict(user.getNickname());
+
+        userRepository.saveUser(user);
+        return user.getId();
+    }
+
     @Transactional(readOnly = true)
     public Integer findHeartNum(Long id) {
         User findUser = userRepository.findUser(id);
-        validateUserNotNull(findUser);
-
         return findUser.getHeartNum();
     }
 
     public UserInfo updateUserInfo(Long id, UserInfo userInfo) {
         User findUser = userRepository.findUser(id);
-        validateUserNotNull(findUser);
-
         findUser.updateUserInfo(userInfo);
         return findUser.getUserInfo();
     }
 
     public User updateNickname(Long id, String nickname) {
         User findUser = userRepository.findUser(id);
-        validateUserNotNull(findUser);
         validateNicknameConflict(nickname);
 
         findUser.updateNickname(nickname);
@@ -68,7 +63,6 @@ public class UserService {
 
     public void deleteUser(Long id) {
         User findUser = userRepository.findUser(id);
-        validateUserNotNull(findUser);
 
         for (Letter letter: findUser.getSentLetters()) {
             letter.removeSender();

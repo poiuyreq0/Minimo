@@ -7,6 +7,7 @@ import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/auth_screen.dart';
 import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/form_validate_util.dart';
+import 'package:minimo/utils/snack_bar_util.dart';
 import 'package:provider/provider.dart';
 
 class UserDeleteScreen extends StatefulWidget {
@@ -89,18 +90,10 @@ class _UserDeleteScreenState extends State<UserDeleteScreen> {
           MaterialPageRoute(builder: (context) => AuthScreen(),),
               (route) => false,
         );
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('그동안 Minimo를 이용해 주셔서 감사합니다.'),
-            )
-        );
+        SnackBarUtil.showSnackBar(context, '그동안 Minimo를 이용해 주셔서 감사합니다.');
 
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('회원 탈퇴에 실패했습니다.\n비밀번호가 올바르게 입력되었는지 확인해 주세요.'),
-            )
-        );
+        SnackBarUtil.showSnackBar(context, '회원 탈퇴에 실패했습니다.\n비밀번호가 올바르게 입력되었는지 확인해 주세요.');
       }
     }
   }

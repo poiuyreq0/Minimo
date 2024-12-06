@@ -36,8 +36,8 @@ public class LetterRepository {
         return em.find(Letter.class, id);
     }
 
-    // 샘플 편지 목록 조회
-    public List<LetterElementDto> findLettersByOption(User user, LetterOption letterOption, Integer count) {
+    // 새로운 편지 목록 조회
+    public List<LetterElementDto> findNewLettersByOption(User user, LetterOption letterOption, Integer count) {
         BooleanExpression condition = matchUserInfoByOption(user, letterOption)
                 .and(matchNotReceivedLetter(user));
 
@@ -56,8 +56,8 @@ public class LetterRepository {
                 .fetch();
     }
 
-    // 실제 편지 뽑기 단건 조회
-    public Letter findLetterByOption(User user, LetterOption letterOption) {
+    // 새로운 편지 단건 조회
+    public Letter findNewLetterByOption(User user, LetterOption letterOption) {
         BooleanExpression condition = matchUserInfoByOption(user, letterOption)
                 .and(matchNotReceivedLetter(user));
 

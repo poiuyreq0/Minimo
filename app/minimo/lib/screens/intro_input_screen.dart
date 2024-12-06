@@ -15,6 +15,7 @@ import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/auth_screen.dart';
 import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/form_validate_util.dart';
+import 'package:minimo/utils/snack_bar_util.dart';
 import 'package:provider/provider.dart';
 
 class IntroInputScreen extends StatefulWidget {
@@ -191,25 +192,13 @@ class _IntroInputScreenState extends State<IntroInputScreen> {
           MaterialPageRoute(builder: (context) => AuthScreen(),),
           (route) => false,
         );
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('$selectedNickname 님 환영합니다!'),
-            )
-        );
+        SnackBarUtil.showSnackBar(context, '$selectedNickname 님 환영합니다!');
 
-      } on DioException catch (e) {
-        if (e.response?.statusCode == HttpStatus.conflict) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(e.response!.data['message']),
-              )
-          );
+      } catch (e) {
+        if (e is DioException && e.response?.statusCode == HttpStatus.conflict) {
+          SnackBarUtil.showSnackBar(context, '이미 사용 중인 닉네임입니다.');
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('요청 처리 중 오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.'),
-              )
-          );
+          SnackBarUtil.showCommonErrorSnackBar(context);
         }
       }
     }
