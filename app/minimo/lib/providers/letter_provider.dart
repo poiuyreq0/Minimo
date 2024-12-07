@@ -9,7 +9,7 @@ import 'package:minimo/repositories/letter_repository.dart';
 
 class LetterProvider extends ChangeNotifier {
   final LetterRepository letterRepository;
-  Map<LetterOption, List<LetterElementModel>> letterElementsCache = {};
+  Map<LetterOption, List<LetterElementModel>> newLettersCache = {};
 
   LetterProvider({
     required this.letterRepository,
@@ -26,9 +26,9 @@ class LetterProvider extends ChangeNotifier {
     required int count,
   }) async {
     final resp = await letterRepository.getEveryNewLetters(userId: userId, count: count);
-    letterElementsCache = resp;
+    newLettersCache = resp;
 
-    return letterElementsCache;
+    return newLettersCache;
   }
 
   Future<LetterModel> receiveLetter({
@@ -87,6 +87,6 @@ class LetterProvider extends ChangeNotifier {
   }
 
   void logout() {
-    letterElementsCache = {};
+    newLettersCache = {};
   }
 }

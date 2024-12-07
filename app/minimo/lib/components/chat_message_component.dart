@@ -6,11 +6,11 @@ import 'package:provider/provider.dart';
 
 class ChatMessageComponent extends StatelessWidget {
   final ChatMessageModel chatMessage;
-  final bool isShowTimeStamp;
+  final bool isShowCreatedDate;
 
   const ChatMessageComponent({
     required this.chatMessage,
-    required this.isShowTimeStamp,
+    required this.isShowCreatedDate,
     super.key
   });
 
@@ -28,9 +28,9 @@ class ChatMessageComponent extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          if (isShowTimeStamp)
+          if (isShowCreatedDate)
             Text(
-              DateFormat('HH:mm').format(chatMessage.timeStamp),
+              DateFormat('HH:mm').format(chatMessage.createdDate),
               style: Theme.of(context).textTheme.displaySmall!.copyWith(
                 fontSize: 10,
               ),
@@ -93,9 +93,9 @@ class ChatMessageComponent extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8,),
-          if (isShowTimeStamp)
+          if (isShowCreatedDate)
             Text(
-              DateFormat('HH:mm').format(chatMessage.timeStamp),
+              DateFormat('HH:mm').format(chatMessage.createdDate),
               style: Theme.of(context).textTheme.displaySmall!.copyWith(
                 fontSize: 10,
               ),

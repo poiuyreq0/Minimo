@@ -1,10 +1,10 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:minimo/components/bottom_text_form_component.dart';
 import 'package:minimo/components/chat_message_component.dart';
 import 'package:minimo/models/chat_message_model.dart';
 import 'package:minimo/providers/chat_provider.dart';
+import 'package:minimo/utils/snack_bar_util.dart';
 import 'package:provider/provider.dart';
 
 class ChatRoomScreen extends StatefulWidget {
@@ -55,11 +55,11 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         appBar: AppBar(
           title: Text(widget.otherUserNickname),
         ),
-        body: FutureBuilder<void>(
+        body: FutureBuilder<List<ChatMessageModel>>(
           future: chatProvider.enterChatRoom(roomId: widget.id, userId: widget.userId),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             } else {
               return Column(
                 children: [
@@ -72,28 +72,28 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                         color: Theme.of(context).colorScheme.surface,
                         child: Align(
                           alignment: Alignment.topCenter,
-                          child: Selector<ChatProvider, List<ChatMessageModel>?>(
-                            selector: (context, chatProvider) => chatProvider.chatRoomScreenCache[widget.id],
+                          child: Selector<ChatProvider, List<ChatMessageModel>>(
+                            selector: (context, chatProvider) => chatProvider.chatRoomScreenCache[widget.id]!,
                             builder: (BuildContext context, chatMessages, Widget? child) {
                               return ListView.separated(
                                 reverse: true,
                                 shrinkWrap: true,
-                                itemCount: chatMessages != null ? chatMessages.length : 0,
+                                itemCount: chatMessages.length,
                                 itemBuilder: (context, index) {
-                                  late final bool isShowTimeStamp;
+                                  late final bool isShowCreatedDate;
                                   if (index > 0) {
-                                    isShowTimeStamp = !(DateFormat('yyyy-MM-dd HH:mm').format(chatMessages![index].timeStamp) ==
-                                        DateFormat('yyyy-MM-dd HH:mm').format(chatMessages[index-1].timeStamp));
+                                    isShowCreatedDate = !(DateFormat('yyyy-MM-dd HH:mm').format(chatMessages[index].createdDate) ==
+                                        DateFormat('yyyy-MM-dd HH:mm').format(chatMessages[index-1].createdDate));
                                   } else {
-                                    isShowTimeStamp = true;
+                                    isShowCreatedDate = true;
                                   }
                                   return Column(
                                     children: [
-                                      if (index == chatMessages!.length - 1)
+                                      if (index == chatMessages.length - 1)
                                         Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: Text(
-                                            DateFormat('yyyy년 M월 d일 EEEE', 'ko_KR').format(chatMessages[index].timeStamp),
+                                            DateFormat('yyyy년 M월 d일 EEEE', 'ko_KR').format(chatMessages[index].createdDate),
                                             style: Theme.of(context).textTheme.displaySmall!.copyWith(
                                               fontSize: 10,
                                             ),
@@ -101,18 +101,18 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                                         ),
                                       ChatMessageComponent(
                                           chatMessage: chatMessages[index],
-                                          isShowTimeStamp: isShowTimeStamp
+                                          isShowCreatedDate: isShowCreatedDate
                                       ),
-                                      if (index == 0 || isShowTimeStamp)
+                                      if (index == 0 || isShowCreatedDate)
                                         const SizedBox(height: 8,),
                                     ],
                                   );
                                 },
                                 separatorBuilder: (context, index) {
                                   late final bool isSameTime;
-                                  if (index < chatMessages!.length - 1) {
-                                    isSameTime = DateFormat('yyyy-MM-dd').format(chatMessages[index].timeStamp) ==
-                                        DateFormat('yyyy-MM-dd').format(chatMessages[index+1].timeStamp);
+                                  if (index < chatMessages.length - 1) {
+                                    isSameTime = DateFormat('yyyy-MM-dd').format(chatMessages[index].createdDate) ==
+                                        DateFormat('yyyy-MM-dd').format(chatMessages[index+1].createdDate);
                                   } else {
                                     isSameTime = false;
                                   }
@@ -121,7 +121,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                                       padding: const EdgeInsets.all(8.0),
                                       child: Center(
                                         child: Text(
-                                          DateFormat('yyyy년 M월 d일 EEEE', 'ko_KR').format(chatMessages[index].timeStamp),
+                                          DateFormat('yyyy년 M월 d일 EEEE', 'ko_KR').format(chatMessages[index].createdDate),
                                           style: Theme.of(context).textTheme.displaySmall!.copyWith(
                                             fontSize: 10,
                                           ),
@@ -164,7 +164,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       roomId: widget.id,
       senderId: widget.userId,
       content: _textEditingController.text,
-      timeStamp: DateTime.now(),
+      createdDate: DateTime.now(),
     );
 
     try {
@@ -179,11 +179,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       );
 
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('요청 처리 중 오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.'),
-          )
-      );
+      SnackBarUtil.showCommonErrorSnackBar(context);
     }
   }
 }

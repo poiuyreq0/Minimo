@@ -29,19 +29,19 @@ class _ChatListScreenState extends State<ChatListScreen> {
       child: Column(
         children: [
           const Divider(
-            height: 0,
+            height: 1,
             indent: 16,
             endIndent: 16,
           ),
           const SizedBox(height: 8,),
           Consumer<ChatProvider>(
             builder: (context, chatProvider, child) {
-              return FutureBuilder<void>(
+              return FutureBuilder<List<ChatRoomModel>>(
                 future: chatProvider.getChatRooms(userId: user.id),
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  } else if (chatProvider.chatListScreenCache.isEmpty) {
+                  if (!snapshot.hasData) {
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.data!.isEmpty) {
                     return Text(
                       '아직 채팅방이 없습니다.',
                       style: Theme.of(context).textTheme.titleSmall,
@@ -50,11 +50,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
                     return ListView.builder(
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
-                      itemCount: chatProvider.chatListScreenCache.length,
+                      itemCount: snapshot.data!.length,
                       itemBuilder: (context, index) {
-                        ChatRoomModel chatRoom = chatProvider.chatListScreenCache[index];
-                        final otherUserNickname = user.nickname != chatRoom.userNicknames[0] ? chatRoom.userNicknames[0] : chatRoom.userNicknames[1];
-                        return ChatRoomElementComponent(otherUserNickname: otherUserNickname, chatMessage: chatRoom.lastMessage,);
+                        return ChatRoomElementComponent(chatRoom: snapshot.data![index], userId: user.id);
                       },
                     );
                   }

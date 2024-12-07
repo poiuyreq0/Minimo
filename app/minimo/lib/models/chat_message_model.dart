@@ -10,7 +10,7 @@ class ChatMessageModel with _$ChatMessageModel {
     required int roomId,
     required int senderId,
     required String content,
-    required DateTime timeStamp,
+    required DateTime createdDate,
   }) = _ChatMessageModel;
 
   factory ChatMessageModel.fromJson(Map<String, dynamic> json) => _$ChatMessageModelFromJson(json);

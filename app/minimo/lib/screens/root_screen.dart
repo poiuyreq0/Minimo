@@ -18,45 +18,22 @@ class RootScreen extends StatefulWidget {
 }
 
 class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _tabController = TabController(
-      length: 3,
-      vsync: this,
-    );
-
-    _tabController.addListener(tabListener);
-  }
-
-  tabListener() {
-    // 슬라이드 이동 시, BottomNavigationBar 동기화
-    setState(() {});
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
+  int currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: renderAppBar(_tabController.index),
-      body: TabBarView(
-        controller: _tabController,
-        children: renderChildren(),
+      appBar: renderAppBar(currentIndex),
+      body: IndexedStack(
+        index: currentIndex,
+        children: renderScreen(),
       ),
       bottomNavigationBar: renderBottomNavigationBar(),
-      floatingActionButton: renderFloatingActionButton(_tabController.index),
+      floatingActionButton: renderFloatingActionButton(),
     );
   }
 
-  List<Widget> renderChildren() {
+  List<Widget> renderScreen() {
     return [
       HomeScreen(),
       Placeholder(),
@@ -66,11 +43,10 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
 
   BottomNavigationBar renderBottomNavigationBar() {
     return BottomNavigationBar(
-      currentIndex: _tabController.index,
+      currentIndex: currentIndex,
       onTap: (index) {
-        // 탭 하여 이동 시, 페이지 동기화
         setState(() {
-          _tabController.animateTo(index);
+          currentIndex = index;
         });
       },
       items: [
@@ -173,10 +149,13 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
       AppBar(
         leading: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-          child: Text(
-            '채팅',
-            maxLines: 1,
-            style: Theme.of(context).textTheme.titleLarge,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              '채팅',
+              maxLines: 1,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
           ),
         ),
         leadingWidth: 200,
@@ -186,7 +165,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
     return appBars[index];
   }
 
-  FloatingActionButton? renderFloatingActionButton(int index) {
+  FloatingActionButton? renderFloatingActionButton() {
     List<FloatingActionButton?> buttons = [
       FloatingActionButton(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -206,7 +185,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
       null,
     ];
 
-    return buttons[index];
+    return buttons[currentIndex];
   }
 
   void sideNavigatorPush(Widget screen) {

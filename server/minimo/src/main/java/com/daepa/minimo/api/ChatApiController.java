@@ -35,9 +35,6 @@ public class ChatApiController {
     @GetMapping("/rooms")
     public ResponseEntity<List<ChatRoomDto>> getChatRooms(@RequestParam("userId") Long userId) {
         List<ChatRoomDto> chatRooms = chatService.findChatRooms(userId);
-
-        System.out.println("getChatRooms: " + chatRooms);
-
         return ResponseEntity.ok(chatRooms);
     }
 }

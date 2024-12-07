@@ -7,11 +7,14 @@ import 'package:minimo/components/little_letter_list_component.dart';
 import 'package:minimo/consts/letter_option.dart';
 import 'package:minimo/consts/user_role.dart';
 import 'package:minimo/models/letter_element_model.dart';
+import 'package:minimo/models/user_info_model.dart';
+import 'package:minimo/models/user_model.dart';
 import 'package:minimo/providers/letter_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/home/letter_box/letter_detail_screen.dart';
 import 'package:minimo/utils/snack_bar_util.dart';
 import 'package:provider/provider.dart';
+import 'package:tuple/tuple.dart';
 
 import '../splash_screen.dart';
 
@@ -25,8 +28,15 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return Consumer2<UserProvider, LetterProvider>(
-      builder: (context, userProvider, letterProvider, child) {
+    return Selector<UserProvider, Tuple2<UserInfoModel, int>>(
+      selector: (context, userProvider) {
+        UserModel user = userProvider.userCache!;
+        return Tuple2(user.userInfo, user.heartNum);
+      },
+      builder: (context, _, child) {
+        UserProvider userProvider = context.read<UserProvider>();
+        LetterProvider letterProvider = context.read<LetterProvider>();
+
         return FutureBuilder<Map<LetterOption, List<LetterElementModel>>>(
             future: letterProvider.getEveryNewLetters(userId: userProvider.userCache!.id, count: 5),
             builder: (context, snapshot) {

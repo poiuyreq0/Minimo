@@ -12,39 +12,33 @@ class ChatProvider extends ChangeNotifier {
     required this.chatRepository,
   })  : super();
 
-  Future<void> enterChatRoom({
+  Future<List<ChatMessageModel>> enterChatRoom({
     required int roomId,
     required int userId,
   }) async {
-    await getMessages(roomId: roomId);
-    chatRepository.enterChatRoom(roomId: roomId, userId: userId, updateCache: _updateCache);
+    await chatRepository.enterChatRoom(roomId: roomId, userId: userId, updateMessage: _updateMessage);
+    final messages = await getMessages(roomId: roomId);
+    return messages;
   }
 
   void exitChatRoom() {
     chatRepository.exitChatRoom();
   }
 
-  void sendMessage({
-    required ChatMessageModel chatMessage,
-  }) {
-    chatRepository.sendMessage(chatMessage: chatMessage);
-    _updateCache(chatMessage);
-  }
-
-  void _updateCache(ChatMessageModel chatMessage) {
+  void _updateMessage(ChatMessageModel chatMessage) {
     chatRoomScreenCache.update(
       chatMessage.roomId,
-      (value) => [
+          (value) => [
         chatMessage,
         ...value,
-      ]..sort((a, b) => b.timeStamp.compareTo(a.timeStamp),),
+      ]..sort((a, b) => b.createdDate.compareTo(a.createdDate),),
       ifAbsent: () => [chatMessage],
     );
 
     notifyListeners();
   }
 
-  Future<void> getMessages({
+  Future<List<ChatMessageModel>> getMessages({
     required int roomId,
   }) async {
     final resp = await chatRepository.getMessages(roomId: roomId);
@@ -53,13 +47,13 @@ class ChatProvider extends ChangeNotifier {
       roomId,
       (value) => [
         ...resp,
-      ]..sort((a, b) => b.timeStamp.compareTo(a.timeStamp),),
+      ]..sort((a, b) => b.createdDate.compareTo(a.createdDate),),
       ifAbsent: () => [
         ...resp,
       ],
     );
 
-    notifyListeners();
+    return chatRoomScreenCache[roomId]!;
   }
 
   Future<int> getChatRoomIdByLetterId({
@@ -70,15 +64,19 @@ class ChatProvider extends ChangeNotifier {
     return resp;
   }
 
-  Future<void> getChatRooms({
+  Future<List<ChatRoomModel>> getChatRooms({
     required userId,
   }) async {
-    debugPrint("getChatRooms before: $chatListScreenCache");
-
     final resp = await chatRepository.getChatRooms(userId: userId);
-
     chatListScreenCache = resp;
 
-    debugPrint("getChatRooms: $chatListScreenCache");
+    return chatListScreenCache;
+  }
+
+  void sendMessage({
+    required ChatMessageModel chatMessage,
+  }) {
+    chatRepository.sendMessage(chatMessage: chatMessage);
+    _updateMessage(chatMessage);
   }
 }

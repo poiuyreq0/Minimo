@@ -16,12 +16,12 @@ class ChatRepository {
   Future<void> enterChatRoom({
     required int roomId,
     required int userId,
-    required Function(ChatMessageModel) updateCache,
+    required Function(ChatMessageModel) updateMessage,
   }) async {
     stompClient = StompClient(
       config: StompConfig.sockJS(
         url: '$_targetUrl/ws-chat',
-        onConnect: (frame) => _onConnect(frame, roomId, userId, updateCache),
+        onConnect: (frame) => _onConnect(frame, roomId, userId, updateMessage),
         onDisconnect: _onDisconnect,
       ),
     );

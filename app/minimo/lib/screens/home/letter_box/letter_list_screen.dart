@@ -44,16 +44,17 @@ class _LetterListScreenState extends State<LetterListScreen> {
               ),
             ),
             const Divider(
-              height: 0,
+              height: 1,
               indent: 16,
               endIndent: 16,
             ),
             const SizedBox(height: 8,),
             Consumer<LetterProvider>(
               builder: (context, letterProvider, child) {
-                UserProvider userProvider = context.read<UserProvider>();
+                int userId = context.read<UserProvider>().userCache!.id;
+
                 return FutureBuilder(
-                  future: letterProvider.getLettersByUser(userRoleModel: UserRoleModel(id: userProvider.userCache!.id, userRole: widget.userRole), letterState: widget.letterState),
+                  future: letterProvider.getLettersByUser(userRoleModel: UserRoleModel(id: userId, userRole: widget.userRole), letterState: widget.letterState),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
                       return const CircularProgressIndicator();
