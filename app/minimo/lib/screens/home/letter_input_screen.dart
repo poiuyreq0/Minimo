@@ -16,6 +16,7 @@ import 'package:minimo/models/user_info_model.dart';
 import 'package:minimo/providers/letter_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/styles/app_style.dart';
+import 'package:minimo/utils/date_picker_util.dart';
 import 'package:minimo/utils/form_validate_util.dart';
 import 'package:minimo/utils/snack_bar_util.dart';
 import 'package:provider/provider.dart';
@@ -119,7 +120,18 @@ class _LetterInputScreenState extends State<LetterInputScreen> {
                         label: '생일',
                         hintText: '생일을 선택해 주세요.',
                         controller: birthdayTextController,
-                        onTap: () => selectDate(context),
+                        onTap: () => DatePickerUtil.showCustomDatePicker(
+                            context: context,
+                            initialDate: selectedBirthday,
+                            onDateChange: (value) {
+                              if (value != null && value != selectedBirthday) {
+                                setState(() {
+                                  selectedBirthday = value;
+                                  birthdayTextController.text = DateFormat('yyyy-MM-dd').format(selectedBirthday!);
+                                });
+                              }
+                            }
+                        ),
                         validator: (value) => FormValidateUtil.validateLength(value),
                       ),
                   ],
@@ -160,23 +172,6 @@ class _LetterInputScreenState extends State<LetterInputScreen> {
         ),
       ),
     );
-  }
-
-  Future<void> selectDate(BuildContext context) async {
-    final DateTime? selectedDate = await showDatePicker(
-      locale: const Locale('ko', 'KR'),
-      context: context,
-      initialDate: selectedBirthday,
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-
-    if (selectedDate != null && selectedDate != selectedBirthday) {
-      setState(() {
-        selectedBirthday = selectedDate;
-        birthdayTextController.text = DateFormat('yyyy-MM-dd').format(selectedBirthday!);
-      });
-    }
   }
 
   Future<void> onSavePressed(BuildContext context) async {
