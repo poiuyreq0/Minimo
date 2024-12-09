@@ -23,7 +23,7 @@ class DividedElementComponent extends StatelessWidget {
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
-        const SizedBox(width: 24),
+        const SizedBox(width: 16),
         Expanded(
           flex: 2,
           child: Text(

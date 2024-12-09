@@ -15,9 +15,12 @@ class InputFormContainer extends StatelessWidget {
       padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 16),
       alignment: Alignment.center,
       decoration: AppStyle.getMainBoxDecoration(context),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: children,
+      child: ListView.separated(
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: children.length,
+        itemBuilder: (context, index) => children[index],
+        separatorBuilder: (context, index) => const SizedBox(height: 12),
       ),
     );
   }

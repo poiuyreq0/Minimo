@@ -41,7 +41,7 @@ class LittleLetterListComponent extends StatelessWidget {
                 content: letters[index].title,
               );
             },
-            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            separatorBuilder: (context, index) => const SizedBox(height: 16),
           ),
         ),
         const SizedBox(height: 16),
