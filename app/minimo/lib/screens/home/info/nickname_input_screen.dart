@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:minimo/components/text_form_component.dart';
+import 'package:minimo/components/forms/input_form_container.dart';
+import 'package:minimo/components/forms/text_form_component.dart';
 import 'package:minimo/components/title_component.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/styles/app_style.dart';
@@ -49,32 +50,22 @@ class _NicknameInputScreenState extends State<NicknameInputScreen> {
                   title: '닉네임',
                   helpText: '유리병 편지에 함께 적어 보내는 이름입니다.',
                 ),
-                Container(
-                  padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 16),
-                  alignment: Alignment.center,
-                  decoration: AppStyle.getMainBoxDecoration(context),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      TextFormComponent(
-                        label: '닉네임',
-                        hintText: '유리병 편지에 함께 적어 보내는 이름입니다.',
-                        inputFormatters: [
-                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                        ],
-                        initialValue: selectedNickname,
-                        onChanged: (value) => selectedNickname = value,
-                        validator: (value) => FormValidateUtil.validateLength(value),
-                      ),
-                    ],
-                  ),
+                InputFormContainer(
+                  children: [
+                    TextFormComponent(
+                      label: '닉네임',
+                      inputFormatters: [
+                        FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                      ],
+                      initialValue: selectedNickname,
+                      onChanged: (value) => selectedNickname = value,
+                      validator: (value) => FormValidateUtil.validateLength(value),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16,),
+                const SizedBox(height: 16),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                  ),
+                  style: AppStyle.getPositiveElevatedButtonStyle(context),
                   onPressed: () => onSavePressed(context),
                   child: Text('확인'),
                 ),
@@ -95,11 +86,11 @@ class _NicknameInputScreenState extends State<NicknameInputScreen> {
       try {
         await userProvider.updateNickname(nickname: selectedNickname!);
         Navigator.of(context).pop();
-        SnackBarUtil.showSnackBar(context, '닉네임이 변경되었습니다.');
+        SnackBarUtil.showCustomSnackBar(context, '닉네임이 변경되었습니다.');
 
       } catch (e) {
         if (e is DioException && e.response?.statusCode == HttpStatus.conflict) {
-          SnackBarUtil.showSnackBar(context, '이미 사용 중인 닉네임입니다.');
+          SnackBarUtil.showCustomSnackBar(context, '이미 사용 중인 닉네임입니다.');
         } else {
           SnackBarUtil.showCommonErrorSnackBar(context);
         }

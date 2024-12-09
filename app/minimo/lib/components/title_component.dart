@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:minimo/utils/dialog_util.dart';
 
 class TitleComponent extends StatelessWidget {
   final String title;
@@ -32,29 +33,12 @@ class TitleComponent extends StatelessWidget {
                   iconSize: 16,
                   icon: Icon(Icons.help_outline),
                   onPressed: () {
-                    showDialog(
+                    DialogUtil.showCustomDialog(
                       context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          content: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              helpText,
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text(
-                                '닫기',
-                                style: Theme.of(context).textTheme.titleSmall,
-                              ),
-                            ),
-                          ],
-                        );
+                      content: helpText,
+                      negativeText: '닫기',
+                      onNegativePressed: () {
+                        Navigator.of(context).pop();
                       },
                     );
                   },

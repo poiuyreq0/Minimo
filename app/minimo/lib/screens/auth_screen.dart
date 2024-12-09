@@ -7,6 +7,7 @@ import 'package:minimo/models/user_model.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/intro_screen.dart';
 import 'package:minimo/screens/splash_screen.dart';
+import 'package:minimo/utils/dialog_util.dart';
 import 'package:provider/provider.dart';
 import 'root_screen.dart';
 
@@ -20,20 +21,19 @@ class AuthScreen extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: userProvider.userChanges(),
       builder: (context, snapshot) {
-        // if (!snapshot.hasData || (snapshot.hasData && !snapshot.data!.emailVerified)) {
-        debugPrint('snapshot data : ${snapshot.data}');
-        if (!snapshot.hasData) {
+        // 로그인 및 이메일 인증 확인
+        if (!snapshot.hasData || (snapshot.hasData && !snapshot.data!.emailVerified)) {
           return Scaffold(
             resizeToAvoidBottomInset: true,
             body: SignInScreen(
+              actions: [
+                AuthStateChangeAction<AuthState>((context, state) async {
+                  await handleEmailVerified(context, state, snapshot);
+                },),
+              ],
               providers: [
                 EmailAuthProvider(),
               ],
-              // actions: [
-              //   AuthStateChangeAction<AuthState>((context, state) async {
-              //     await _handleEmailVerified(context, state, snapshot);
-              //   },),
-              // ],
               headerBuilder: (context, constraints, shrinkOffset) {
                 return Padding(
                   padding: const EdgeInsets.only(top: 20),
@@ -67,84 +67,41 @@ class AuthScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _handleEmailVerified(
+  Future<void> handleEmailVerified(
     BuildContext context,
     AuthState state,
     AsyncSnapshot<User?> snapshot,
   ) async {
     if (state is UserCreated) {
-      showDialog(
+      DialogUtil.showCustomDialog(
         context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(
-              '회원가입 완료',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            content: Text(
-              '로그인 화면에서 로그인을 완료해 주세요.',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => AuthScreen(),),
-                    (route) => false,
-                  );
-                },
-                child: Text(
-                  '닫기',
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-              ),
-            ],
+        title: '회원가입 완료',
+        content: '로그인 화면에서 로그인을 완료해 주세요.',
+        negativeText: '닫기',
+        onNegativePressed: () {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => AuthScreen(),),
+            (route) => false,
           );
         },
       );
     } else if (state is SignedIn) {
+      // StreamBuilder FirebaseAuth userChanges() Reload
       await snapshot.data!.reload();
-      if (!snapshot.data!.emailVerified && context.mounted) {
+
+      if (!snapshot.data!.emailVerified) {
         snapshot.data!.sendEmailVerification();
-        showDialog(
+        DialogUtil.showCustomDialog(
           context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: Text(
-                '신규 가입자 계정 인증',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              content: Text(
-                '이메일로 전송된 인증 링크를 클릭하여 계정을 활성화해 주세요.',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () async {
-                    await snapshot.data!.reload();
-                    snapshot.data!.sendEmailVerification();
-                  },
-                  child: Text(
-                    '재전송',
-                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    await snapshot.data!.reload();
-                    if (context.mounted) {
-                      Navigator.of(context).pop();
-                    }
-                  },
-                  child: Text(
-                    '닫기',
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                ),
-              ],
-            );
+          title: '신규 가입자 이메일 인증',
+          content: '이메일로 전송된 인증 링크를 클릭하면 계정이 활성화됩니다.',
+          positiveText: '재전송',
+          onPositivePressed: () async {
+            snapshot.data!.sendEmailVerification();
+          },
+          negativeText: '닫기',
+          onNegativePressed: () async {
+            Navigator.of(context).pop();
           },
         );
       }

@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:minimo/consts/user_role.dart';
-import 'package:minimo/models/chat_message_model.dart';
 import 'package:minimo/models/chat_room_model.dart';
-import 'package:minimo/models/letter_model.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/chat/chat_room_screen.dart';
-import 'package:minimo/screens/home/letter_box/letter_detail_screen.dart';
 import 'package:provider/provider.dart';
 
 class ChatRoomElementComponent extends StatelessWidget {
@@ -35,11 +31,12 @@ class ChatRoomElementComponent extends StatelessWidget {
           );
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           child: Row(
             children: [
               Expanded(
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
@@ -48,7 +45,7 @@ class ChatRoomElementComponent extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.displayLarge,
                     ),
-                    const SizedBox(height: 2,),
+                    const SizedBox(height: 5),
                     Builder(
                       builder: (context) {
                         late String result;
@@ -79,7 +76,7 @@ class ChatRoomElementComponent extends StatelessWidget {
                         final messageCreatedDate = chatRoom.lastMessage!.createdDate;
                         late String result;
                         if (current.year == messageCreatedDate.year && current.month == messageCreatedDate.month && current.day == messageCreatedDate.day) {
-                          result = DateFormat('a hh:mm', 'ko_KR').format(messageCreatedDate);
+                          result = DateFormat('a h:mm', 'ko_KR').format(messageCreatedDate);
                         } else if (current.year == messageCreatedDate.year && current.month == messageCreatedDate.month && current.day-1 == messageCreatedDate.day) {
                           result = '어제';
                         } else if (current.year == messageCreatedDate.year) {

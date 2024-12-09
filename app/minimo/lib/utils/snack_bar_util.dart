@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
 
 class SnackBarUtil {
-  static void showSnackBar(BuildContext context, String message) {
+  static void showCustomSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
+    );
+  }
+
+  static void showCustomWidgetSnackBar({
+    required BuildContext context,
+    required Widget content,
+  }) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: content),
     );
   }
 

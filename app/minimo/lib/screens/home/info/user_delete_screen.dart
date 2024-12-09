@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:minimo/components/text_form_component.dart';
+import 'package:minimo/components/forms/input_form_container.dart';
+import 'package:minimo/components/forms/password_form_component.dart';
 import 'package:minimo/components/title_component.dart';
 import 'package:minimo/providers/letter_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
@@ -39,31 +40,21 @@ class _UserDeleteScreenState extends State<UserDeleteScreen> {
                 TitleComponent(
                   title: '비밀번호 확인',
                 ),
-                Container(
-                  padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 16),
-                  alignment: Alignment.center,
-                  decoration: AppStyle.getMainBoxDecoration(context),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      TextFormComponent(
-                        label: '비밀번호',
-                        isPassword: true,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                        ],
-                        onChanged: (value) => password = value,
-                        validator: (value) => FormValidateUtil.validateNotEmpty(value),
-                      ),
-                    ],
-                  ),
+                InputFormContainer(
+                  children: [
+                    PasswordFormComponent(
+                      label: '비밀번호',
+                      inputFormatters: [
+                        FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                      ],
+                      onChanged: (value) => password = value,
+                      validator: (value) => FormValidateUtil.validateNotEmpty(value),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16,),
+                const SizedBox(height: 16),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                  ),
+                  style: AppStyle.getNegativeElevatedButtonStyle(context),
                   onPressed: () => onSavePressed(context),
                   child: Text('회원 탈퇴'),
                 ),
@@ -90,10 +81,10 @@ class _UserDeleteScreenState extends State<UserDeleteScreen> {
           MaterialPageRoute(builder: (context) => AuthScreen(),),
               (route) => false,
         );
-        SnackBarUtil.showSnackBar(context, '그동안 Minimo를 이용해 주셔서 감사합니다.');
+        SnackBarUtil.showCustomSnackBar(context, '그동안 Minimo를 이용해 주셔서 감사합니다.');
 
       } catch (e) {
-        SnackBarUtil.showSnackBar(context, '회원 탈퇴에 실패했습니다.\n비밀번호가 올바르게 입력되었는지 확인해 주세요.');
+        SnackBarUtil.showCustomSnackBar(context, '회원 탈퇴에 실패했습니다.\n비밀번호가 올바르게 입력되었는지 확인해 주세요.');
       }
     }
   }

@@ -30,12 +30,12 @@ class ChatMessageComponent extends StatelessWidget {
         children: [
           if (isShowCreatedDate)
             Text(
-              DateFormat('HH:mm').format(chatMessage.createdDate),
+              DateFormat('a h:mm', 'ko_KR').format(chatMessage.createdDate),
               style: Theme.of(context).textTheme.displaySmall!.copyWith(
                 fontSize: 10,
               ),
             ),
-          const SizedBox(width: 8,),
+          const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12,),
             constraints: BoxConstraints(
@@ -53,8 +53,8 @@ class ChatMessageComponent extends StatelessWidget {
             ),
             child: Text(
               chatMessage.content,
-              style:  Theme.of(context).textTheme.displayMedium!.copyWith(
-                fontSize: 12,
+              style: Theme.of(context).textTheme.displayMedium!.copyWith(
+                fontSize: 15,
               ),
             ),
           ),
@@ -87,15 +87,15 @@ class ChatMessageComponent extends StatelessWidget {
             ),
             child: Text(
               chatMessage.content,
-              style:  Theme.of(context).textTheme.displayMedium!.copyWith(
-                fontSize: 12,
+              style: Theme.of(context).textTheme.displayMedium!.copyWith(
+                fontSize: 15,
               ),
             ),
           ),
-          const SizedBox(width: 8,),
+          const SizedBox(width: 8),
           if (isShowCreatedDate)
             Text(
-              DateFormat('HH:mm').format(chatMessage.createdDate),
+              DateFormat('a h:mm', 'ko_KR').format(chatMessage.createdDate),
               style: Theme.of(context).textTheme.displaySmall!.copyWith(
                 fontSize: 10,
               ),

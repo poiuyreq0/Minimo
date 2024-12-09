@@ -22,9 +22,9 @@ class LetterElementComponent extends StatelessWidget {
         );
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
@@ -33,21 +33,23 @@ class LetterElementComponent extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.displayLarge,
             ),
-            const SizedBox(height: 2,),
+            const SizedBox(height: 5),
             Text(
               letter.letterContent.content,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.displayMedium,
             ),
-            const SizedBox(height: 2,),
+            const SizedBox(height: 5),
             Row(
               children: [
                 Text(
                   'From ${letter.senderNickname ?? 'Unknown'} To ${letter.receiverNickname ?? 'Unknown'}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.displaySmall,
+                  style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                    fontSize: 13,
+                  ),
                 ),
               ],
             ),

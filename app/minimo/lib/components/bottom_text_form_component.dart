@@ -22,16 +22,16 @@ class _BottomTextFormComponentState extends State<BottomTextFormComponent> {
   @override
   void initState() {
     super.initState();
-    widget.controller.addListener(_textChangeListener);
+    widget.controller.addListener(textChangeListener);
   }
 
   @override
   void dispose() {
-    widget.controller.removeListener(_textChangeListener);
+    widget.controller.removeListener(textChangeListener);
     super.dispose();
   }
 
-  void _textChangeListener() {
+  void textChangeListener() {
     setState(() {
       if (widget.controller.text.isEmpty) {
         isShowIconButton = false;

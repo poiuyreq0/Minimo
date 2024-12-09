@@ -11,7 +11,8 @@ import 'package:stomp_dart_client/stomp_dart_client.dart';
 class ChatRepository {
   final _dio = Dio();
   late StompClient stompClient;
-  final _targetUrl = 'http://${Platform.isAndroid ? '10.0.2.2' : 'localhost'}:8080';
+  // final _targetUrl = 'http://${Platform.isAndroid ? '10.0.2.2' : 'localhost'}:8080';
+  final _targetUrl = 'http://192.168.0.7:8080';
 
   Future<void> enterChatRoom({
     required int roomId,

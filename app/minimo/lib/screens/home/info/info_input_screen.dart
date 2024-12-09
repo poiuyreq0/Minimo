@@ -1,9 +1,10 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:minimo/components/dropdown_form_component.dart';
-import 'package:minimo/components/text_form_component.dart';
+import 'package:minimo/components/forms/date_time_form_component.dart';
+import 'package:minimo/components/forms/dropdown_form_component.dart';
+import 'package:minimo/components/forms/input_form_container.dart';
+import 'package:minimo/components/forms/text_form_component.dart';
 import 'package:minimo/components/title_component.dart';
 import 'package:minimo/consts/gender.dart';
 import 'package:minimo/consts/mbti.dart';
@@ -23,7 +24,7 @@ class InfoInputScreen extends StatefulWidget {
 
 class _InfoInputScreenState extends State<InfoInputScreen> {
   final GlobalKey<FormState> formKey = GlobalKey();
-  final TextEditingController birthdayController = TextEditingController();
+  late final TextEditingController birthdayTextController;
 
   String? selectedName;
   Mbti? selectedMbti;
@@ -40,12 +41,12 @@ class _InfoInputScreenState extends State<InfoInputScreen> {
     selectedGender = userInfo.gender;
     selectedBirthday = userInfo.birthday;
 
-    birthdayController.text = DateFormat('yyyy-MM-dd').format(selectedBirthday!);
+    birthdayTextController = TextEditingController(text: DateFormat('yyyy-MM-dd').format(selectedBirthday!));
   }
 
   @override
   void dispose() {
-    birthdayController.dispose();
+    birthdayTextController.dispose();
     super.dispose();
   }
 
@@ -54,7 +55,7 @@ class _InfoInputScreenState extends State<InfoInputScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: Text('수신 정보 변경'),
+        title: Text('내 정보 변경'),
       ),
       body: SingleChildScrollView(
         child: Form(
@@ -65,61 +66,48 @@ class _InfoInputScreenState extends State<InfoInputScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 TitleComponent(
-                  title: '수신 정보',
-                  helpText: '작성하신 수신 정보를 바탕으로 나에게 맞는 유리병 편지를 건질 수 있습니다.',
+                  title: '내 정보',
+                  helpText: '작성한 정보를 바탕으로 나에게 맞는 유리병 편지를 건질 수 있습니다.',
                 ),
-                Container(
-                  padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 16),
-                  alignment: Alignment.center,
-                  decoration: AppStyle.getMainBoxDecoration(context),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      TextFormComponent(
-                        label: '이름 초성',
-                        hintText: '이름의 초성을 입력해 주세요.',
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[ㄱ-ㅎ]')),
-                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                        ],
-                        initialValue: selectedName,
-                        onChanged: (value) => selectedName = value,
-                        validator: (value) => FormValidateUtil.validateLength(value),
-                      ),
-                      DropdownFormComponent<Mbti>(
-                        label: 'MBTI',
-                        value: selectedMbti,
-                        items: Mbti.values,
-                        onChanged: (value) => selectedMbti = value,
-                        validator: (value) => FormValidateUtil.validateNotNull<Mbti>(value),
-                      ),
-                      DropdownFormComponent<Gender>(
-                        label: '성별',
-                        value: selectedGender,
-                        items: Gender.values,
-                        onChanged: (value) => selectedGender = value,
-                        validator: (value) => FormValidateUtil.validateNotNull<Gender>(value),
-                      ),
-                      GestureDetector(
-                        onTap: () => selectDate(context),
-                        child: AbsorbPointer(
-                          child: TextFormComponent(
-                            label: '생일',
-                            hintText: '생일을 선택해 주세요.',
-                            controller: birthdayController,
-                            validator: (value) => FormValidateUtil.validateLength(value),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                InputFormContainer(
+                  children: [
+                    TextFormComponent(
+                      label: '이름 초성',
+                      hintText: '이름의 초성을 입력해 주세요.',
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'[ㄱ-ㅎ]')),
+                        FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                      ],
+                      initialValue: selectedName,
+                      onChanged: (value) => selectedName = value,
+                      validator: (value) => FormValidateUtil.validateLength(value),
+                    ),
+                    DropdownFormComponent<Mbti>(
+                      label: 'MBTI',
+                      value: selectedMbti,
+                      items: Mbti.values,
+                      onChanged: (value) => selectedMbti = value,
+                      validator: (value) => FormValidateUtil.validateNotNull<Mbti>(value),
+                    ),
+                    DropdownFormComponent<Gender>(
+                      label: '성별',
+                      value: selectedGender,
+                      items: Gender.values,
+                      onChanged: (value) => selectedGender = value,
+                      validator: (value) => FormValidateUtil.validateNotNull<Gender>(value),
+                    ),
+                    DateTimeFormComponent(
+                      label: '생일',
+                      hintText: '생일을 선택해 주세요.',
+                      controller: birthdayTextController,
+                      onTap: () => selectDate(context),
+                      validator: (value) => FormValidateUtil.validateLength(value),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16,),
+                const SizedBox(height: 16),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                  ),
+                  style: AppStyle.getPositiveElevatedButtonStyle(context),
                   onPressed: () => onSavePressed(context),
                   child: Text('확인'),
                 ),
@@ -143,7 +131,7 @@ class _InfoInputScreenState extends State<InfoInputScreen> {
     if (selectedDate != null && selectedDate != selectedBirthday) {
       setState(() {
         selectedBirthday = selectedDate;
-        birthdayController.text = DateFormat('yyyy-MM-dd').format(selectedBirthday!);
+        birthdayTextController.text = DateFormat('yyyy-MM-dd').format(selectedBirthday!);
       });
     }
   }
@@ -163,7 +151,7 @@ class _InfoInputScreenState extends State<InfoInputScreen> {
       try {
         await userProvider.updateUserInfo(userInfoModel: userInfoModel);
         Navigator.of(context).pop();
-        SnackBarUtil.showSnackBar(context, '수신 정보가 변경되었습니다.');
+        SnackBarUtil.showCustomSnackBar(context, '내 정보가 변경되었습니다.');
 
       } catch (e) {
         SnackBarUtil.showCommonErrorSnackBar(context);

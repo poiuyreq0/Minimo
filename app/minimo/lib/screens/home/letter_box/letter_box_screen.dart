@@ -18,6 +18,7 @@ class LetterBoxScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: TitleComponent(
@@ -121,7 +122,7 @@ class LetterBoxScreen extends StatelessWidget {
                 );
               },
             ),
-            const SizedBox(height: 32,),
+            const SizedBox(height: 32),
           ],
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:minimo/components/text_form_component.dart';
+import 'package:minimo/components/forms/input_form_container.dart';
+import 'package:minimo/components/forms/password_form_component.dart';
 import 'package:minimo/components/title_component.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/styles/app_style.dart';
@@ -39,67 +40,48 @@ class _PasswordInputScreenState extends State<PasswordInputScreen> {
                 TitleComponent(
                   title: '비밀번호 확인',
                 ),
-                Container(
-                  padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 16),
-                  alignment: Alignment.center,
-                  decoration: AppStyle.getMainBoxDecoration(context),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      TextFormComponent(
-                        label: '현재 비밀번호',
-                        isPassword: true,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                        ],
-                        onChanged: (value) => password = value,
-                        validator: (value) => FormValidateUtil.validateNotEmpty(value),
-                      ),
-                    ],
-                  ),
+                InputFormContainer(
+                  children: [
+                    PasswordFormComponent(
+                      label: '현재 비밀번호',
+                      inputFormatters: [
+                        FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                      ],
+                      onChanged: (value) => password = value,
+                      validator: (value) => FormValidateUtil.validateNotEmpty(value),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16,),
+                const SizedBox(height: 16),
                 TitleComponent(
                   title: '새 비밀번호 입력',
                   helpText: '6글자 이상',
                 ),
-                Container(
-                  padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 16),
-                  alignment: Alignment.center,
-                  decoration: AppStyle.getMainBoxDecoration(context),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      TextFormComponent(
-                        label: '새 비밀번호',
-                        hintText: '6글자 이상',
-                        isPassword: true,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                        ],
-                        onChanged: (value) => newPassword = value,
-                        validator: (value) => FormValidateUtil.validateNotEmpty(value),
-                      ),
-
-                      TextFormComponent(
-                        label: '새 비밀번호 확인',
-                        hintText: '새 비밀번호를 다시 한번 입력해 주세요.',
-                        isPassword: true,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                        ],
-                        onChanged: (value) => newPasswordConfirm = value,
-                        validator: (value) => validatePassword(value),
-                      ),
-                    ],
-                  ),
+                InputFormContainer(
+                  children: [
+                    PasswordFormComponent(
+                      label: '새 비밀번호',
+                      hintText: '6글자 이상',
+                      inputFormatters: [
+                        FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                      ],
+                      onChanged: (value) => newPassword = value,
+                      validator: (value) => FormValidateUtil.validateNotEmpty(value),
+                    ),
+                    PasswordFormComponent(
+                      label: '새 비밀번호 확인',
+                      hintText: '새 비밀번호를 다시 한번 입력해 주세요.',
+                      inputFormatters: [
+                        FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                      ],
+                      onChanged: (value) => newPasswordConfirm = value,
+                      validator: (value) => validatePassword(value),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16,),
+                const SizedBox(height: 16),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                  ),
+                  style: AppStyle.getPositiveElevatedButtonStyle(context),
                   onPressed: () => onSavePressed(context),
                   child: Text('확인'),
                 ),
@@ -120,10 +102,10 @@ class _PasswordInputScreenState extends State<PasswordInputScreen> {
       try {
         await userProvider.updatePassword(password: password!, newPassword: newPassword!);
         Navigator.of(context).pop();
-        SnackBarUtil.showSnackBar(context, '비밀번호가 변경되었습니다.');
+        SnackBarUtil.showCustomSnackBar(context, '비밀번호가 변경되었습니다.');
 
       } catch (e) {
-        SnackBarUtil.showSnackBar(context, '비밀번호 변경에 실패했습니다.\n비밀번호가 올바르게 입력되었는지 확인해 주세요.');
+        SnackBarUtil.showCustomSnackBar(context, '비밀번호 변경에 실패했습니다.\n비밀번호가 올바르게 입력되었는지 확인해 주세요.');
       }
     }
   }

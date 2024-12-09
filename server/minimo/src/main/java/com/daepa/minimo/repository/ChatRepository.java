@@ -60,7 +60,6 @@ public class ChatRepository {
                         chatRoomUser.chatRoom.id
                 ))
                 .from(chatRoomUser)
-                .join(chatRoom.chatRoomUserList)
                 .where(chatRoomUser.user.id.eq(userId))
                 .fetch();
 
@@ -80,11 +79,11 @@ public class ChatRepository {
                                     chatMessage.chatRoom.id.as("roomId"),
                                     chatMessage.senderId,
                                     chatMessage.content,
-                                    chatMessage.timeStamp
+                                    chatMessage.createdDate
                             ))
                             .from(chatMessage)
                             .where(chatMessage.chatRoom.id.eq(chatRoomDto.getId()))
-                            .orderBy(chatMessage.timeStamp.desc())
+                            .orderBy(chatMessage.createdDate.desc())
                             .fetchFirst();
 
                     return ChatRoomDto.builder()

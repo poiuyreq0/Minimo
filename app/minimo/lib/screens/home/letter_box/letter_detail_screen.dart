@@ -53,19 +53,21 @@ class LetterDetailScreen extends StatelessWidget {
                           fontSize: 18,
                         ),
                       ),
-                      const SizedBox(height: 8,),
+                      const SizedBox(height: 12),
                       Text(
                         letter.letterContent.content,
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const Divider(
-                        height: 24,
+                        height: 36,
                       ),
                       Text(
                         '보낸 사람   ${letter.senderNickname ?? 'Unknown'}\n받은 사람   ${letter.receiverNickname ?? 'Unknown'}',
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
-                      const SizedBox(height: 8,),
+                      const Divider(
+                        height: 36,
+                      ),
                       if (letter.createdDate != null)
                         Text(
                           '보낸 일시   ${DateFormat('yyyy-MM-dd HH:mm:ss').format(letter.createdDate!)}',
@@ -85,9 +87,9 @@ class LetterDetailScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 16,),
+              const SizedBox(height: 16),
               ActionButton(letter: letter, letterState: letter.letterState!, userRole: userRole,),
-              const SizedBox(height: 32,),
+              const SizedBox(height: 32),
             ],
           ),
         ),
@@ -120,23 +122,20 @@ class ActionButton extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              ),
+              style: AppStyle.getPositiveElevatedButtonStyle(context),
               onPressed: () async {
                 // 편지 연결
                 if (letterState != LetterState.CONNECTED) {
                   try {
                     await letterProvider.connectLetter(id: letter.id, userRoleModel: UserRoleModel(id: user.id, userRole: userRole));
                     Navigator.of(context).pop();
-                    SnackBarUtil.showSnackBar(context, '연결에 성공했습니다!\n상대방과 대화를 시작해 보세요.');
+                    SnackBarUtil.showCustomSnackBar(context, '연결에 성공했습니다!\n상대방과 대화를 시작해 보세요.');
 
                   } catch (e) {
                     if (e is DioException && e.response?.statusCode == HttpStatus.notFound) {
-                      SnackBarUtil.showSnackBar(context, '연결이 끊긴 상대방입니다.\n편지를 연결할 수 없습니다.');
+                      SnackBarUtil.showCustomSnackBar(context, '연결이 끊긴 상대방입니다.\n편지를 연결할 수 없습니다.');
                     } else if (e is DioException && e.response?.statusCode == HttpStatus.forbidden) {
-                      SnackBarUtil.showSnackBar(context, '유효한 사용자가 아닙니다.');
+                      SnackBarUtil.showCustomSnackBar(context, '유효한 사용자가 아닙니다.');
                     } else {
                       SnackBarUtil.showCommonErrorSnackBar(context);
                     }
@@ -159,7 +158,7 @@ class ActionButton extends StatelessWidget {
 
                 } catch (e) {
                   if (e is DioException && e.response?.statusCode == HttpStatus.notFound) {
-                    SnackBarUtil.showSnackBar(context, '사라진 채팅방입니다.');
+                    SnackBarUtil.showCustomSnackBar(context, '사라진 채팅방입니다.');
                   } else {
                     SnackBarUtil.showCommonErrorSnackBar(context);
                   }
@@ -177,31 +176,28 @@ class ActionButton extends StatelessWidget {
             ),
           ),
         ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.tertiary,
-            foregroundColor: Theme.of(context).colorScheme.onTertiary,
-          ),
+          style: AppStyle.getNegativeElevatedButtonStyle(context),
           onPressed: () async {
             try {
               if (letterState == LetterState.SENT && userRole == UserRole.SENDER) {
                 await letterProvider.sinkLetter(id: letter.id, userRoleModel: UserRoleModel(id: user.id, userRole: userRole));
-                SnackBarUtil.showSnackBar(context, '유리병이 가라앉았습니다.');
+                SnackBarUtil.showCustomSnackBar(context, '유리병이 가라앉았습니다.');
 
               } else if (letterState == LetterState.LOCKED && userRole == UserRole.RECEIVER) {
                 await letterProvider.returnLetter(id: letter.id, userRoleModel: UserRoleModel(id: user.id, userRole: userRole));
-                SnackBarUtil.showSnackBar(context, '유리병을 바다로 돌려보냈습니다.');
+                SnackBarUtil.showCustomSnackBar(context, '유리병을 바다로 돌려보냈습니다.');
 
               } else {
                 await letterProvider.disconnectLetter(id: letter.id, userRoleModel: UserRoleModel(id: user.id, userRole: userRole));
-                SnackBarUtil.showSnackBar(context, '상대방과의 연결을 끊었습니다.');
+                SnackBarUtil.showCustomSnackBar(context, '상대방과의 연결을 끊었습니다.');
               }
               Navigator.of(context).pop();
 
             } catch (e) {
               if (e is DioException && e.response?.statusCode == HttpStatus.notFound) {
-                SnackBarUtil.showSnackBar(context, '편지를 찾을 수 없습니다.');
+                SnackBarUtil.showCustomSnackBar(context, '편지를 찾을 수 없습니다.');
               } else if (e is DioException && e.response?.statusCode == HttpStatus.forbidden) {
-                SnackBarUtil.showSnackBar(context, '유효한 사용자가 아닙니다.');
+                SnackBarUtil.showCustomSnackBar(context, '유효한 사용자가 아닙니다.');
               } else {
                 SnackBarUtil.showCommonErrorSnackBar(context);
               }

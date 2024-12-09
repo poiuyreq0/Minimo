@@ -15,7 +15,7 @@ public class ChatMessageDto {
     private Long roomId;
     private Long senderId;
     private String content;
-    private LocalDateTime timeStamp;
+    private LocalDateTime createdDate;
 
     public static ChatMessageDto fromChatMessage(@NonNull ChatMessage chatMessage) {
         return ChatMessageDto.builder()
@@ -23,7 +23,7 @@ public class ChatMessageDto {
                 .roomId(chatMessage.getChatRoom().getId())
                 .senderId(chatMessage.getSenderId())
                 .content(chatMessage.getContent())
-                .timeStamp(chatMessage.getTimeStamp())
+                .createdDate(chatMessage.getCreatedDate())
                 .build();
     }
 
@@ -31,7 +31,6 @@ public class ChatMessageDto {
         return ChatMessage.builder()
                 .senderId(senderId)
                 .content(content)
-                .timeStamp(timeStamp)
                 .build();
     }
 }

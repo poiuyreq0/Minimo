@@ -7,7 +7,8 @@ import 'package:minimo/models/user_model.dart';
 
 class UserRepository {
   final Dio _dio = Dio();
-  final String _targetUrl = 'http://${Platform.isAndroid ? '10.0.2.2' : 'localhost'}:8080/api/user';
+  // final String _targetUrl = 'http://${Platform.isAndroid ? '10.0.2.2' : 'localhost'}:8080/api/user';
+  final String _targetUrl = 'http://192.168.0.7:8080/api/user';
 
   UserRepository() {
     _dio.interceptors.add(InterceptorsWrapper(

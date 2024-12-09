@@ -24,21 +24,21 @@ class ChatRoomScreen extends StatefulWidget {
 }
 
 class _ChatRoomScreenState extends State<ChatRoomScreen> {
-  late final TextEditingController _textEditingController;
-  late final ScrollController _scrollController;
+  late final TextEditingController textEditingController;
+  late final ScrollController scrollController;
 
   @override
   void initState() {
     super.initState();
 
-    _textEditingController = TextEditingController(text: '',);
-    _scrollController = ScrollController();
+    textEditingController = TextEditingController(text: '',);
+    scrollController = ScrollController();
   }
 
   @override
   void dispose() {
-    _textEditingController.dispose();
-    _scrollController.dispose();
+    textEditingController.dispose();
+    scrollController.dispose();
     super.dispose();
   }
 
@@ -94,9 +94,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                                           padding: const EdgeInsets.all(8.0),
                                           child: Text(
                                             DateFormat('yyyy년 M월 d일 EEEE', 'ko_KR').format(chatMessages[index].createdDate),
-                                            style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                                              fontSize: 10,
-                                            ),
+                                            style: Theme.of(context).textTheme.displaySmall,
                                           ),
                                         ),
                                       ChatMessageComponent(
@@ -104,7 +102,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                                           isShowCreatedDate: isShowCreatedDate
                                       ),
                                       if (index == 0 || isShowCreatedDate)
-                                        const SizedBox(height: 8,),
+                                        const SizedBox(height: 8),
                                     ],
                                   );
                                 },
@@ -122,17 +120,15 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                                       child: Center(
                                         child: Text(
                                           DateFormat('yyyy년 M월 d일 EEEE', 'ko_KR').format(chatMessages[index].createdDate),
-                                          style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                                            fontSize: 10,
-                                          ),
+                                          style: Theme.of(context).textTheme.displaySmall,
                                         ),
                                       ),
                                     );
                                   } else {
-                                    return const SizedBox(height: 4,);
+                                    return const SizedBox(height: 4);
                                   }
                                 },
-                                controller: _scrollController,
+                                controller: scrollController,
                               );
                             },
                           ),
@@ -142,7 +138,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                   ),
                   BottomTextFormComponent(
                     hintText: '메시지 입력',
-                    controller: _textEditingController,
+                    controller: textEditingController,
                     onPressed: () {
                       onSendPressed(context);
                     },
@@ -163,16 +159,16 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       id: 0,  // 임시 Id
       roomId: widget.id,
       senderId: widget.userId,
-      content: _textEditingController.text,
+      content: textEditingController.text,
       createdDate: DateTime.now(),
     );
 
     try {
       chatProvider.sendMessage(chatMessage: chatMessage);
-      _textEditingController.text = '';
+      textEditingController.text = '';
 
       // 스크롤 위치를 맨 아래로 이동
-      _scrollController.animateTo(
+      scrollController.animateTo(
         0,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,

@@ -26,7 +26,7 @@ class InfoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('내 정보'),
+        title: Text('사용자 정보'),
       ),
       body: Selector<UserProvider, Tuple3<UserInfoModel, String, String>>(
         selector: (context, userProvider) {
@@ -43,7 +43,7 @@ class InfoScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       TitleComponent(
-                        title: '수신 정보',
+                        title: '내 정보',
                         buttonText: '변경',
                         onPressed: () {
                           Navigator.of(context).push(
@@ -63,17 +63,17 @@ class InfoScreen extends StatelessWidget {
                               title: '이름',
                               content: tuple.item1.name,
                             ),
-                            const SizedBox(height: 8,),
+                            const SizedBox(height: 12),
                             DividedElementComponent(
                               title: 'MBTI',
                               content: tuple.item1.mbti!.name,
                             ),
-                            const SizedBox(height: 8,),
+                            const SizedBox(height: 12),
                             DividedElementComponent(
                               title: '성별',
                               content: tuple.item1.gender! == Gender.MALE ? '남성' : '여성',
                             ),
-                            const SizedBox(height: 8,),
+                            const SizedBox(height: 12),
                             DividedElementComponent(
                               title: '생일',
                               content: DateFormat('yyyy-MM-dd').format(tuple.item1.birthday!),
@@ -84,7 +84,7 @@ class InfoScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 16,),
+                const SizedBox(height: 16),
                 const Divider(
                   height: 48,
                   indent: 16,
@@ -140,7 +140,7 @@ class InfoScreen extends StatelessWidget {
                     );
                   },
                 ),
-                const SizedBox(height: 32,),
+                const SizedBox(height: 32),
               ],
             ),
           );

@@ -101,12 +101,12 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
           child: Row(
             children: [
               Image.asset('assets/icons/icon_clear.png'),
-              SizedBox(width: 8,),
+              const SizedBox(width: 8),
               InkWell(
                 onTap: () {},
                 borderRadius: BorderRadius.circular(10),
                 child: Ink(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: AppStyle.getMainBoxDecoration(context).copyWith(
                     border: Border.all(
                       color: Theme.of(context).colorScheme.secondaryFixedDim,
@@ -122,11 +122,11 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
                         builder: (context, heartNum, child) {
                           return Text(
                             '$heartNum',
-                            style: Theme.of(context).textTheme.displayMedium,
+                            style: Theme.of(context).textTheme.titleMedium,
                           );
                         },
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 4),
                       SizedBox(
                         height: 16,
                         child: VerticalDivider(),

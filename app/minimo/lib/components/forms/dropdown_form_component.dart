@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:minimo/consts/gender.dart';
 import 'package:minimo/consts/letter_option.dart';
+import 'package:minimo/styles/app_style.dart';
 
 class DropdownFormComponent<T> extends StatelessWidget {
   final String label;
@@ -23,12 +24,9 @@ class DropdownFormComponent<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<T>(
-      decoration: InputDecoration(
-        label: Text(
-          label,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        contentPadding: const EdgeInsets.only(top: 8),
+      decoration: AppStyle.getMainInputDecoration(
+          context: context,
+          label: label,
       ),
       value: value,
       items: items.map<DropdownMenuItem<T>>((T value) {

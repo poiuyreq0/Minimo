@@ -48,7 +48,7 @@ class _LetterListScreenState extends State<LetterListScreen> {
               indent: 16,
               endIndent: 16,
             ),
-            const SizedBox(height: 8,),
+            const SizedBox(height: 8),
             Consumer<LetterProvider>(
               builder: (context, letterProvider, child) {
                 int userId = context.read<UserProvider>().userCache!.id;

@@ -12,6 +12,7 @@ import 'package:minimo/models/user_model.dart';
 import 'package:minimo/providers/letter_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/home/letter_box/letter_detail_screen.dart';
+import 'package:minimo/utils/dialog_util.dart';
 import 'package:minimo/utils/snack_bar_util.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
@@ -33,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
         UserModel user = userProvider.userCache!;
         return Tuple2(user.userInfo, user.heartNum);
       },
-      builder: (context, _, child) {
+      builder: (context, tuple, child) {
         UserProvider userProvider = context.read<UserProvider>();
         LetterProvider letterProvider = context.read<LetterProvider>();
 
@@ -53,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 24.0),
                       child: Column(
                         children: [
+                          const SizedBox(height: 16),
                           LittleLetterListComponent(
                             title: '짝사랑에게 온 편지',
                             letters: snapshot.data![LetterOption.ALL]!,
@@ -60,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               showReceiveLetterDialog(LetterOption.ALL, userProvider, letterProvider);
                             },
                           ),
-                          const SizedBox(height: 8,),
+                          const SizedBox(height: 8),
                           LittleLetterListComponent(
                             title: '이름으로 온 편지',
                             letters: snapshot.data![LetterOption.NAME]!,
@@ -68,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               showReceiveLetterDialog(LetterOption.NAME, userProvider, letterProvider);
                             },
                           ),
-                          const SizedBox(height: 8,),
+                          const SizedBox(height: 8),
                           LittleLetterListComponent(
                             title: 'MBTI로 온 편지',
                             letters: snapshot.data![LetterOption.MBTI]!,
@@ -76,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               showReceiveLetterDialog(LetterOption.MBTI, userProvider, letterProvider);
                             },
                           ),
-                          const SizedBox(height: 8,),
+                          const SizedBox(height: 8),
                           LittleLetterListComponent(
                             title: '성별로 온 편지',
                             letters: snapshot.data![LetterOption.GENDER]!,
@@ -84,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               showReceiveLetterDialog(LetterOption.GENDER, userProvider, letterProvider);
                             },
                           ),
-                          const SizedBox(height: 8,),
+                          const SizedBox(height: 8),
                           LittleLetterListComponent(
                             title: '어쩌다 온 편지',
                             letters: snapshot.data![LetterOption.NONE]!,
@@ -92,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               showReceiveLetterDialog(LetterOption.NONE, userProvider, letterProvider);
                             },
                           ),
-                          const SizedBox(height: 64,),
+                          const SizedBox(height: 64),
                         ],
                       ),
                     ),
@@ -106,78 +108,58 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void showReceiveLetterDialog(LetterOption letterOption, UserProvider userProvider, LetterProvider letterProvider) {
-    showDialog(
+    DialogUtil.showCustomDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
-            '유리병 건지기',
-            style: Theme.of(context).textTheme.titleLarge,
+      title: '유리병 건지기',
+      widgetContent: Row(
+        children: [
+          HeartIconComponent(),
+          Text(
+            '를 하나 소모하여 유리병을 건집니다.',
+            style: Theme.of(context).textTheme.titleMedium,
           ),
-          content: Row(
-            children: [
-              HeartIconComponent(),
-              Text(
-                '를 하나 소모하여 유리병을 건집니다.',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () async {
-                if (userProvider.userCache!.heartNum <= 0) {
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Row(
-                      children: [
-                        HeartIconComponent(),
-                        Text('가 부족합니다.'),
-                      ],
-                    ),
-                  ),);
-
-                } else {
-                  try {
-                    final letter = await letterProvider.receiveLetter(receiverId: userProvider.userCache!.id, letterOption: letterOption);
-                    await userProvider.getHeartNum();
-
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                        builder: (context) => LetterDetailScreen(letter: letter, userRole: UserRole.RECEIVER),
-                      ),
-                      (route) => route.isFirst,
-                    );
-                    SnackBarUtil.showSnackBar(context, '건지기에 성공했습니다!\n유리병 편지는 편지함에서 확인할 수 있습니다.');
-
-                  } catch (e) {
-                    Navigator.of(context).pop();
-                    if (e is DioException && e.response?.statusCode == HttpStatus.notFound) {
-                      SnackBarUtil.showSnackBar(context, '아직 나에게 온 유리병이 없습니다.');
-                    } else {
-                      SnackBarUtil.showCommonErrorSnackBar(context);
-                    }
-                  }
-                }
-              },
-              child: Text(
-                '건지기',
-                style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
+        ],
+      ),
+      positiveText: '건지기',
+      onPositivePressed: () async {
+        if (userProvider.userCache!.heartNum <= 0) {
+          Navigator.of(context).pop();
+          SnackBarUtil.showCustomWidgetSnackBar(
+            context: context,
+            content: Row(
+              children: [
+                HeartIconComponent(),
+                Text('가 부족합니다.'),
+              ],
             ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                '닫기',
-                style: Theme.of(context).textTheme.titleSmall,
+          );
+
+        } else {
+          try {
+            final letter = await letterProvider.receiveLetter(receiverId: userProvider.userCache!.id, letterOption: letterOption);
+            await userProvider.getHeartNum();
+
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => LetterDetailScreen(letter: letter, userRole: UserRole.RECEIVER),
               ),
-            ),
-          ],
-        );
+                  (route) => route.isFirst,
+            );
+            SnackBarUtil.showCustomSnackBar(context, '건지기에 성공했습니다!\n유리병 편지는 편지함에서 확인할 수 있습니다.');
+
+          } catch (e) {
+            Navigator.of(context).pop();
+            if (e is DioException && e.response?.statusCode == HttpStatus.notFound) {
+              SnackBarUtil.showCustomSnackBar(context, '아직 나에게 온 유리병이 없습니다.');
+            } else {
+              SnackBarUtil.showCommonErrorSnackBar(context);
+            }
+          }
+        }
+      },
+      negativeText: '닫기',
+      onNegativePressed: () async {
+        Navigator.of(context).pop();
       },
     );
   }

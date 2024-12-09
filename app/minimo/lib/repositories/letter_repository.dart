@@ -9,7 +9,8 @@ import 'package:minimo/models/user_role_model.dart';
 
 class LetterRepository {
   final _dio = Dio();
-  final _targetUrl = 'http://${Platform.isAndroid ? '10.0.2.2' : 'localhost'}:8080/api/letter';
+  // final _targetUrl = 'http://${Platform.isAndroid ? '10.0.2.2' : 'localhost'}:8080/api/letter';
+  final _targetUrl = 'http://192.168.0.7:8080/api/letter';
 
   Future<int> sendLetter({
     required LetterModel letterModel,
