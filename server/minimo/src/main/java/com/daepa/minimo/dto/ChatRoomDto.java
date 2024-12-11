@@ -9,8 +9,8 @@ import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
 @Builder
+@Getter
 public class ChatRoomDto {
     private Long id;
     private List<String> userNicknames;

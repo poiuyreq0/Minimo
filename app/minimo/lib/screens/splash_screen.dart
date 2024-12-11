@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:minimo/utils/url_util.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -8,7 +9,7 @@ class SplashScreen extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Image.asset(
-          'assets/icons/icon_clear.png',
+          UrlUtil.iconClear,
           width: 200,
           height: 200,
         ),

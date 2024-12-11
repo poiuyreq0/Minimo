@@ -30,7 +30,7 @@ public class LetterService {
 
     public Long sendLetter(Long senderId, Letter letter) {
         User sender = userRepository.findUser(senderId);
-        letter.changeSender(sender);
+        letter.updateSender(sender);
         letterRepository.saveLetter(letter);
         return letter.getId();
     }
@@ -46,7 +46,7 @@ public class LetterService {
         Letter findLetter = letterRepository.findNewLetterByOption(receiver, letterOption);
         validateLetterNotNull(findLetter);
 
-        findLetter.changeReceiver(receiver);
+        findLetter.updateReceiver(receiver);
         receivedRecordRepository.saveReceivedRecord(ReceivedRecord.builder()
                         .letter(findLetter)
                         .receiverId(receiver.getId())
@@ -97,7 +97,7 @@ public class LetterService {
 
         // 채팅방 생성 로직
         ChatRoom chatRoom = ChatRoom.builder().build();
-        chatRoom.changeLetterId(id);
+        chatRoom.updateLetterId(id);
         chatRepository.saveChatRoom(chatRoom);
 
         for (User user : List.of(findLetter.getSender(), findLetter.getReceiver())) {

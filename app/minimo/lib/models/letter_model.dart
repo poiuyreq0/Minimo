@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:minimo/consts/letter_option.dart';
-import 'package:minimo/consts/letter_state.dart';
+import 'package:minimo/enums/letter_option.dart';
+import 'package:minimo/enums/letter_state.dart';
 
 import 'letter_content_model.dart';
 import 'user_info_model.dart';

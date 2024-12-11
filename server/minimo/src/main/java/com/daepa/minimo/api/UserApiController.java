@@ -1,14 +1,23 @@
 package com.daepa.minimo.api;
 
 import com.daepa.minimo.common.embeddables.UserInfo;
+import com.daepa.minimo.domain.ImageFile;
 import com.daepa.minimo.domain.User;
 import com.daepa.minimo.dto.UserDto;
 import com.daepa.minimo.dto.UserInfoDto;
 import com.daepa.minimo.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -37,9 +46,29 @@ public class UserApiController {
     }
 
     @GetMapping("/{id}/heart-num")
-    public ResponseEntity<Map<String, Integer>> getHeartNum(@PathVariable("id") Long id) {
+    public ResponseEntity<Integer> getHeartNum(@PathVariable("id") Long id) {
         Integer heartNum = userService.findHeartNum(id);
-        return ResponseEntity.ok(Map.of("heartNum", heartNum));
+        return ResponseEntity.ok(heartNum);
+    }
+
+    @GetMapping("/{id}/image")
+    public ResponseEntity<Resource> getImage(@PathVariable("id") Long id) throws IOException {
+        ImageFile imageFile = userService.findImageFile(id);
+        String filePath = imageFile.getFilePath();
+
+        MediaType mediaType = MediaType.parseMediaType(Files.probeContentType(Paths.get(filePath)));
+        UrlResource resource = new UrlResource("file:" + filePath);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, mediaType.toString())
+                .body(resource);
+    }
+
+    @PostMapping("/{id}/update/image")
+    public ResponseEntity<Map<String, Long>> updateImage(@PathVariable("id") Long id, @RequestParam("image") MultipartFile image) throws IOException {
+        System.out.println("updateImage: " + image.getSize());
+        Long userId = userService.updateImage(id, image);
+        return ResponseEntity.ok(Map.of("id", userId));
     }
 
     @PostMapping("/{id}/update/user-info")
@@ -56,7 +85,7 @@ public class UserApiController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Long>> deleteUser(@PathVariable("id") Long id) {
-        userService.deleteUser(id);
-        return ResponseEntity.ok(Map.of("id", id));
+        Long deletedId = userService.deleteUser(id);
+        return ResponseEntity.ok(Map.of("id", deletedId));
     }
 }

@@ -4,15 +4,13 @@ import com.daepa.minimo.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 import static lombok.AccessLevel.PROTECTED;
 
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
+@Builder
 @Getter
 @Entity
-@Builder
 public class ChatMessage extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +24,7 @@ public class ChatMessage extends BaseTimeEntity {
     private Long senderId;
     private String content;
 
-    public void changeChatRoom(@NonNull ChatRoom chatRoom) {
+    public void updateChatRoom(@NonNull ChatRoom chatRoom) {
         this.chatRoom = chatRoom;
         chatRoom.getMessages().add(this);
     }

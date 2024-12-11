@@ -2,13 +2,14 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:minimo/utils/url_util.dart';
 import 'package:minimo/models/user_info_model.dart';
 import 'package:minimo/models/user_model.dart';
 
 class UserRepository {
   final Dio _dio = Dio();
-  // final String _targetUrl = 'http://${Platform.isAndroid ? '10.0.2.2' : 'localhost'}:8080/api/user';
-  final String _targetUrl = 'http://192.168.0.7:8080/api/user';
+  final String _userApiUrl = UrlUtil.userApi;
 
   UserRepository() {
     _dio.interceptors.add(InterceptorsWrapper(
@@ -30,7 +31,7 @@ class UserRepository {
     required int id,
   }) async {
     final resp = await _dio.get(
-      '$_targetUrl/$id',
+      '$_userApiUrl/$id',
     );
 
     if (resp.data == null) {
@@ -43,7 +44,7 @@ class UserRepository {
     required String email,
   }) async {
     final resp = await _dio.get(
-      '$_targetUrl/email',
+      '$_userApiUrl/email',
       queryParameters: {
         'email': email,
       },
@@ -59,7 +60,7 @@ class UserRepository {
     required UserModel user,
   }) async {
     final resp = await _dio.post(
-      _targetUrl,
+      _userApiUrl,
       data: user.toJson(),
     );
     return resp.data['id'];
@@ -69,9 +70,24 @@ class UserRepository {
     required int id,
   }) async {
     final resp = await _dio.get(
-      '$_targetUrl/$id/heart-num',
+      '$_userApiUrl/$id/heart-num',
     );
-    return resp.data['heartNum'];
+    return resp.data;
+  }
+
+  Future<int> updateImage({
+    required int id,
+    required XFile image,
+  }) async {
+    FormData imageData = FormData.fromMap({
+      'image': await MultipartFile.fromFile(image.path, filename: image.name),
+    });
+
+    final resp = await _dio.post(
+      '$_userApiUrl/$id/update/image',
+      data: imageData,
+    );
+    return resp.data['id'];
   }
 
   Future<UserInfoModel> updateUserInfo({
@@ -79,7 +95,7 @@ class UserRepository {
     required UserInfoModel userInfoModel,
   }) async {
     final resp = await _dio.post(
-      '$_targetUrl/$id/update/user-info',
+      '$_userApiUrl/$id/update/user-info',
       data: userInfoModel.toJson(),
     );
     return UserInfoModel.fromJson(resp.data);
@@ -90,7 +106,7 @@ class UserRepository {
     required String nickname,
   }) async {
     final resp = await _dio.post(
-      '$_targetUrl/$id/update/nickname',
+      '$_userApiUrl/$id/update/nickname',
       data: {
         'nickname': nickname
       },
@@ -102,7 +118,7 @@ class UserRepository {
     required int id,
   }) async {
     final resp = await _dio.delete(
-      '$_targetUrl/$id',
+      '$_userApiUrl/$id',
     );
     return resp.data['id'];
   }

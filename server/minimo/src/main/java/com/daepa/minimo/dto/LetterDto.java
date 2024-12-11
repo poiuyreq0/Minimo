@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
 @Builder
+@Getter
 public class LetterDto {
     private Long id;
     private Long senderId;

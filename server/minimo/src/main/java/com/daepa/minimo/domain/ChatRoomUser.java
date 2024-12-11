@@ -11,9 +11,9 @@ import static lombok.AccessLevel.PROTECTED;
 
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
+@Builder
 @Getter
 @Entity
-@Builder
 public class ChatRoomUser extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

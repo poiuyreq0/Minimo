@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:minimo/utils/url_util.dart';
 import 'package:minimo/models/user_model.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/intro_screen.dart';
@@ -39,7 +40,7 @@ class AuthScreen extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 20),
                   child: AspectRatio(
                     aspectRatio: 1,
-                    child: Image.asset('assets/icons/icon_clear.png'),
+                    child: Image.asset(UrlUtil.iconClear),
                   ),
                 );
               },

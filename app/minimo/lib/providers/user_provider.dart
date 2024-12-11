@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:minimo/models/user_info_model.dart';
 import 'package:minimo/models/user_model.dart';
 import 'package:minimo/repositories/user_repository.dart';
@@ -48,6 +49,14 @@ class UserProvider extends ChangeNotifier {
 
     notifyListeners();
     return resp;
+  }
+
+  Future<void> updateImage({
+    required XFile image,
+  }) async {
+    await userRepository.updateImage(id: userCache!.id, image: image);
+
+    notifyListeners();
   }
 
   Future<void> updateUserInfo({

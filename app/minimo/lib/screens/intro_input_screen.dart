@@ -8,8 +8,8 @@ import 'package:minimo/components/forms/date_time_form_component.dart';
 import 'package:minimo/components/forms/dropdown_form_component.dart';
 import 'package:minimo/components/forms/input_form_container.dart';
 import 'package:minimo/components/title_component.dart';
-import 'package:minimo/consts/gender.dart';
-import 'package:minimo/consts/mbti.dart';
+import 'package:minimo/enums/gender.dart';
+import 'package:minimo/enums/mbti.dart';
 import 'package:minimo/models/user_info_model.dart';
 import 'package:minimo/models/user_model.dart';
 import 'package:minimo/providers/user_provider.dart';
@@ -68,7 +68,6 @@ class _IntroInputScreenState extends State<IntroInputScreen> {
               children: [
                 TitleComponent(
                   title: '닉네임',
-                  helpText: '유리병 편지에 함께 적어 보내는 이름입니다.',
                 ),
                 InputFormContainer(
                   children: [

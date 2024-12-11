@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:minimo/utils/url_util.dart';
 import 'package:minimo/models/chat_message_model.dart';
 import 'package:minimo/models/chat_room_model.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
@@ -11,8 +11,8 @@ import 'package:stomp_dart_client/stomp_dart_client.dart';
 class ChatRepository {
   final _dio = Dio();
   late StompClient stompClient;
-  // final _targetUrl = 'http://${Platform.isAndroid ? '10.0.2.2' : 'localhost'}:8080';
-  final _targetUrl = 'http://192.168.0.7:8080';
+  final _chatWebSocketUrl = UrlUtil.chatWebSocket;
+  final _chatApiUrl = UrlUtil.chatApi;
 
   Future<void> enterChatRoom({
     required int roomId,
@@ -21,7 +21,7 @@ class ChatRepository {
   }) async {
     stompClient = StompClient(
       config: StompConfig.sockJS(
-        url: '$_targetUrl/ws-chat',
+        url: _chatWebSocketUrl,
         onConnect: (frame) => _onConnect(frame, roomId, userId, updateMessage),
         onDisconnect: _onDisconnect,
       ),
@@ -66,7 +66,7 @@ class ChatRepository {
     required int roomId,
   }) async {
     final resp = await _dio.get(
-      '$_targetUrl/api/chat/room/$roomId',
+      '$_chatApiUrl/room/$roomId',
     );
 
     return resp.data.map<ChatMessageModel>(
@@ -78,7 +78,7 @@ class ChatRepository {
     required int letterId,
   }) async {
     final resp = await _dio.get(
-      '$_targetUrl/api/chat/room/letter',
+      '$_chatApiUrl/room/letter',
       queryParameters: {
         'letterId': letterId,
       }
@@ -91,7 +91,7 @@ class ChatRepository {
     required int userId,
   }) async {
     final resp = await _dio.get(
-      '$_targetUrl/api/chat/rooms',
+      '$_chatApiUrl/rooms',
       queryParameters: {
         'userId': userId,
       }

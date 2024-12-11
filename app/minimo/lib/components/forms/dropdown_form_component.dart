@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:minimo/consts/gender.dart';
-import 'package:minimo/consts/letter_option.dart';
+import 'package:minimo/enums/gender.dart';
+import 'package:minimo/enums/letter_option.dart';
 import 'package:minimo/styles/app_style.dart';
 
 class DropdownFormComponent<T> extends StatelessWidget {

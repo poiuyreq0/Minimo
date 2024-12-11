@@ -1,22 +1,22 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:minimo/consts/letter_option.dart';
-import 'package:minimo/consts/letter_state.dart';
+import 'package:minimo/utils/url_util.dart';
+import 'package:minimo/enums/letter_option.dart';
+import 'package:minimo/enums/letter_state.dart';
 import 'package:minimo/models/letter_element_model.dart';
 import 'package:minimo/models/letter_model.dart';
 import 'package:minimo/models/user_role_model.dart';
 
 class LetterRepository {
   final _dio = Dio();
-  // final _targetUrl = 'http://${Platform.isAndroid ? '10.0.2.2' : 'localhost'}:8080/api/letter';
-  final _targetUrl = 'http://192.168.0.7:8080/api/letter';
+  final _letterApiUrl = UrlUtil.letterApi;
 
   Future<int> sendLetter({
     required LetterModel letterModel,
   }) async {
     final resp = await _dio.post(
-      '$_targetUrl/send',
+      '$_letterApiUrl/send',
       data: letterModel.toJson(),
     );
     return resp.data['id'];
@@ -27,7 +27,7 @@ class LetterRepository {
     required int count,
   }) async {
     final resp = await _dio.get(
-      '$_targetUrl/new/every',
+      '$_letterApiUrl/new/every',
       queryParameters: {
         'userId': userId,
         'count': count,
@@ -50,7 +50,7 @@ class LetterRepository {
     required LetterOption letterOption,
   }) async {
     final resp = await _dio.post(
-        '$_targetUrl/receive',
+        '$_letterApiUrl/receive',
         data: {
           'receiverId': receiverId,
           'letterOption': letterOption.name,
@@ -64,7 +64,7 @@ class LetterRepository {
     required UserRoleModel userRoleModel,
   }) async {
     final resp = await _dio.post(
-      '$_targetUrl/$id/sink',
+      '$_letterApiUrl/$id/sink',
       data: userRoleModel.toJson(),
     );
     return resp.data['id'];
@@ -75,7 +75,7 @@ class LetterRepository {
     required UserRoleModel userRoleModel,
   }) async {
     final resp = await _dio.post(
-      '$_targetUrl/$id/return',
+      '$_letterApiUrl/$id/return',
       data: userRoleModel.toJson(),
     );
     return resp.data['id'];
@@ -86,7 +86,7 @@ class LetterRepository {
     required UserRoleModel userRoleModel,
   }) async {
     final resp = await _dio.post(
-      '$_targetUrl/$id/disconnect',
+      '$_letterApiUrl/$id/disconnect',
       data: userRoleModel.toJson(),
     );
     return resp.data['id'];
@@ -97,7 +97,7 @@ class LetterRepository {
     required UserRoleModel userRoleModel,
   }) async {
     final resp = await _dio.post(
-      '$_targetUrl/$id/connect',
+      '$_letterApiUrl/$id/connect',
       data: userRoleModel.toJson(),
     );
     return resp.data['id'];
@@ -108,7 +108,7 @@ class LetterRepository {
     required LetterState letterState,
   }) async {
     final resp = await _dio.get(
-        '$_targetUrl/user',
+        '$_letterApiUrl/user',
         queryParameters: {
           'userId': userRoleModel.id,
           'userRole': userRoleModel.userRole.name,

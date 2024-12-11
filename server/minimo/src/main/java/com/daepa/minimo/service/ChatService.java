@@ -35,7 +35,7 @@ public class ChatService {
 
     public void sendMessage(Long roomId, ChatMessage message) {
         ChatRoom findChatRoom = chatRepository.findChatRoom(roomId);
-        message.changeChatRoom(findChatRoom);
+        message.updateChatRoom(findChatRoom);
         chatRepository.saveChatMessage(message);
     }
 

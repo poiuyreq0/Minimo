@@ -5,8 +5,8 @@ import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
 @Builder
+@Getter
 public class LetterElementDto {
     private Long id;
     private String senderNickname;

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:minimo/consts/gender.dart';
-import 'package:minimo/consts/letter_option.dart';
-import 'package:minimo/consts/letter_state.dart';
-import 'package:minimo/consts/mbti.dart';
+import 'package:minimo/enums/gender.dart';
+import 'package:minimo/enums/letter_option.dart';
+import 'package:minimo/enums/mbti.dart';
 import 'package:minimo/models/letter_content_model.dart';
 import 'package:minimo/models/letter_model.dart';
 import 'package:minimo/models/user_info_model.dart';

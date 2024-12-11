@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:minimo/utils/url_util.dart';
 import 'package:minimo/styles/app_style.dart';
 
 import 'intro_input_screen.dart';
@@ -83,7 +84,7 @@ class _IntroScreenState extends State<IntroScreen> {
             children: [
               if (currentPage == 0)
                 Image.asset(
-                  'assets/icons/icon_clear.png',
+                  UrlUtil.iconClear,
                   width: 200,
                   height: 200,
                 ),

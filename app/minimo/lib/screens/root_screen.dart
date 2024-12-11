@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minimo/components/heart_icon_component.dart';
+import 'package:minimo/utils/url_util.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/home/home_screen.dart';
 import 'package:minimo/screens/home/info/info_screen.dart';
@@ -100,7 +101,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
           child: Row(
             children: [
-              Image.asset('assets/icons/icon_clear.png'),
+              Image.asset(UrlUtil.iconClear),
               const SizedBox(width: 8),
               InkWell(
                 onTap: () {},

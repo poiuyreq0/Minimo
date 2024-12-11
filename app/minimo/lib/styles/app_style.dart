@@ -140,7 +140,7 @@ class AppStyle {
     return ElevatedButton.styleFrom(
       backgroundColor: Theme.of(context).colorScheme.primary,
       foregroundColor: Theme.of(context).colorScheme.onPrimary,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     );
   }
 
@@ -148,7 +148,7 @@ class AppStyle {
     return ElevatedButton.styleFrom(
       backgroundColor: Theme.of(context).colorScheme.tertiary,
       foregroundColor: Theme.of(context).colorScheme.onTertiary,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     );
   }
 }

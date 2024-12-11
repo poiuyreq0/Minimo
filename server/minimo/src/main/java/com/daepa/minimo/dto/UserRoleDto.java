@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
 @Builder
+@Getter
 public class UserRoleDto {
     private Long id;
     private UserRole userRole;

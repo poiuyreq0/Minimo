@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:minimo/consts/user_role.dart';
+import 'package:minimo/enums/user_role.dart';
 
 part 'user_role_model.freezed.dart';
 part 'user_role_model.g.dart';

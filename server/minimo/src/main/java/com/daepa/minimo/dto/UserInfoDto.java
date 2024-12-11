@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
 @Builder
+@Getter
 public class UserInfoDto {
     private String name;
     private Mbti mbti;

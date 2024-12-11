@@ -19,6 +19,11 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e);
     }
 
+    @ExceptionHandler(ImageNotFoundException.class)
+    public ResponseEntity<RuntimeException> handleImageNotFoundException(ImageNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e);
+    }
+
     @ExceptionHandler(LetterNotFoundException.class)
     public ResponseEntity<RuntimeException> handleLetterNotFoundException(LetterNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e);

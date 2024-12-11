@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:minimo/consts/gender.dart';
-import 'package:minimo/consts/mbti.dart';
+import 'package:minimo/enums/gender.dart';
+import 'package:minimo/enums/mbti.dart';
 
 part 'user_info_model.freezed.dart';
 part 'user_info_model.g.dart';

@@ -39,6 +39,9 @@ public class User extends BaseTimeEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatRoomUser> chatRoomUserList = new ArrayList<>();
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "image_file_id")
+    private ImageFile imageFile;
 
     // User 생성 시, 초기화
     @Column(nullable = false)
@@ -61,11 +64,15 @@ public class User extends BaseTimeEntity {
         this.nickname = nickname;
     }
 
-    public void changeHeartNum() {
+    public void updateImage(ImageFile image) {
+        this.imageFile = image;
+    }
+
+    public void updateHeartNum() {
         heartNum -= 1;
     }
 
-    public void increaseReportedCount() {
+    public void updateReportedCount() {
         reportedCount += 1;
         if (reportedCount >= 5) {
             accountState = AccountState.BANNED;

@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
 @Builder
+@Getter
 public class ChatMessageDto {
     private Long id;
     private Long roomId;

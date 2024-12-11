@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:minimo/components/letter_element_component.dart';
 import 'package:minimo/components/title_component.dart';
-import 'package:minimo/consts/letter_state.dart';
-import 'package:minimo/consts/user_role.dart';
+import 'package:minimo/enums/letter_state.dart';
+import 'package:minimo/enums/user_role.dart';
 import 'package:minimo/models/user_role_model.dart';
 import 'package:minimo/providers/letter_provider.dart';
 import 'package:minimo/providers/user_provider.dart';

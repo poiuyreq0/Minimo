@@ -1,15 +1,21 @@
 package com.daepa.minimo.service;
 
 import com.daepa.minimo.common.embeddables.UserInfo;
+import com.daepa.minimo.domain.ImageFile;
 import com.daepa.minimo.domain.Letter;
 import com.daepa.minimo.domain.User;
 import com.daepa.minimo.exception.NicknameConflictException;
+import com.daepa.minimo.exception.ImageNotFoundException;
 import com.daepa.minimo.exception.UserNotFoundException;
 import com.daepa.minimo.repository.LetterRepository;
 import com.daepa.minimo.repository.UserRepository;
+import com.daepa.minimo.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RequiredArgsConstructor
 @Service
@@ -47,6 +53,21 @@ public class UserService {
         return findUser.getHeartNum();
     }
 
+    @Transactional(readOnly = true)
+    public ImageFile findImageFile(Long id) {
+        User findUser = userRepository.findUser(id);
+        validateImageNotNull(findUser.getImageFile());
+
+        return findUser.getImageFile();
+    }
+
+    public Long updateImage(Long id, MultipartFile image) throws IOException {
+        ImageFile imageFile = FileUtil.saveImage(image);
+        User findUser = userRepository.findUser(id);
+        findUser.updateImage(imageFile);
+        return findUser.getId();
+    }
+
     public UserInfo updateUserInfo(Long id, UserInfo userInfo) {
         User findUser = userRepository.findUser(id);
         findUser.updateUserInfo(userInfo);
@@ -61,7 +82,7 @@ public class UserService {
         return findUser;
     }
 
-    public void deleteUser(Long id) {
+    public Long deleteUser(Long id) {
         User findUser = userRepository.findUser(id);
 
         for (Letter letter: findUser.getSentLetters()) {
@@ -78,6 +99,7 @@ public class UserService {
         }
 
         userRepository.deleteUser(findUser);
+        return findUser.getId();
     }
 
     private void validateNicknameConflict(String nickname) {
@@ -90,6 +112,12 @@ public class UserService {
     private void validateUserNotNull(User user) {
         if (user == null) {
             throw new UserNotFoundException();
+        }
+    }
+
+    private void validateImageNotNull(ImageFile imageFile) {
+        if (imageFile == null) {
+            throw new ImageNotFoundException();
         }
     }
 }

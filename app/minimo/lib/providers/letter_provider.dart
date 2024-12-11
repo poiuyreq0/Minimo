@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:minimo/consts/letter_option.dart';
-import 'package:minimo/consts/letter_state.dart';
-import 'package:minimo/consts/user_role.dart';
+import 'package:minimo/enums/letter_option.dart';
+import 'package:minimo/enums/letter_state.dart';
 import 'package:minimo/models/letter_element_model.dart';
 import 'package:minimo/models/letter_model.dart';
 import 'package:minimo/models/user_role_model.dart';

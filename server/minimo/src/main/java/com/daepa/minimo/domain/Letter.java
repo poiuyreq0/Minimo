@@ -63,17 +63,17 @@ public class Letter extends BaseTimeEntity {
     private LocalDateTime receivedDate;
     private LocalDateTime connectedDate;
 
-    public void changeSender(@NonNull User sender) {
+    public void updateSender(@NonNull User sender) {
         this.sender = sender;
         sender.getSentLetters().add(this);
 
         letterState = LetterState.SENT;
     }
 
-    public void changeReceiver(@NonNull User receiver) {
+    public void updateReceiver(@NonNull User receiver) {
         this.receiver = receiver;
         receiver.getReceivedLetters().add(this);
-        receiver.changeHeartNum();
+        receiver.updateHeartNum();
 
         receivedDate = LocalDateTime.now();
         letterState = LetterState.LOCKED;

@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:minimo/consts/letter_state.dart';
+import 'package:minimo/enums/letter_state.dart';
 
 part 'letter_element_model.freezed.dart';
 part 'letter_element_model.g.dart';

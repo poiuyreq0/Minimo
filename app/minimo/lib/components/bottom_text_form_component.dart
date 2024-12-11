@@ -52,7 +52,7 @@ class _BottomTextFormComponentState extends State<BottomTextFormComponent> {
         children: [
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8),
               child: TextField(
                 keyboardType: TextInputType.multiline,
                 maxLines: null,

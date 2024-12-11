@@ -1,5 +1,6 @@
 package com.daepa.minimo.domain;
 
+import com.daepa.minimo.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,14 +12,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 @Entity
-public class ReceivedRecord {
+public class ImageFile extends BaseTimeEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "letter_user_id")
+    @Column(name = "image_file_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "letter_id")
-    private Letter letter;
+    @Column(nullable = false)
+    private String fileName;
 
-    private Long receiverId;
+    @Column(nullable = false)
+    private String filePath;
 }

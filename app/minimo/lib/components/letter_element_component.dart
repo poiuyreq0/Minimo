@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:minimo/consts/user_role.dart';
+import 'package:minimo/enums/user_role.dart';
 import 'package:minimo/models/letter_model.dart';
 import 'package:minimo/screens/home/letter_box/letter_detail_screen.dart';
 
