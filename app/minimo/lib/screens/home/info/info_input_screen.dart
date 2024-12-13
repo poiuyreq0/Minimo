@@ -14,6 +14,7 @@ import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/date_picker_util.dart';
 import 'package:minimo/utils/form_validate_util.dart';
 import 'package:minimo/utils/snack_bar_util.dart';
+import 'package:minimo/utils/time_stamp_util.dart';
 import 'package:provider/provider.dart';
 
 class InfoInputScreen extends StatefulWidget {
@@ -42,7 +43,9 @@ class _InfoInputScreenState extends State<InfoInputScreen> {
     selectedGender = userInfo.gender;
     selectedBirthday = userInfo.birthday;
 
-    birthdayTextController = TextEditingController(text: DateFormat('yyyy-MM-dd').format(selectedBirthday!));
+    birthdayTextController = TextEditingController(
+      text: TimeStampUtil.getBirthdayTimeStamp(selectedBirthday!),
+    );
   }
 
   @override
@@ -74,7 +77,7 @@ class _InfoInputScreenState extends State<InfoInputScreen> {
                   children: [
                     TextFormComponent(
                       label: '이름 초성',
-                      hintText: '이름의 초성을 입력해 주세요.',
+                      hintText: '예) 홍길동 -> ㅎㄱㄷ',
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(RegExp(r'[ㄱ-ㅎ]')),
                         FilteringTextInputFormatter.deny(RegExp(r'\s')),
@@ -108,7 +111,7 @@ class _InfoInputScreenState extends State<InfoInputScreen> {
                           if (value != null && value != selectedBirthday) {
                             setState(() {
                               selectedBirthday = value;
-                              birthdayTextController.text = DateFormat('yyyy-MM-dd').format(selectedBirthday!);
+                              birthdayTextController.text = TimeStampUtil.getBirthdayTimeStamp(selectedBirthday!);
                             });
                           }
                         }

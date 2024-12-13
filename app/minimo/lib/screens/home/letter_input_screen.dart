@@ -19,6 +19,7 @@ import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/date_picker_util.dart';
 import 'package:minimo/utils/form_validate_util.dart';
 import 'package:minimo/utils/snack_bar_util.dart';
+import 'package:minimo/utils/time_stamp_util.dart';
 import 'package:provider/provider.dart';
 
 class LetterInputScreen extends StatefulWidget {
@@ -90,7 +91,7 @@ class _LetterInputScreenState extends State<LetterInputScreen> {
                     if (selectedOption == LetterOption.ALL || selectedOption == LetterOption.NAME)
                       TextFormComponent(
                         label: '수신자 이름 초성',
-                        hintText: '이름의 초성을 입력해 주세요.',
+                        hintText: '예) 홍길동 -> ㅎㄱㄷ',
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(RegExp(r'[ㄱ-ㅎ]')),
                           FilteringTextInputFormatter.deny(RegExp(r'\s')),
@@ -127,7 +128,7 @@ class _LetterInputScreenState extends State<LetterInputScreen> {
                               if (value != null && value != selectedBirthday) {
                                 setState(() {
                                   selectedBirthday = value;
-                                  birthdayTextController.text = DateFormat('yyyy-MM-dd').format(selectedBirthday!);
+                                  birthdayTextController.text = TimeStampUtil.getBirthdayTimeStamp(selectedBirthday!);
                                 });
                               }
                             }

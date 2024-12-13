@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
@@ -13,6 +14,8 @@ import java.util.List;
 @Getter
 public class ChatRoomDto {
     private Long id;
+    private List<Long> userIds;
     private List<String> userNicknames;
     private ChatMessageDto lastMessage;
+    private LocalDateTime createdDate;
 }

@@ -57,7 +57,8 @@ public class ChatRepository {
         List<ChatRoomDto> chatRooms = queryFactory
                 .select(Projections.fields(
                         ChatRoomDto.class,
-                        chatRoomUser.chatRoom.id
+                        chatRoomUser.chatRoom.id,
+                        chatRoomUser.chatRoom.createdDate
                 ))
                 .from(chatRoomUser)
                 .where(chatRoomUser.user.id.eq(userId))
@@ -65,6 +66,13 @@ public class ChatRepository {
 
         return chatRooms.stream().map(
                 chatRoomDto -> {
+                    List<Long> userIds = queryFactory
+                            .select(chatRoomUser.user.id)
+                            .from(chatRoomUser)
+                            .join(chatRoomUser.user)
+                            .where(chatRoomUser.chatRoom.id.eq(chatRoomDto.getId()))
+                            .fetch();
+
                     List<String> userNicknames = queryFactory
                             .select(chatRoomUser.user.nickname)
                             .from(chatRoomUser)
@@ -88,8 +96,10 @@ public class ChatRepository {
 
                     return ChatRoomDto.builder()
                             .id(chatRoomDto.getId())
+                            .userIds(userIds)
                             .userNicknames(userNicknames)
                             .lastMessage(lastMessage)
+                            .createdDate(chatRoomDto.getCreatedDate())
                             .build();
                 }
         ).toList();

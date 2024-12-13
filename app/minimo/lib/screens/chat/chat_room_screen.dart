@@ -4,7 +4,9 @@ import 'package:minimo/components/bottom_text_form_component.dart';
 import 'package:minimo/components/chat_message_component.dart';
 import 'package:minimo/models/chat_message_model.dart';
 import 'package:minimo/providers/chat_provider.dart';
+import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/utils/snack_bar_util.dart';
+import 'package:minimo/utils/time_stamp_util.dart';
 import 'package:provider/provider.dart';
 
 class ChatRoomScreen extends StatefulWidget {
@@ -80,52 +82,80 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                                 shrinkWrap: true,
                                 itemCount: chatMessages.length,
                                 itemBuilder: (context, index) {
-                                  late final bool isShowCreatedDate;
-                                  if (index > 0) {
-                                    isShowCreatedDate = !(DateFormat('yyyy-MM-dd HH:mm').format(chatMessages[index].createdDate) ==
-                                        DateFormat('yyyy-MM-dd HH:mm').format(chatMessages[index-1].createdDate));
+                                  final userId = context.read<UserProvider>().userCache!.id;
+                                  final isMine = userId == chatMessages[index].senderId;
+
+                                  late final bool isShowTimeStamp;
+                                  if (index == 0) {
+                                    isShowTimeStamp = true;
                                   } else {
-                                    isShowCreatedDate = true;
+                                    final isSameNextMinute = TimeStampUtil.isSameMinute(chatMessages[index].createdDate, chatMessages[index-1].createdDate);
+                                    final isSameNextUser = chatMessages[index].senderId == chatMessages[index-1].senderId;
+                                    if (!isSameNextMinute) {
+                                      isShowTimeStamp = true;
+                                    } else if (!isSameNextUser) {
+                                      isShowTimeStamp = true;
+                                    } else {
+                                      isShowTimeStamp = false;
+                                    }
                                   }
+
+                                  late final bool isShowFirst;
+                                  if (index == chatMessages.length - 1) {
+                                    isShowFirst = true;
+                                  } else {
+                                    final isSamePreviousMinute = TimeStampUtil.isSameMinute(chatMessages[index].createdDate, chatMessages[index+1].createdDate);
+                                    final isSamePreviousUser = chatMessages[index].senderId == chatMessages[index+1].senderId;
+                                    if (!isSamePreviousMinute) {
+                                      isShowFirst = true;
+                                    } else if (!isSamePreviousUser) {
+                                      isShowFirst = true;
+                                    } else {
+                                      isShowFirst = false;
+                                    }
+                                  }
+
                                   return Column(
                                     children: [
                                       if (index == chatMessages.length - 1)
                                         Padding(
-                                          padding: const EdgeInsets.all(8.0),
+                                          padding: const EdgeInsets.all(16),
                                           child: Text(
-                                            DateFormat('yyyy년 M월 d일 EEEE', 'ko_KR').format(chatMessages[index].createdDate),
+                                            TimeStampUtil.getRoomTimeStamp(chatMessages[index].createdDate),
                                             style: Theme.of(context).textTheme.displaySmall,
                                           ),
                                         ),
                                       ChatMessageComponent(
-                                          chatMessage: chatMessages[index],
-                                          isShowCreatedDate: isShowCreatedDate
+                                        otherUserNickname: widget.otherUserNickname,
+                                        chatMessage: chatMessages[index],
+                                        isMine: isMine,
+                                        isShowFirst: isShowFirst,
+                                        isShowTimeStamp: isShowTimeStamp,
                                       ),
-                                      if (index == 0 || isShowCreatedDate)
-                                        const SizedBox(height: 8),
+                                      if (index == 0)
+                                        const SizedBox(height: 6),
                                     ],
                                   );
                                 },
                                 separatorBuilder: (context, index) {
-                                  late final bool isSameTime;
+                                  late final bool isSameDay;
                                   if (index < chatMessages.length - 1) {
-                                    isSameTime = DateFormat('yyyy-MM-dd').format(chatMessages[index].createdDate) ==
-                                        DateFormat('yyyy-MM-dd').format(chatMessages[index+1].createdDate);
+                                    isSameDay = TimeStampUtil.isSameDay(chatMessages[index].createdDate, chatMessages[index+1].createdDate);
                                   } else {
-                                    isSameTime = false;
+                                    isSameDay = false;
                                   }
-                                  if (!isSameTime) {
+                                  if (!isSameDay) {
                                     return Padding(
-                                      padding: const EdgeInsets.all(8.0),
+                                      padding: const EdgeInsets.all(16),
                                       child: Center(
                                         child: Text(
-                                          DateFormat('yyyy년 M월 d일 EEEE', 'ko_KR').format(chatMessages[index].createdDate),
+                                          TimeStampUtil.getRoomTimeStamp(chatMessages[index].createdDate),
                                           style: Theme.of(context).textTheme.displaySmall,
                                         ),
                                       ),
                                     );
                                   } else {
-                                    return const SizedBox(height: 4);
+                                    return const SizedBox(height: 6);
                                   }
                                 },
                                 controller: scrollController,

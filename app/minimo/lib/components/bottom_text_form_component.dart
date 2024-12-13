@@ -47,7 +47,7 @@ class _BottomTextFormComponentState extends State<BottomTextFormComponent> {
       constraints: BoxConstraints(
         maxHeight: 200,
       ),
-      color: Theme.of(context).colorScheme.onPrimary,
+      color: Theme.of(context).colorScheme.surfaceContainerLowest,
       child: Row(
         children: [
           Expanded(
@@ -59,9 +59,20 @@ class _BottomTextFormComponentState extends State<BottomTextFormComponent> {
                 maxLength: 1000,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Theme.of(context).colorScheme.surfaceContainerLowest,
+                  fillColor: Theme.of(context).colorScheme.onPrimary,
                   suffixIconColor: Theme.of(context).colorScheme.primary,
-                  border: OutlineInputBorder(),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.inversePrimary,
+                      width: 2.0,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.inversePrimary,
+                      width: 3.0,
+                    ),
+                  ),
                   hintText: widget.hintText,
                   counterText: '',
                   suffixIcon: isShowIconButton ? IconButton(

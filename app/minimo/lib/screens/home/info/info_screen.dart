@@ -12,6 +12,7 @@ import 'package:minimo/providers/letter_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/home/info/info_input_screen.dart';
 import 'package:minimo/styles/app_style.dart';
+import 'package:minimo/utils/time_stamp_util.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 
@@ -122,7 +123,7 @@ class InfoScreen extends StatelessWidget {
                             const SizedBox(height: 12),
                             DividedElementComponent(
                               title: '생일',
-                              content: DateFormat('yyyy-MM-dd').format(tuple.item1.userInfo.birthday!),
+                              content: TimeStampUtil.getBirthdayTimeStamp(tuple.item1.userInfo.birthday!),
                             ),
                           ],
                         ),

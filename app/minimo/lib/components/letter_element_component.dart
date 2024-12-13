@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:minimo/enums/letter_state.dart';
 import 'package:minimo/enums/user_role.dart';
 import 'package:minimo/models/letter_model.dart';
+import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/home/letter_box/letter_detail_screen.dart';
+import 'package:minimo/utils/time_stamp_util.dart';
+import 'package:provider/provider.dart';
+import 'package:tuple/tuple.dart';
+
+import 'user_network_image_component.dart';
 
 class LetterElementComponent extends StatelessWidget {
   final LetterModel letter;
@@ -15,6 +23,11 @@ class LetterElementComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final displayUser = getDisplayUser(context);
+    final displayUserRole = displayUser.item1;
+    final displayUserId = displayUser.item2;
+    final displayUserNickname = displayUser.item3;
+
     return InkWell(
       onTap: () {
         Navigator.of(context).push(
@@ -22,40 +35,92 @@ class LetterElementComponent extends StatelessWidget {
         );
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+        child: Row(
           children: [
-            Text(
-              letter.letterContent.title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.displayLarge,
+            UserNetworkImageComponent(
+              userId: displayUserId,
+              size: 55,
             ),
-            const SizedBox(height: 5),
-            Text(
-              letter.letterContent.content,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.displayMedium,
-            ),
-            const SizedBox(height: 5),
-            Row(
-              children: [
-                Text(
-                  'From ${letter.senderNickname ?? 'Unknown'} To ${letter.receiverNickname ?? 'Unknown'}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                    fontSize: 13,
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Builder(
+                    builder: (context) {
+                      String result = (displayUserRole == UserRole.SENDER ? 'From. ' : 'To. ')
+                          + (displayUserNickname ?? '(알 수 없음)');
+
+                      return Text(
+                        result,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.displayLarge,
+                      );
+                    }
                   ),
+                  const SizedBox(height: 5),
+                  Text(
+                    letter.letterContent.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.displayMedium,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 24),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Builder(
+                  builder: (context) {
+                    late final String result;
+
+                    if (letter.letterState == LetterState.CONNECTED) {
+                      result = TimeStampUtil.getElementTimeStamp(letter.connectedDate!);
+                    } else if (letter.letterState == LetterState.LOCKED) {
+                      result = TimeStampUtil.getElementTimeStamp(letter.receivedDate!);
+                    } else {
+                      result = TimeStampUtil.getElementTimeStamp(letter.createdDate!);
+                    }
+
+                    return Text(
+                      result,
+                      maxLines: 1,
+                      style: Theme.of(context).textTheme.displaySmall,
+                    );
+                  },
                 ),
+                // 안 읽은 메시지 개수 추가
               ],
             ),
           ],
         ),
       ),
     );
+  }
+
+  Tuple3<UserRole, int?, String?> getDisplayUser(BuildContext context) {
+    final userId = context.read<UserProvider>().userCache!.id;
+    late final UserRole displayUserRole;
+
+    if (userRole == UserRole.SENDER && letter.letterState == LetterState.SENT) {
+      displayUserRole = UserRole.SENDER;
+    } else {
+      if (letter.senderId != userId) {
+        displayUserRole = UserRole.SENDER;
+      } else {
+        displayUserRole = UserRole.RECEIVER;
+      }
+    }
+
+    if (displayUserRole == UserRole.SENDER) {
+      return Tuple3(displayUserRole, letter.senderId, letter.senderNickname);
+    } else {
+      return Tuple3(displayUserRole, letter.receiverId, letter.receiverNickname);
+    }
   }
 }

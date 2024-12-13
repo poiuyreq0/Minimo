@@ -14,6 +14,7 @@ import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/chat/chat_room_screen.dart';
 import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/snack_bar_util.dart';
+import 'package:minimo/utils/time_stamp_util.dart';
 import 'package:provider/provider.dart';
 
 class LetterDetailScreen extends StatelessWidget {
@@ -62,7 +63,7 @@ class LetterDetailScreen extends StatelessWidget {
                         height: 36,
                       ),
                       Text(
-                        '보낸 사람   ${letter.senderNickname ?? 'Unknown'}\n받은 사람   ${letter.receiverNickname ?? 'Unknown'}',
+                        '보낸 사람   ${letter.senderNickname ?? '(알 수 없음)'}\n받은 사람   ${letter.receiverNickname ?? '(알 수 없음)'}',
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                       const Divider(
@@ -70,17 +71,17 @@ class LetterDetailScreen extends StatelessWidget {
                       ),
                       if (letter.createdDate != null)
                         Text(
-                          '보낸 일시   ${DateFormat('yyyy-MM-dd HH:mm:ss').format(letter.createdDate!)}',
+                          '보낸 일시   ${TimeStampUtil.getLetterTimeStamp(letter.createdDate!)}',
                           style: Theme.of(context).textTheme.titleSmall,
                         ),
                       if (letter.receivedDate != null)
                         Text(
-                          '받은 일시   ${DateFormat('yyyy-MM-dd HH:mm:ss').format(letter.receivedDate!)}',
+                          '받은 일시   ${TimeStampUtil.getLetterTimeStamp(letter.receivedDate!)}',
                           style: Theme.of(context).textTheme.titleSmall,
                         ),
                       if (letter.connectedDate != null)
                         Text(
-                          '연결 일시   ${DateFormat('yyyy-MM-dd HH:mm:ss').format(letter.connectedDate!)}',
+                          '연결 일시   ${TimeStampUtil.getLetterTimeStamp(letter.connectedDate!)}',
                           style: Theme.of(context).textTheme.titleSmall,
                         ),
                     ],

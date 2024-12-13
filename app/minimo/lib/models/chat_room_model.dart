@@ -8,8 +8,10 @@ part 'chat_room_model.g.dart';
 class ChatRoomModel with _$ChatRoomModel {
   const factory ChatRoomModel({
     required int id,
+    required List<int> userIds,
     required List<String> userNicknames,
     ChatMessageModel? lastMessage,
+    required DateTime createdDate,
   }) = _ChatRoomModel;
 
   factory ChatRoomModel.fromJson(Map<String, dynamic> json) => _$ChatRoomModelFromJson(json);

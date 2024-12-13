@@ -66,7 +66,6 @@ public class UserApiController {
 
     @PostMapping("/{id}/update/image")
     public ResponseEntity<Map<String, Long>> updateImage(@PathVariable("id") Long id, @RequestParam("image") MultipartFile image) throws IOException {
-        System.out.println("updateImage: " + image.getSize());
         Long userId = userService.updateImage(id, image);
         return ResponseEntity.ok(Map.of("id", userId));
     }

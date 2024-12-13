@@ -50,7 +50,7 @@ class ChatProvider extends ChangeNotifier {
       ]..sort((a, b) => b.createdDate.compareTo(a.createdDate),),
       ifAbsent: () => [
         ...resp,
-      ],
+      ]..sort((a, b) => b.createdDate.compareTo(a.createdDate),),
     );
 
     return chatRoomScreenCache[roomId]!;

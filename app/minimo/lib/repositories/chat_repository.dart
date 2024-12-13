@@ -70,7 +70,7 @@ class ChatRepository {
     );
 
     return resp.data.map<ChatMessageModel>(
-            (message) => ChatMessageModel.fromJson(message)
+        (message) => ChatMessageModel.fromJson(message)
     ).toList();
   }
 

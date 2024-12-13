@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:minimo/utils/url_util.dart';
 
 class UserNetworkImageComponent extends StatelessWidget {
-  final int userId;
+  final int? userId;
   final double size;
 
   const UserNetworkImageComponent({
@@ -16,8 +16,8 @@ class UserNetworkImageComponent extends StatelessWidget {
   Widget build(BuildContext context) {
     final sizeBasedValue = size * 0.35;
 
-    return ExtendedImage.network(
-      UrlUtil.getUserImageUrl(userId),
+    return (userId != null) ? ExtendedImage.network(
+      UrlUtil.getUserImageUrl(userId!),
       width: size,
       height: size,
       fit: BoxFit.cover,
@@ -35,6 +35,13 @@ class UserNetworkImageComponent extends StatelessWidget {
           }
         }
       },
+    ) : ExtendedImage.asset(
+      UrlUtil.icon,
+      width: size,
+      height: size,
+      fit: BoxFit.cover,
+      borderRadius: BorderRadius.circular(sizeBasedValue),
+      shape: BoxShape.rectangle,
     );
   }
 }
