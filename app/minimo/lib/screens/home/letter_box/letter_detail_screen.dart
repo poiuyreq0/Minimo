@@ -160,8 +160,6 @@ class ActionButton extends StatelessWidget {
                   );
 
                 } catch (e) {
-                  final userNickname = userRole == UserRole.SENDER ? letter.senderNickname : letter.receiverNickname;
-
                   if (e is DioException && e.response?.statusCode == HttpStatus.notFound) {
                     SnackBarUtil.showCustomSnackBar(context, '이미 나간 채팅방입니다.');
                   } else {

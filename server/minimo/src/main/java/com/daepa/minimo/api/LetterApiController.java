@@ -64,9 +64,9 @@ public class LetterApiController {
     }
 
     @PostMapping("/{id}/connect")
-    public ResponseEntity<Map<String, Long>> connectLetter(@PathVariable("id") Long id, @RequestBody UserRoleDto userRoleDto) {
-        Long letterId = letterService.connectLetter(id, userRoleDto.getId(), userRoleDto.getUserRole());
-        return ResponseEntity.ok(Map.of("id", letterId));
+    public ResponseEntity<LetterDto> connectLetter(@PathVariable("id") Long id, @RequestBody UserRoleDto userRoleDto) {
+        Letter letter = letterService.connectLetter(id, userRoleDto.getId(), userRoleDto.getUserRole());
+        return ResponseEntity.ok(LetterDto.fromLetter(letter));
     }
 
     @GetMapping("/user")

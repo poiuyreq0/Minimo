@@ -89,7 +89,7 @@ public class LetterService {
         return findLetter.getId();
     }
 
-    public Long connectLetter(Long id, Long userId, UserRole userRole) {
+    public Letter connectLetter(Long id, Long userId, UserRole userRole) {
         Letter findLetter = letterRepository.findLetter(id);
         validateLetterNotNull(findLetter);
         validateLetterOwner(findLetter, userId, userRole);
@@ -97,7 +97,6 @@ public class LetterService {
 
         // 채팅방 생성 로직
         ChatRoom chatRoom = ChatRoom.builder().build();
-        chatRoom.updateLetterId(id);
         chatRepository.saveChatRoom(chatRoom);
 
         for (User user : List.of(findLetter.getSender(), findLetter.getReceiver())) {
@@ -110,7 +109,7 @@ public class LetterService {
 
         findLetter.connectLetter(chatRoom.getId());
 
-        return findLetter.getId();
+        return findLetter;
     }
 
     @Transactional(readOnly = true)

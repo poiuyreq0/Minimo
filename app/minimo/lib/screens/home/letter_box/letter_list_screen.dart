@@ -57,7 +57,10 @@ class _LetterListScreenState extends State<LetterListScreen> {
                   future: letterProvider.getLettersByUser(userRoleModel: UserRoleModel(id: userId, userRole: widget.userRole), letterState: widget.letterState),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
-                      return const CircularProgressIndicator();
+                      return const Padding(
+                        padding: EdgeInsets.only(top: 24),
+                        child: CircularProgressIndicator(),
+                      );
                     } else if (snapshot.data!.isEmpty) {
                       return Text(
                         '아직 편지가 없습니다.',

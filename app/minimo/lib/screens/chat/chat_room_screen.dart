@@ -102,7 +102,9 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           future: chatProvider.enterChatRoom(roomId: widget.id, userId: widget.userId),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
             } else {
               return Column(
                 children: [

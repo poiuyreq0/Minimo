@@ -22,6 +22,7 @@ public class LetterDto {
     private LetterContent letterContent;
     private LetterOption letterOption;
     private UserInfo userInfo;
+    private Long chatRoomId;
     private LetterState letterState;
     private LocalDateTime createdDate;
     private LocalDateTime receivedDate;
@@ -37,6 +38,7 @@ public class LetterDto {
                 .letterContent(letter.getLetterContent())
                 .letterOption(letter.getLetterOption())
                 .userInfo(letter.getUserInfo())
+                .chatRoomId(letter.getChatRoomId())
                 .letterState(letter.getLetterState())
                 .createdDate(letter.getCreatedDate())
                 .receivedDate(letter.getReceivedDate())

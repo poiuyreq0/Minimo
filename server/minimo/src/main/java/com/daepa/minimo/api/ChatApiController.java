@@ -26,15 +26,21 @@ public class ChatApiController {
         return ResponseEntity.ok(messageDtos);
     }
 
-    @GetMapping("/room/letter")
-    public ResponseEntity<Map<String, Long>> getchatRoomIdByLetterId(@RequestParam("letterId") Long letterId) {
-        Long chatRoomId = chatService.findChatRoomIdByLetterId(letterId);
-        return ResponseEntity.ok(Map.of("id", chatRoomId));
+    @GetMapping("/room/{id}/check")
+    public ResponseEntity<Map<String, Long>> checkChatRoomByUser(@PathVariable("id") Long roomId, @RequestParam("userId") Long userId) {
+        Long checkedRoomId = chatService.checkChatRoomByUser(roomId, userId);
+        return ResponseEntity.ok(Map.of("id", checkedRoomId));
     }
 
     @GetMapping("/rooms")
     public ResponseEntity<List<ChatRoomDto>> getChatRooms(@RequestParam("userId") Long userId) {
         List<ChatRoomDto> chatRooms = chatService.findChatRooms(userId);
         return ResponseEntity.ok(chatRooms);
+    }
+
+    @PostMapping("/room/{id}/disconnect")
+    public ResponseEntity<Map<String, Long>> disconnectChatRooms(@PathVariable("id") Long roomId, @RequestParam("userId") Long userId) {
+        Long disconnectRoomId = chatService.disconnectChatRoom(roomId, userId);
+        return ResponseEntity.ok(Map.of("id", disconnectRoomId));
     }
 }

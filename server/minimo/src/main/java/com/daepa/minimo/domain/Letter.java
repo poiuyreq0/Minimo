@@ -58,6 +58,8 @@ public class Letter extends BaseTimeEntity {
     @Embedded
     private UserInfo userInfo;
 
+    private Long chatRoomId;
+
     @Enumerated(EnumType.STRING)
     private LetterState letterState = LetterState.NONE;
     private LocalDateTime receivedDate;
@@ -88,6 +90,7 @@ public class Letter extends BaseTimeEntity {
     public void connectLetter(Long chatRoomId) {
         connectedDate = LocalDateTime.now();
         letterState = LetterState.CONNECTED;
+        this.chatRoomId = chatRoomId;
     }
 
     public void removeSender() {

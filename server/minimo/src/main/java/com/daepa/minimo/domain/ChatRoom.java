@@ -28,10 +28,4 @@ public class ChatRoom extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatMessage> messages = new ArrayList<>();
-
-    private Long letterId;
-
-    public void updateLetterId(Long letterId) {
-        this.letterId = letterId;
-    }
 }

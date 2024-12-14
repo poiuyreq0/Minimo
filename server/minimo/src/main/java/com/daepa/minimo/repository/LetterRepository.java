@@ -92,6 +92,7 @@ public class LetterRepository {
                         letter.letterContent,
                         letter.letterOption,
                         letter.userInfo,
+                        letter.chatRoomId,
                         letter.letterState,
                         letter.createdDate,
                         letter.receivedDate,

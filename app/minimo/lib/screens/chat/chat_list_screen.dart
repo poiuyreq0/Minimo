@@ -33,7 +33,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 future: chatProvider.getChatRooms(userId: user.id),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
-                    return const CircularProgressIndicator();
+                    return const Padding(
+                      padding: EdgeInsets.only(top: 24),
+                      child: CircularProgressIndicator(),
+                    );
                   } else if (snapshot.data!.isEmpty) {
                     return Text(
                       '아직 채팅방이 없습니다.',

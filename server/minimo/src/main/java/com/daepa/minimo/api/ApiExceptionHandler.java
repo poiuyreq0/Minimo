@@ -35,6 +35,6 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(ChatRoomNotFoundException.class)
     public ResponseEntity<RuntimeException> handleChatRoomNotFoundException(ChatRoomNotFoundException e) {
-        return ResponseEntity.badRequest().body(e);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e);
     }
 }
