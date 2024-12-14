@@ -43,10 +43,12 @@ class ChatRepository {
         }
       },
     );
+
+    debugPrint('StompClient onConnect: 연결');
   }
 
   void _onDisconnect(StompFrame frame) {
-    debugPrint('_onWebSocketDisconnect: 연결 해제');
+    debugPrint('StompClient onDisconnect: 연결 해제');
   }
 
   void exitChatRoom() {
@@ -74,13 +76,14 @@ class ChatRepository {
     ).toList();
   }
 
-  Future<int> getChatRoomIdByLetterId({
-    required int letterId,
+  Future<int> checkChatRoomByUser({
+    required int roomId,
+    required int userId,
   }) async {
     final resp = await _dio.get(
-      '$_chatApiUrl/room/letter',
+      '$_chatApiUrl/room/$roomId/check',
       queryParameters: {
-        'letterId': letterId,
+        'userId': userId,
       }
     );
 
@@ -100,5 +103,19 @@ class ChatRepository {
     return resp.data.map<ChatRoomModel>(
         (chatRoom) => ChatRoomModel.fromJson(chatRoom)
     ).toList();
+  }
+
+  Future<int> disconnectChatRoom({
+    required int roomId,
+    required int userId,
+  }) async {
+    final resp = await _dio.post(
+      '$_chatApiUrl/room/$roomId/disconnect',
+      queryParameters: {
+        'userId': userId,
+      }
+    );
+
+    return resp.data['id'];
   }
 }

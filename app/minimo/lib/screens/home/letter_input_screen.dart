@@ -87,57 +87,61 @@ class _LetterInputScreenState extends State<LetterInputScreen> {
                       },
                       validator: (value) => FormValidateUtil.validateNotNull<LetterOption>(value),
                     ),
-                    const SizedBox(height: 16),
-                    if (selectedOption == LetterOption.ALL || selectedOption == LetterOption.NAME)
-                      TextFormComponent(
-                        label: '수신자 이름 초성',
-                        hintText: '예) 홍길동 -> ㅎㄱㄷ',
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[ㄱ-ㅎ]')),
-                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                        ],
-                        initialValue: selectedReceiverName,
-                        onChanged: (value) => selectedReceiverName = value,
-                        validator: (value) => FormValidateUtil.validateLength(value),
-                      ),
-                    if (selectedOption == LetterOption.ALL || selectedOption == LetterOption.MBTI)
-                      DropdownFormComponent<Mbti>(
-                        label: 'MBTI',
-                        value: selectedMbti,
-                        items: Mbti.values,
-                        onChanged: (value) => selectedMbti = value,
-                        validator: (value) => FormValidateUtil.validateNotNull<Mbti>(value),
-                      ),
-                    if (selectedOption == LetterOption.ALL || selectedOption == LetterOption.GENDER)
-                      DropdownFormComponent<Gender>(
-                        label: '성별',
-                        value: selectedGender,
-                        items: Gender.values,
-                        onChanged: (value) => selectedGender = value,
-                        validator: (value) => FormValidateUtil.validateNotNull<Gender>(value),
-                      ),
-                    if (selectedOption == LetterOption.ALL)
-                      DateTimeFormComponent(
-                        label: '생일',
-                        hintText: '생일을 선택해 주세요.',
-                        controller: birthdayTextController,
-                        onTap: () => DatePickerUtil.showCustomDatePicker(
-                            context: context,
-                            initialDate: selectedBirthday,
-                            onDateChange: (value) {
-                              if (value != null && value != selectedBirthday) {
-                                setState(() {
-                                  selectedBirthday = value;
-                                  birthdayTextController.text = TimeStampUtil.getBirthdayTimeStamp(selectedBirthday!);
-                                });
-                              }
-                            }
-                        ),
-                        validator: (value) => FormValidateUtil.validateLength(value),
-                      ),
                   ],
                 ),
                 const SizedBox(height: 16),
+                if (selectedOption != LetterOption.NONE)
+                  InputFormContainer(
+                    children: [
+                      if (selectedOption == LetterOption.ALL || selectedOption == LetterOption.NAME)
+                        TextFormComponent(
+                          label: '수신자 이름 초성',
+                          hintText: '예) 홍길동 -> ㅎㄱㄷ',
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'[ㄱ-ㅎ]')),
+                            FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                          ],
+                          initialValue: selectedReceiverName,
+                          onChanged: (value) => selectedReceiverName = value,
+                          validator: (value) => FormValidateUtil.validateLength(value),
+                        ),
+                      if (selectedOption == LetterOption.ALL || selectedOption == LetterOption.MBTI)
+                        DropdownFormComponent<Mbti>(
+                          label: 'MBTI',
+                          value: selectedMbti,
+                          items: Mbti.values,
+                          onChanged: (value) => selectedMbti = value,
+                          validator: (value) => FormValidateUtil.validateNotNull<Mbti>(value),
+                        ),
+                      if (selectedOption == LetterOption.ALL || selectedOption == LetterOption.GENDER)
+                        DropdownFormComponent<Gender>(
+                          label: '성별',
+                          value: selectedGender,
+                          items: Gender.values,
+                          onChanged: (value) => selectedGender = value,
+                          validator: (value) => FormValidateUtil.validateNotNull<Gender>(value),
+                        ),
+                      if (selectedOption == LetterOption.ALL)
+                        DateTimeFormComponent(
+                          label: '생일',
+                          controller: birthdayTextController,
+                          onTap: () => DatePickerUtil.showCustomDatePicker(
+                              context: context,
+                              initialDate: selectedBirthday,
+                              onDateChange: (value) {
+                                if (value != null && value != selectedBirthday) {
+                                  setState(() {
+                                    selectedBirthday = value;
+                                    birthdayTextController.text = TimeStampUtil.getBirthdayTimeStamp(selectedBirthday!);
+                                  });
+                                }
+                              }
+                          ),
+                          validator: (value) => FormValidateUtil.validateLength(value),
+                        ),
+                    ],
+                  ),
+                const SizedBox(height: 24),
                 TitleComponent(
                   title: '편지 작성',
                 ),
@@ -145,7 +149,7 @@ class _LetterInputScreenState extends State<LetterInputScreen> {
                   children: [
                     TextFormComponent(
                       label: '제목',
-                      hintText: '개인 정보가 노출되지 않도록 주의 바랍니다.',
+                      hintText: '과도한 개인 정보 노출에 주의 바랍니다.',
                       initialValue: selectedTitle,
                       onChanged: (value) => selectedTitle = value,
                       validator: (value) => FormValidateUtil.validateLength(value),
@@ -153,7 +157,7 @@ class _LetterInputScreenState extends State<LetterInputScreen> {
                     const SizedBox(height: 8),
                     ContentFormComponent(
                       label: '내용',
-                      hintText: '개인 정보가 노출되지 않도록 주의 바랍니다.',
+                      hintText: '과도한 개인 정보 노출에 주의 바랍니다.',
                       initialValue: selectedContent,
                       onChanged: (value) => selectedContent = value,
                       validator: (value) => FormValidateUtil.validateContent(value),

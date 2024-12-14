@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
-
     @ExceptionHandler(NicknameConflictException.class)
     public ResponseEntity<RuntimeException> handleNicknameConflictException(NicknameConflictException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e);

@@ -125,10 +125,13 @@ class ActionButton extends StatelessWidget {
             child: ElevatedButton(
               style: AppStyle.getPositiveElevatedButtonStyle(context),
               onPressed: () async {
+                int? chatRoomId = letter.chatRoomId;
+
                 // 편지 연결
                 if (letterState != LetterState.CONNECTED) {
                   try {
-                    await letterProvider.connectLetter(id: letter.id, userRoleModel: UserRoleModel(id: user.id, userRole: userRole));
+                    chatRoomId = await letterProvider.connectLetter(id: letter.id, userRoleModel: UserRoleModel(id: user.id, userRole: userRole));
+
                     Navigator.of(context).pop();
                     SnackBarUtil.showCustomSnackBar(context, '연결에 성공했습니다!\n상대방과 대화를 시작해 보세요.');
 
@@ -148,18 +151,19 @@ class ActionButton extends StatelessWidget {
 
                 // 채팅방 이동
                 try {
-                  // 편지와 연결된 채팅방 Id 가져오기
-                  final chatRoomId = await context.read<ChatProvider>().getChatRoomIdByLetterId(letterId: letter.id);
-
-                  final otherUserNickname = userRole == UserRole.SENDER ? letter.senderNickname : letter.receiverNickname;
+                  // 사용자가 채팅방을 나갔는지 확인
+                  final checkedRoomId = await context.read<ChatProvider>().checkChatRoomByUser(roomId: chatRoomId!, userId: user.id);
+                  final otherUserNickname = userRole != UserRole.SENDER ? letter.senderNickname : letter.receiverNickname;
 
                   Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => ChatRoomScreen(id: chatRoomId, userId: user.id, otherUserNickname: otherUserNickname!,),)
+                      MaterialPageRoute(builder: (context) => ChatRoomScreen(id: checkedRoomId, userId: user.id, otherUserNickname: otherUserNickname!,),)
                   );
 
                 } catch (e) {
+                  final userNickname = userRole == UserRole.SENDER ? letter.senderNickname : letter.receiverNickname;
+
                   if (e is DioException && e.response?.statusCode == HttpStatus.notFound) {
-                    SnackBarUtil.showCustomSnackBar(context, '사라진 채팅방입니다.');
+                    SnackBarUtil.showCustomSnackBar(context, '이미 나간 채팅방입니다.');
                   } else {
                     SnackBarUtil.showCommonErrorSnackBar(context);
                   }

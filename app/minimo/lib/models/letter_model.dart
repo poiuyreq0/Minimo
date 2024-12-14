@@ -19,6 +19,7 @@ class LetterModel with _$LetterModel {
     required LetterContentModel letterContent,
     required LetterOption letterOption,
     UserInfoModel? userInfo,
+    int? chatRoomId,
     LetterState? letterState,
     DateTime? createdDate,
     DateTime? receivedDate,

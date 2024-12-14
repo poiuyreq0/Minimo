@@ -56,10 +56,11 @@ class ChatProvider extends ChangeNotifier {
     return chatRoomScreenCache[roomId]!;
   }
 
-  Future<int> getChatRoomIdByLetterId({
-    required int letterId,
+  Future<int> checkChatRoomByUser({
+    required int roomId,
+    required int userId,
   }) async {
-    final resp = await chatRepository.getChatRoomIdByLetterId(letterId: letterId);
+    final resp = await chatRepository.checkChatRoomByUser(roomId: roomId, userId: userId);
 
     return resp;
   }
@@ -78,5 +79,14 @@ class ChatProvider extends ChangeNotifier {
   }) {
     chatRepository.sendMessage(chatMessage: chatMessage);
     _updateMessage(chatMessage);
+  }
+
+  Future<void> disconnectChatRoom({
+    required int roomId,
+    required int userId,
+  }) async {
+    chatRepository.disconnectChatRoom(roomId: roomId, userId: userId,);
+
+    notifyListeners();
   }
 }

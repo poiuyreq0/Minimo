@@ -25,8 +25,6 @@ class ChatMessageComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int userId = context.read<UserProvider>().userCache!.id;
-
     return isMine ? sentMessage(context) : receivedMessage(context, chatMessage.senderId);
   }
 

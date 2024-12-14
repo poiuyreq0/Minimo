@@ -1,16 +1,13 @@
 package com.daepa.minimo.repository;
 
-import com.daepa.minimo.common.enums.LetterState;
 import com.daepa.minimo.domain.ChatMessage;
 import com.daepa.minimo.domain.ChatRoom;
 import com.daepa.minimo.domain.ChatRoomUser;
+import com.daepa.minimo.domain.Letter;
 import com.daepa.minimo.dto.ChatMessageDto;
 import com.daepa.minimo.dto.ChatRoomDto;
-import com.daepa.minimo.dto.LetterDto;
-import com.querydsl.core.group.GroupBy;
-import com.querydsl.core.types.ExpressionUtils;
+import com.daepa.minimo.dto.UserNicknameDto;
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +18,6 @@ import java.util.List;
 import static com.daepa.minimo.domain.QChatMessage.chatMessage;
 import static com.daepa.minimo.domain.QChatRoom.chatRoom;
 import static com.daepa.minimo.domain.QChatRoomUser.chatRoomUser;
-import static com.daepa.minimo.domain.QUser.user;
 
 @RequiredArgsConstructor
 @Repository
@@ -45,14 +41,6 @@ public class ChatRepository {
         return em.find(ChatRoom.class, roomId);
     }
 
-    public Long findChatRoomIdByLetterId(Long letterId) {
-        return queryFactory
-                .select(chatRoom.id)
-                .from(chatRoom)
-                .where(chatRoom.letterId.eq(letterId))
-                .fetchFirst();
-    }
-
     public List<ChatRoomDto> findChatRooms(Long userId) {
         List<ChatRoomDto> chatRooms = queryFactory
                 .select(Projections.fields(
@@ -66,15 +54,12 @@ public class ChatRepository {
 
         return chatRooms.stream().map(
                 chatRoomDto -> {
-                    List<Long> userIds = queryFactory
-                            .select(chatRoomUser.user.id)
-                            .from(chatRoomUser)
-                            .join(chatRoomUser.user)
-                            .where(chatRoomUser.chatRoom.id.eq(chatRoomDto.getId()))
-                            .fetch();
-
-                    List<String> userNicknames = queryFactory
-                            .select(chatRoomUser.user.nickname)
+                    List<UserNicknameDto> userNicknameDtos = queryFactory
+                            .select(Projections.fields(
+                                    UserNicknameDto.class,
+                                    chatRoomUser.user.id,
+                                    chatRoomUser.user.nickname
+                            ))
                             .from(chatRoomUser)
                             .join(chatRoomUser.user)
                             .where(chatRoomUser.chatRoom.id.eq(chatRoomDto.getId()))
@@ -96,12 +81,19 @@ public class ChatRepository {
 
                     return ChatRoomDto.builder()
                             .id(chatRoomDto.getId())
-                            .userIds(userIds)
-                            .userNicknames(userNicknames)
+                            .userNicknames(userNicknameDtos)
                             .lastMessage(lastMessage)
                             .createdDate(chatRoomDto.getCreatedDate())
                             .build();
                 }
         ).toList();
+    }
+
+    public void deleteChatRoom(ChatRoom chatRoom) {
+        em.remove(chatRoom);
+    }
+
+    public void deleteChatRoomUser(ChatRoomUser chatRoomUser) {
+        em.remove(chatRoomUser);
     }
 }

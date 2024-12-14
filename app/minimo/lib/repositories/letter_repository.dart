@@ -92,7 +92,7 @@ class LetterRepository {
     return resp.data['id'];
   }
 
-  Future<int> connectLetter({
+  Future<LetterModel> connectLetter({
     required int id,
     required UserRoleModel userRoleModel,
   }) async {
@@ -100,7 +100,7 @@ class LetterRepository {
       '$_letterApiUrl/$id/connect',
       data: userRoleModel.toJson(),
     );
-    return resp.data['id'];
+    return LetterModel.fromJson(resp.data);
   }
 
   Future<List<LetterModel>> getLettersByUser({

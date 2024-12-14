@@ -67,13 +67,14 @@ class LetterProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> connectLetter({
+  Future<int> connectLetter({
     required int id,
     required UserRoleModel userRoleModel,
   }) async {
-    await letterRepository.connectLetter(id: id, userRoleModel: userRoleModel);
+    final resp = await letterRepository.connectLetter(id: id, userRoleModel: userRoleModel);
 
     notifyListeners();
+    return resp.chatRoomId!;
   }
 
   Future<List<LetterModel>> getLettersByUser({
@@ -81,7 +82,6 @@ class LetterProvider extends ChangeNotifier {
     required LetterState letterState,
   }) async {
     final resp = await letterRepository.getLettersByUser(userRoleModel: userRoleModel, letterState: letterState);
-
     return resp;
   }
 

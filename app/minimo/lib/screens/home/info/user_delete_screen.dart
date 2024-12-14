@@ -79,7 +79,7 @@ class _UserDeleteScreenState extends State<UserDeleteScreen> {
 
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => AuthScreen(),),
-              (route) => false,
+          (route) => false,
         );
         SnackBarUtil.showCustomSnackBar(context, '그동안 Minimo를 이용해 주셔서 감사합니다.');
 

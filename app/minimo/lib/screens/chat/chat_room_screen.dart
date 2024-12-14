@@ -5,6 +5,7 @@ import 'package:minimo/components/chat_message_component.dart';
 import 'package:minimo/models/chat_message_model.dart';
 import 'package:minimo/providers/chat_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
+import 'package:minimo/utils/dialog_util.dart';
 import 'package:minimo/utils/snack_bar_util.dart';
 import 'package:minimo/utils/time_stamp_util.dart';
 import 'package:provider/provider.dart';
@@ -32,7 +33,6 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   @override
   void initState() {
     super.initState();
-
     textEditingController = TextEditingController(text: '',);
     scrollController = ScrollController();
   }
@@ -56,6 +56,47 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
           title: Text(widget.otherUserNickname),
+          actions: [
+            PopupMenuButton<String>(
+              onSelected: (value) {
+                if (value == '나가기') {
+                  DialogUtil.showCustomDialog(
+                    context: context,
+                    content: '채팅방을 나가면 다시 들어올 수 없습니다.\n정말 나가시겠습니까?',
+                    positiveText: '나가기',
+                    onPositivePressed: () {
+                      try {
+                        chatProvider.disconnectChatRoom(roomId: widget.id, userId: widget.userId);
+
+                        Navigator.of(context).popUntil(
+                              (route) => route.isFirst,
+                        );
+                        SnackBarUtil.showCustomSnackBar(context, '채팅방을 나갔습니다.');
+
+                      } catch (e) {
+                        SnackBarUtil.showCommonErrorSnackBar(context);
+                      }
+                    },
+                    negativeText: '취소',
+                    onNegativePressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  );
+                }
+              },
+              itemBuilder: (context) {
+                return [
+                  PopupMenuItem<String>(
+                    value: '나가기',
+                    child: Text(
+                      '나가기',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                  ),
+                ];
+              },
+            ),
+          ],
         ),
         body: FutureBuilder<List<ChatMessageModel>>(
           future: chatProvider.enterChatRoom(roomId: widget.id, userId: widget.userId),

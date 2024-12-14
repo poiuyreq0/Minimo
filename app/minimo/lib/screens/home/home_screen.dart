@@ -56,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           const SizedBox(height: 16),
                           LittleLetterListComponent(
-                            title: '짝사랑에게 온 편지',
+                            title: '당신에게 온 편지',
                             letters: snapshot.data![LetterOption.ALL]!,
                             onPressed: () async {
                               showReceiveLetterDialog(LetterOption.ALL, userProvider, letterProvider);
@@ -143,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
               MaterialPageRoute(
                 builder: (context) => LetterDetailScreen(letter: letter, userRole: UserRole.RECEIVER),
               ),
-                  (route) => route.isFirst,
+              (route) => route.isFirst,
             );
             SnackBarUtil.showCustomSnackBar(context, '건지기에 성공했습니다!\n유리병 편지는 편지함에서 확인할 수 있습니다.');
 

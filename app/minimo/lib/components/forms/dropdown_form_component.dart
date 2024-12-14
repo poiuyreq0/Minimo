@@ -56,7 +56,7 @@ class DropdownFormComponent<T> extends StatelessWidget {
           res = '짝사랑';
           break;
         case 'NAME':
-          res = '이름 초성';
+          res = '이름';
           break;
         case 'MBTI':
           res = 'MBTI';
@@ -65,7 +65,7 @@ class DropdownFormComponent<T> extends StatelessWidget {
           res = '성별';
           break;
         case 'NONE':
-          res = '미지의 누군가';
+          res = '아무나';
           break;
         default:
           break;

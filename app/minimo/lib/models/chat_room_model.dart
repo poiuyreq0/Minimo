@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:minimo/models/chat_message_model.dart';
+import 'package:minimo/models/user_nickname_model.dart';
 
 part 'chat_room_model.freezed.dart';
 part 'chat_room_model.g.dart';
@@ -8,8 +9,7 @@ part 'chat_room_model.g.dart';
 class ChatRoomModel with _$ChatRoomModel {
   const factory ChatRoomModel({
     required int id,
-    required List<int> userIds,
-    required List<String> userNicknames,
+    required List<UserNicknameModel> userNicknames,
     ChatMessageModel? lastMessage,
     required DateTime createdDate,
   }) = _ChatRoomModel;

@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:minimo/components/user_network_image_component.dart';
 import 'package:minimo/models/chat_room_model.dart';
+import 'package:minimo/models/user_nickname_model.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/chat/chat_room_screen.dart';
 import 'package:minimo/utils/time_stamp_util.dart';
 import 'package:provider/provider.dart';
+import 'package:tuple/tuple.dart';
 
 class ChatRoomElementComponent extends StatelessWidget {
   final ChatRoomModel chatRoom;
@@ -19,14 +21,14 @@ class ChatRoomElementComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userNickname = context.read<UserProvider>().userCache!.nickname;
-    final otherUserId = userId != chatRoom.userIds[0] ? chatRoom.userIds[0] : chatRoom.userIds[1];
-    final otherUserNickname = userNickname != chatRoom.userNicknames[0] ? chatRoom.userNicknames[0] : chatRoom.userNicknames[1];
+    final otherUser = getOtherUser(chatRoom.userNicknames);
+    final otherUserId = otherUser.item1;
+    final otherUserNickname = otherUser.item2;
 
     return InkWell(
       onTap: () {
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => ChatRoomScreen(id: chatRoom.id, userId: userId, otherUserNickname: otherUserNickname,),),
+          MaterialPageRoute(builder: (context) => ChatRoomScreen(id: chatRoom.id, userId: userId, otherUserNickname: otherUserNickname ?? '(알 수 없음)',),),
         );
       },
       child: Padding(
@@ -44,7 +46,7 @@ class ChatRoomElementComponent extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    otherUserNickname,
+                    otherUserNickname ?? '(알 수 없음)',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.displayLarge,
@@ -98,5 +100,14 @@ class ChatRoomElementComponent extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Tuple2<int?, String?> getOtherUser(List<UserNicknameModel> userNicknames) {
+    for (UserNicknameModel userNickname in userNicknames) {
+      if (userId != userNickname.id) {
+        return Tuple2(userNickname.id, userNickname.nickname);
+      }
+    }
+    return const Tuple2(null, null);
   }
 }

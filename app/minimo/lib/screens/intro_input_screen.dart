@@ -117,7 +117,6 @@ class _IntroInputScreenState extends State<IntroInputScreen> {
                     ),
                     DateTimeFormComponent(
                       label: '생일',
-                      hintText: '생일을 선택해 주세요.',
                       controller: birthdayTextController,
                       onTap: () => DatePickerUtil.showCustomDatePicker(
                           context: context,
