@@ -107,7 +107,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
                 onTap: () {},
                 borderRadius: BorderRadius.circular(10),
                 child: Ink(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                   decoration: AppStyle.getMainBoxDecoration(context).copyWith(
                     border: Border.all(
                       color: Theme.of(context).colorScheme.secondaryFixedDim,

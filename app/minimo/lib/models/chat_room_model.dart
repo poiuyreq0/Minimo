@@ -11,6 +11,7 @@ class ChatRoomModel with _$ChatRoomModel {
     required int id,
     required List<UserNicknameModel> userNicknames,
     ChatMessageModel? lastMessage,
+    int? readNum,
     required DateTime createdDate,
   }) = _ChatRoomModel;
 

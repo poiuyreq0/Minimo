@@ -35,7 +35,17 @@ class FormValidateUtil {
     if (value == null || value.trim().isEmpty) {
       return '필드가 비어있습니다.';
     } else if (value.trim().length < 20) {
-      return '조금 더 길게 마음을 표현해 보세요!';
+      return '조금만 더 마음을 표현해 주세요!';
+    }
+
+    return null;
+  }
+
+  static String? validatePassword(String? value, String? newPassword) {
+    if (value == null || value.trim().isEmpty) {
+      return '필드가 비어있습니다.';
+    } else if (value != newPassword) {
+      return '비밀번호가 서로 다릅니다.';
     }
 
     return null;

@@ -40,8 +40,7 @@ public class UserApiController {
 
     @PostMapping
     public ResponseEntity<Map<String, Long>> createUser(@RequestBody UserDto userDto) {
-        User user = userDto.toUser();
-        Long userId = userService.createUser(user);
+        Long userId = userService.createUser(userDto.toUser());
         return ResponseEntity.ok(Map.of("id", userId));
     }
 

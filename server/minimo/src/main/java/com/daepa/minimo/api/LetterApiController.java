@@ -24,8 +24,7 @@ public class LetterApiController {
 
     @PostMapping("/send")
     public ResponseEntity<Map<String, Long>> sendLetter(@RequestBody LetterDto letterDto) {
-        Letter letter = letterDto.toLetter();
-        Long letterId = letterService.sendLetter(letterDto.getSenderId(), letter);
+        Long letterId = letterService.sendLetter(letterDto.getSenderId(), letterDto.toLetter());
         return ResponseEntity.ok(Map.of("id", letterId));
     }
 

@@ -10,7 +10,6 @@ import 'package:minimo/components/forms/text_form_component.dart';
 import 'package:minimo/components/title_component.dart';
 import 'package:minimo/components/user_file_image_component.dart';
 import 'package:minimo/components/user_network_image_component.dart';
-import 'package:minimo/models/user_model.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/form_validate_util.dart';

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:minimo/models/chat_message_model.dart';
 import 'package:minimo/models/chat_room_model.dart';
+import 'package:minimo/models/read_chat_model.dart';
 import 'package:minimo/repositories/chat_repository.dart';
 
 class ChatProvider extends ChangeNotifier {
   final ChatRepository chatRepository;
-  List<ChatRoomModel> chatListScreenCache = [];
-  Map<int, List<ChatMessageModel>> chatRoomScreenCache = {};
+  List<ChatRoomModel> chatRoomsCache = [];
+  Map<int, List<ChatMessageModel>> chatMessagesByChatRoomCache = {};
 
   ChatProvider({
     required this.chatRepository,
@@ -16,8 +17,8 @@ class ChatProvider extends ChangeNotifier {
     required int roomId,
     required int userId,
   }) async {
-    await chatRepository.enterChatRoom(roomId: roomId, userId: userId, updateMessage: _updateMessage);
-    final messages = await getMessages(roomId: roomId);
+    await chatRepository.enterChatRoom(roomId: roomId, userId: userId, updateChat: _updateChat, updateRead: _updateRead, updateReads: _updateReads);
+    final messages = await readMessages(roomId: roomId, userId: userId);
     return messages;
   }
 
@@ -25,10 +26,15 @@ class ChatProvider extends ChangeNotifier {
     chatRepository.exitChatRoom();
   }
 
-  void _updateMessage(ChatMessageModel chatMessage) {
-    chatRoomScreenCache.update(
+  // 상대방이 채팅 메시지를 보낼 시
+  void _updateChat(int userId, ChatMessageModel chatMessage) {
+    if (userId != chatMessage.senderId) {
+      readMessage(readChat: ReadChatModel(roomId: chatMessage.roomId, messageId: chatMessage.id));
+    }
+
+    chatMessagesByChatRoomCache.update(
       chatMessage.roomId,
-          (value) => [
+      (value) => [
         chatMessage,
         ...value,
       ]..sort((a, b) => b.createdDate.compareTo(a.createdDate),),
@@ -38,12 +44,67 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<ChatMessageModel>> getMessages({
-    required int roomId,
-  }) async {
-    final resp = await chatRepository.getMessages(roomId: roomId);
+  // 상대방이 채팅 메시지를 읽을 시
+  void _updateRead(ReadChatModel readChat) {
+    chatMessagesByChatRoomCache.update(
+      readChat.roomId,
+      (value) {
+        final index = value.indexWhere((message) => message.id == readChat.messageId);
+        if (index != -1) {
+          value[index] = value[index].copyWith(isRead: true);
+        }
 
-    chatRoomScreenCache.update(
+        return value;
+      }
+    );
+
+    notifyListeners();
+  }
+
+  // 상대방이 채팅방을 입장할 시
+  void _updateReads(int roomId) {
+    chatMessagesByChatRoomCache.update(
+        roomId,
+        (value) {
+          for (int i = 0; i < value.length; i++) {
+            if (!value[i].isRead) {
+              int j = i;
+              while (!value[j].isRead) {
+                value[j] = value[j].copyWith(isRead: true);
+                j++;
+              }
+              break;
+            }
+          }
+
+          return value;
+        }
+    );
+
+    notifyListeners();
+  }
+
+  Future<void> sendMessage({
+    required ChatMessageModel chatMessage,
+  }) async {
+    await chatRepository.sendMessage(chatMessage: chatMessage);
+  }
+
+  void readMessage({
+    required ReadChatModel readChat,
+  }) async {
+    await chatRepository.readMessage(readChat: readChat);
+  }
+
+  // 채팅방 입장 시 메시지 가져오기
+  // 후에 페이징 구현 필요
+  Future<List<ChatMessageModel>> readMessages({
+    required int roomId,
+    required int userId,
+  }) async {
+    final resp = await chatRepository.readMessages(roomId: roomId, userId: userId);
+
+    chatMessagesByChatRoomCache.update(
       roomId,
       (value) => [
         ...resp,
@@ -53,7 +114,7 @@ class ChatProvider extends ChangeNotifier {
       ]..sort((a, b) => b.createdDate.compareTo(a.createdDate),),
     );
 
-    return chatRoomScreenCache[roomId]!;
+    return chatMessagesByChatRoomCache[roomId]!;
   }
 
   Future<int> checkChatRoomByUser({
@@ -65,20 +126,13 @@ class ChatProvider extends ChangeNotifier {
     return resp;
   }
 
-  Future<List<ChatRoomModel>> getChatRooms({
+  Future<List<ChatRoomModel>> getChatRoomsByUser({
     required userId,
   }) async {
-    final resp = await chatRepository.getChatRooms(userId: userId);
-    chatListScreenCache = resp;
+    final resp = await chatRepository.getChatRoomsByUser(userId: userId);
+    chatRoomsCache = resp;
 
-    return chatListScreenCache;
-  }
-
-  void sendMessage({
-    required ChatMessageModel chatMessage,
-  }) {
-    chatRepository.sendMessage(chatMessage: chatMessage);
-    _updateMessage(chatMessage);
+    return chatRoomsCache;
   }
 
   Future<void> disconnectChatRoom({

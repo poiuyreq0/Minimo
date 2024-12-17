@@ -3,7 +3,6 @@ package com.daepa.minimo.repository;
 import com.daepa.minimo.domain.ChatMessage;
 import com.daepa.minimo.domain.ChatRoom;
 import com.daepa.minimo.domain.ChatRoomUser;
-import com.daepa.minimo.domain.Letter;
 import com.daepa.minimo.dto.ChatMessageDto;
 import com.daepa.minimo.dto.ChatRoomDto;
 import com.daepa.minimo.dto.UserNicknameDto;
@@ -13,10 +12,10 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.daepa.minimo.domain.QChatMessage.chatMessage;
-import static com.daepa.minimo.domain.QChatRoom.chatRoom;
 import static com.daepa.minimo.domain.QChatRoomUser.chatRoomUser;
 
 @RequiredArgsConstructor
@@ -41,7 +40,11 @@ public class ChatRepository {
         return em.find(ChatRoom.class, roomId);
     }
 
-    public List<ChatRoomDto> findChatRooms(Long userId) {
+    public ChatMessage findChatMessage(Long messageId) {
+        return em.find(ChatMessage.class, messageId);
+    }
+
+    public List<ChatRoomDto> findChatRoomsByUser(Long userId) {
         List<ChatRoomDto> chatRooms = queryFactory
                 .select(Projections.fields(
                         ChatRoomDto.class,
@@ -72,6 +75,7 @@ public class ChatRepository {
                                     chatMessage.chatRoom.id.as("roomId"),
                                     chatMessage.senderId,
                                     chatMessage.content,
+                                    chatMessage.isRead,
                                     chatMessage.createdDate
                             ))
                             .from(chatMessage)
@@ -79,21 +83,50 @@ public class ChatRepository {
                             .orderBy(chatMessage.createdDate.desc())
                             .fetchFirst();
 
+                    Long readNum = queryFactory
+                            .select(chatMessage.count())
+                            .from(chatMessage)
+                            .where(chatMessage.chatRoom.id.eq(chatRoomDto.getId())
+                                    .and(chatMessage.isRead.eq(false))
+                                    .and(chatMessage.senderId.ne(userId)))
+                            .fetchOne();
+
                     return ChatRoomDto.builder()
                             .id(chatRoomDto.getId())
                             .userNicknames(userNicknameDtos)
                             .lastMessage(lastMessage)
+                            .readNum(readNum)
                             .createdDate(chatRoomDto.getCreatedDate())
                             .build();
                 }
         ).toList();
     }
 
-    public void deleteChatRoom(ChatRoom chatRoom) {
-        em.remove(chatRoom);
+    public List<ChatMessageDto> readMessages(Long roomId, Long userId) {
+        queryFactory
+                .update(chatMessage)
+                .set(chatMessage.isRead, true)
+                .where(chatMessage.chatRoom.id.eq(roomId)
+                        .and(chatMessage.isRead.eq(false))
+                        .and(chatMessage.senderId.ne(userId)))
+                .execute();
+
+        return queryFactory
+                .select(Projections.fields(
+                        ChatMessageDto.class,
+                        chatMessage.id,
+                        chatMessage.chatRoom.id.as("roomId"),
+                        chatMessage.senderId,
+                        chatMessage.content,
+                        chatMessage.isRead,
+                        chatMessage.createdDate
+                ))
+                .from(chatMessage)
+                .where(chatMessage.chatRoom.id.eq(roomId))
+                .fetch();
     }
 
-    public void deleteChatRoomUser(ChatRoomUser chatRoomUser) {
-        em.remove(chatRoomUser);
+    public void deleteChatRoom(ChatRoom chatRoom) {
+        em.remove(chatRoom);
     }
 }

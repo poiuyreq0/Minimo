@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:minimo/models/read_chat_model.dart';
 import 'package:minimo/utils/url_util.dart';
 import 'package:minimo/models/chat_message_model.dart';
 import 'package:minimo/models/chat_room_model.dart';
@@ -17,12 +18,14 @@ class ChatRepository {
   Future<void> enterChatRoom({
     required int roomId,
     required int userId,
-    required Function(ChatMessageModel) updateMessage,
+    required Function(int, ChatMessageModel) updateChat,
+    required Function(ReadChatModel) updateRead,
+    required Function(int) updateReads,
   }) async {
     stompClient = StompClient(
       config: StompConfig.sockJS(
         url: _chatWebSocketUrl,
-        onConnect: (frame) => _onConnect(frame, roomId, userId, updateMessage),
+        onConnect: (frame) => _onConnect(frame, roomId, userId, updateChat, updateRead, updateReads),
         onDisconnect: _onDisconnect,
       ),
     );
@@ -30,15 +33,35 @@ class ChatRepository {
     stompClient.activate();
   }
 
-  void _onConnect(StompFrame frame, int roomId, int userId, Function(ChatMessageModel) updateCache) {
+  void _onConnect(StompFrame frame, int roomId, int userId, Function(int, ChatMessageModel) updateChat, Function(ReadChatModel) updateRead, Function(int) updateReads) {
     stompClient.subscribe(
       destination: '/topic/room/$roomId',
       callback: (frame) {
         final message = frame.body;
         if (message != null) {
           final chatMessage = ChatMessageModel.fromJson(jsonDecode(message));
-          if (userId != chatMessage.senderId) {
-            updateCache(chatMessage);
+          updateChat(userId, chatMessage);
+        }
+      },
+    );
+    stompClient.subscribe(
+      destination: '/topic/room/$roomId/read',
+      callback: (frame) {
+        final readChat = frame.body;
+        if (readChat != null) {
+          final readChatModel = ReadChatModel.fromJson(jsonDecode(readChat));
+          updateRead(readChatModel);
+        }
+      },
+    );
+    stompClient.subscribe(
+      destination: '/topic/room/$roomId/enter',
+      callback: (frame) {
+        final otherUserId = frame.body;
+        if (otherUserId != null) {
+          final id = jsonDecode(otherUserId);
+          if (userId != id) {
+            updateReads(roomId);
           }
         }
       },
@@ -55,20 +78,37 @@ class ChatRepository {
     stompClient.deactivate();
   }
 
-  void sendMessage({
+  Future<int> sendMessage({
     required ChatMessageModel chatMessage,
-  }) {
-    stompClient.send(
-      destination: '/app/chat/send',
-      body: jsonEncode(chatMessage.toJson()),
+  }) async {
+    final resp = await _dio.post(
+        '$_chatApiUrl/message/send',
+        data: chatMessage.toJson(),
     );
+
+    return resp.data['id'];
   }
 
-  Future<List<ChatMessageModel>> getMessages({
-    required int roomId,
+  Future<void> readMessage({
+    required ReadChatModel readChat,
   }) async {
-    final resp = await _dio.get(
+    final resp = await _dio.post(
+      '$_chatApiUrl/message/read',
+      data: readChat.toJson(),
+    );
+
+    return resp.data['id'];
+  }
+
+  Future<List<ChatMessageModel>> readMessages({
+    required int roomId,
+    required int userId,
+  }) async {
+    final resp = await _dio.post(
       '$_chatApiUrl/room/$roomId',
+      queryParameters: {
+        'userId': userId,
+      }
     );
 
     return resp.data.map<ChatMessageModel>(
@@ -90,11 +130,11 @@ class ChatRepository {
     return resp.data['id'];
   }
 
-  Future<List<ChatRoomModel>> getChatRooms({
+  Future<List<ChatRoomModel>> getChatRoomsByUser({
     required int userId,
   }) async {
     final resp = await _dio.get(
-      '$_chatApiUrl/rooms',
+      '$_chatApiUrl/room/user',
       queryParameters: {
         'userId': userId,
       }

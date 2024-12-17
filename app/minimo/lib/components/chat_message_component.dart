@@ -35,13 +35,25 @@ class ChatMessageComponent extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          if (isShowTimeStamp)
-            Text(
-              TimeStampUtil.getMessageTimeStamp(chatMessage.createdDate),
-              style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                fontSize: 10,
-              ),
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              if (!chatMessage.isRead)
+                Text(
+                  '1',
+                  style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                    fontSize: 10,
+                  ),
+                ),
+              if (isShowTimeStamp)
+                Text(
+                  TimeStampUtil.getMessageTimeStamp(chatMessage.createdDate),
+                  style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                    fontSize: 10,
+                  ),
+                ),
+            ],
+          ),
           const SizedBox(width: 4),
           content(context, true),
         ],

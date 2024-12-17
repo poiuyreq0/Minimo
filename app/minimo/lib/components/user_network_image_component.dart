@@ -18,6 +18,7 @@ class UserNetworkImageComponent extends StatelessWidget {
 
     return (userId != null) ? ExtendedImage.network(
       UrlUtil.getUserImageUrl(userId!),
+      cache: false,
       width: size,
       height: size,
       fit: BoxFit.cover,

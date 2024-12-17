@@ -117,8 +117,8 @@ public class LetterRepository {
                 .set(letter.receiver, (User) null)
                 .set(letter.receivedDate, (LocalDateTime) null)
                 .set(letter.letterState, LetterState.SENT)
-                .where(letter.letterState.eq(LetterState.LOCKED))
-                .where(letter.receivedDate.lt(current.minusDays(1)))
+                .where(letter.letterState.eq(LetterState.LOCKED)
+                        .and(letter.receivedDate.lt(current.minusDays(1))))
                 .execute();
     }
 

@@ -4,11 +4,13 @@ import com.daepa.minimo.domain.ChatMessage;
 import com.daepa.minimo.domain.ChatRoom;
 import com.daepa.minimo.domain.ChatRoomUser;
 import com.daepa.minimo.domain.User;
+import com.daepa.minimo.dto.ChatMessageDto;
 import com.daepa.minimo.dto.ChatRoomDto;
 import com.daepa.minimo.exception.ChatRoomNotFoundException;
 import com.daepa.minimo.repository.ChatRepository;
 import com.daepa.minimo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,12 +24,6 @@ public class ChatService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public List<ChatMessage> findMessages(Long roomId) {
-        ChatRoom findChatRoom = chatRepository.findChatRoom(roomId);
-        return findChatRoom.getMessages();
-    }
-
-    @Transactional(readOnly = true)
     public Long checkChatRoomByUser(Long roomId, Long userId) {
         User findUser = userRepository.findUser(userId);
 
@@ -38,14 +34,24 @@ public class ChatService {
     }
 
     @Transactional(readOnly = true)
-    public List<ChatRoomDto> findChatRooms(Long userId) {
-        return chatRepository.findChatRooms(userId);
+    public List<ChatRoomDto> findChatRoomsByUser(Long userId) {
+        return chatRepository.findChatRoomsByUser(userId);
     }
 
-    public void sendMessage(Long roomId, ChatMessage message) {
+    public ChatMessage sendMessage(Long roomId, ChatMessage chatMessage) {
         ChatRoom findChatRoom = chatRepository.findChatRoom(roomId);
-        message.updateChatRoom(findChatRoom);
-        chatRepository.saveChatMessage(message);
+        chatMessage.updateChatRoom(findChatRoom);
+        chatRepository.saveChatMessage(chatMessage);
+        return chatMessage;
+    }
+
+    public void readMessage(Long messageId) {
+        ChatMessage findChatMessage = chatRepository.findChatMessage(messageId);
+        findChatMessage.updateIsRead();
+    }
+
+    public List<ChatMessageDto> readMessages(Long roomId, Long userId) {
+        return chatRepository.readMessages(roomId, userId);
     }
 
     public Long disconnectChatRoom(Long roomId, Long userId) {

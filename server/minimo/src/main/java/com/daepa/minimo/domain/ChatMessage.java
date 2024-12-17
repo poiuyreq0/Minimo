@@ -21,11 +21,19 @@ public class ChatMessage extends BaseTimeEntity {
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
+    @Column(nullable = false)
     private Long senderId;
+    @Column(nullable = false)
     private String content;
+    @Column(nullable = false)
+    private Boolean isRead = false;
 
     public void updateChatRoom(@NonNull ChatRoom chatRoom) {
         this.chatRoom = chatRoom;
         chatRoom.getMessages().add(this);
+    }
+
+    public void updateIsRead() {
+        isRead = true;
     }
 }

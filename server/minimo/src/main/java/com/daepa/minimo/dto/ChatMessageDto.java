@@ -15,6 +15,7 @@ public class ChatMessageDto {
     private Long roomId;
     private Long senderId;
     private String content;
+    private Boolean isRead;
     private LocalDateTime createdDate;
 
     public static ChatMessageDto fromChatMessage(@NonNull ChatMessage chatMessage) {
@@ -23,6 +24,7 @@ public class ChatMessageDto {
                 .roomId(chatMessage.getChatRoom().getId())
                 .senderId(chatMessage.getSenderId())
                 .content(chatMessage.getContent())
+                .isRead(chatMessage.getIsRead())
                 .createdDate(chatMessage.getCreatedDate())
                 .build();
     }

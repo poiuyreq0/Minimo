@@ -30,7 +30,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
           Consumer<ChatProvider>(
             builder: (context, chatProvider, child) {
               return FutureBuilder<List<ChatRoomModel>>(
-                future: chatProvider.getChatRooms(userId: user.id),
+                future: chatProvider.getChatRoomsByUser(userId: user.id),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const Padding(

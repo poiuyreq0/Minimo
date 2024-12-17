@@ -10,6 +10,7 @@ class ChatMessageModel with _$ChatMessageModel {
     required int roomId,
     required int senderId,
     required String content,
+    required bool isRead,
     required DateTime createdDate,
   }) = _ChatMessageModel;
 

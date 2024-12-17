@@ -75,7 +75,7 @@ class _PasswordInputScreenState extends State<PasswordInputScreen> {
                         FilteringTextInputFormatter.deny(RegExp(r'\s')),
                       ],
                       onChanged: (value) => newPasswordConfirm = value,
-                      validator: (value) => validatePassword(value),
+                      validator: (value) => FormValidateUtil.validatePassword(value, newPassword),
                     ),
                   ],
                 ),
@@ -108,15 +108,5 @@ class _PasswordInputScreenState extends State<PasswordInputScreen> {
         SnackBarUtil.showCustomSnackBar(context, '비밀번호 변경에 실패했습니다.\n비밀번호가 올바르게 입력되었는지 확인해 주세요.');
       }
     }
-  }
-
-  String? validatePassword(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return '필드가 비어있습니다.';
-    } else if (value != newPassword) {
-      return '비밀번호가 서로 다릅니다.';
-    }
-
-    return null;
   }
 }

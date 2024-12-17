@@ -117,9 +117,10 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                         color: Theme.of(context).colorScheme.surface,
                         child: Align(
                           alignment: Alignment.topCenter,
-                          child: Selector<ChatProvider, List<ChatMessageModel>>(
-                            selector: (context, chatProvider) => chatProvider.chatRoomScreenCache[widget.id]!,
-                            builder: (BuildContext context, chatMessages, Widget? child) {
+                          child: Consumer<ChatProvider>(
+                            builder: (BuildContext context, chatProvider, Widget? child) {
+                              final chatMessages = chatProvider.chatMessagesByChatRoomCache[widget.id]!;
+
                               return ListView.separated(
                                 reverse: true,
                                 shrinkWrap: true,
@@ -233,11 +234,12 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       roomId: widget.id,
       senderId: widget.userId,
       content: textEditingController.text,
+      isRead: false,  // 임시 isRead
       createdDate: DateTime.now(),
     );
 
     try {
-      chatProvider.sendMessage(chatMessage: chatMessage);
+      await chatProvider.sendMessage(chatMessage: chatMessage);
       textEditingController.text = '';
 
       // 스크롤 위치를 맨 아래로 이동

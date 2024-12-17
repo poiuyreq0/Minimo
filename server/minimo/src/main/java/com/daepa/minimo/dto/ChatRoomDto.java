@@ -16,5 +16,6 @@ public class ChatRoomDto {
     private Long id;
     private List<UserNicknameDto> userNicknames;
     private ChatMessageDto lastMessage;
+    private Long readNum;
     private LocalDateTime createdDate;
 }

@@ -93,7 +93,21 @@ class ChatRoomElementComponent extends StatelessWidget {
                     );
                   },
                 ),
-                // 안 읽은 메시지 개수 추가
+                if (chatRoom.readNum != 0)
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      '${chatRoom.readNum}',
+                      maxLines: 1,
+                      style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
               ],
             ),
           ],
