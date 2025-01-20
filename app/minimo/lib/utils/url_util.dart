@@ -1,6 +1,6 @@
 class UrlUtil {
   // static const String domain = 'http://${Platform.isAndroid ? '10.0.2.2' : 'localhost'}:8080';
-  static const String _domain = 'http://192.168.0.7:8080';
+  static const String _domain = 'http://3.36.241.194:8080';
 
   static const String userApi = '$_domain/api/user';
   static const String letterApi = '$_domain/api/letter';
