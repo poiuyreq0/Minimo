@@ -8,12 +8,14 @@ class UserNetworkImageComponent extends StatelessWidget {
   final int? userId;
   final double size;
   final bool cache;
+  final bool isClickable;
 
 
   const UserNetworkImageComponent({
     required this.userId,
     required this.size,
     required this.cache,
+    this.isClickable = true,
     super.key
   });
 
@@ -23,11 +25,11 @@ class UserNetworkImageComponent extends StatelessWidget {
     final sizeBasedValue = size * 0.35;
 
     return GestureDetector(
-      onTap: () {
+      onTap: isClickable ? () {
         Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => UserImageScreen(userId: userId),)
         );
-      },
+      } : null,
       child: Builder(
         builder: (context) {
           if (userId != null) {

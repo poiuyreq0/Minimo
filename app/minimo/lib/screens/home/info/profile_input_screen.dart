@@ -82,12 +82,14 @@ class _ProfileInputScreenState extends State<ProfileInputScreen> {
                                   userId: 0,
                                   size: 130,
                                   cache: false,
+                                  isClickable: false,
                                 );
                               } else if (selectedImage == null) {
                                 return UserNetworkImageComponent(
                                   userId: user.id,
                                   size: 130,
                                   cache: false,
+                                  isClickable: false,
                                 );
                               } else {
                                 return UserFileImageComponent(
