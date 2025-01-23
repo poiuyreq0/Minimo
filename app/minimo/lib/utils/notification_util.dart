@@ -213,10 +213,10 @@ class NotificationUtil {
     late final String title;
     late final String body;
     if (message.data['letterState'] == LetterState.RECEIVED.name) {
-      title = '${message.data['receiverNickname']} 님이 편지를 받았어요! \u{1F970}';
+      title = '${message.data['receiverNickname']} 님이 편지를 받았어요 \u{1F970}';
       body = "상대방의 연결을 기다리는 중이에요 \u{23F3}";
     } else {
-      title = '${message.data['receiverNickname']} 님이 편지를 연결했어요! \u{1F970}';
+      title = '${message.data['receiverNickname']} 님이 편지를 연결했어요 \u{1F970}';
       body = "새로운 대화를 시작해 보세요 \u{1F4AC}";
     }
 

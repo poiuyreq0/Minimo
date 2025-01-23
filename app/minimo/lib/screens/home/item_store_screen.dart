@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:minimo/components/ads/banner_ad_component.dart';
 import 'package:minimo/components/images/bottle_icon_component.dart';
 import 'package:minimo/components/images/net_icon_component.dart';
 import 'package:minimo/components/ads/reward_ad_component.dart';
@@ -59,8 +60,13 @@ class ItemStoreScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
+          const SizedBox(height: 8),
+          BannerAdComponent(
+            padding: 16,
+          ),
+          const SizedBox(height: 16),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 64.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
               children: [
                 Expanded(

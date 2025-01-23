@@ -25,13 +25,13 @@ class LetterBoxScreen extends StatelessWidget {
               ),
             ),
             LittleTitleComponent(
-              title: '흘러가는 편지들',
+              title: '흘러가는 편지',
               onPressed: () {
                 Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => LetterListScreen(
-                        title: '흘러가는 편지들',
-                        helpText: '아직 누군가에게 발견되지 않은 유리병 편지입니다.',
+                        title: '흘러가는 편지',
+                        helpText: '새로운 만남을 향해 흘러가는 중입니다 :)',
                         letterState: LetterState.SENT,
                         userRole: UserRole.SENDER,
                       ),
@@ -40,13 +40,13 @@ class LetterBoxScreen extends StatelessWidget {
               },
             ),
             LittleTitleComponent(
-              title: '누군가 고민 중인 편지들',
+              title: '누군가 고민 중인 편지',
               onPressed: () {
                 Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => LetterListScreen(
-                        title: '누군가 고민 중인 편지들',
-                        helpText: '누군가를 만난 유리병 편지입니다.\n고민 중인 편지는 24시간 후 다시 바다로 떠나게 됩니다.',
+                        title: '누군가 고민 중인 편지',
+                        helpText: '상대방의 연결을 기다리는 중입니다 :)\n편지는 24시간 후 다시 바다로 떠나게 됩니다.',
                         letterState: LetterState.RECEIVED,
                         userRole: UserRole.SENDER,
                       ),
@@ -66,13 +66,13 @@ class LetterBoxScreen extends StatelessWidget {
               ),
             ),
             LittleTitleComponent(
-              title: '고민 중인 편지들',
+              title: '고민 중인 편지',
               onPressed: () {
                 Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => LetterListScreen(
-                        title: '고민 중인 편지들',
-                        helpText: '내가 건진 유리병 편지입니다.\n고민 중인 편지는 24시간 후 다시 바다로 떠나게 됩니다.',
+                        title: '고민 중인 편지',
+                        helpText: '연결을 기다리는 중입니다 :)\n편지는 24시간 후 다시 바다로 떠나게 됩니다.',
                         letterState: LetterState.RECEIVED,
                         userRole: UserRole.RECEIVER,
                       ),
@@ -92,13 +92,13 @@ class LetterBoxScreen extends StatelessWidget {
               ),
             ),
             LittleTitleComponent(
-              title: '나로부터 시작된 인연들',
+              title: '나로부터 시작된 만남',
               onPressed: () {
                 Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => LetterListScreen(
-                        title: '나로부터 시작된 인연들',
-                        helpText: '유리병 편지로 연결된 인연입니다.\n용기 내어 대화를 시작해 보세요!',
+                        title: '나로부터 시작된 만남',
+                        helpText: '유리병 편지가 연결되었습니다 :)\n용기 내어 대화를 시작해 보세요!',
                         letterState: LetterState.CONNECTED,
                         userRole: UserRole.SENDER,
                       ),
@@ -107,13 +107,13 @@ class LetterBoxScreen extends StatelessWidget {
               },
             ),
             LittleTitleComponent(
-              title: '나에게로 다가온 인연들',
+              title: '나에게로 다가온 만남',
               onPressed: () {
                 Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => LetterListScreen(
-                        title: '나에게로 다가온 인연들',
-                        helpText: '유리병 편지로 연결된 인연입니다.\n용기 내어 대화를 시작해 보세요!',
+                        title: '나에게로 다가온 만남',
+                        helpText: '유리병 편지가 연결되었습니다 :)\n용기 내어 대화를 시작해 보세요!',
                         letterState: LetterState.CONNECTED,
                         userRole: UserRole.RECEIVER,
                       ),

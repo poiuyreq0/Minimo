@@ -53,10 +53,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 24.0),
                       child: Column(
                         children: [
-                          // BannerAdComponent(
-                          //   padding: 24,
-                          // ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 8),
+                          BannerAdComponent(
+                            padding: 24,
+                          ),
+                          const SizedBox(height: 8),
                           LittleLetterListComponent(
                             title: '당신에게 온 편지',
                             letters: snapshot.data![LetterOption.ALL]!,
@@ -118,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             WidgetSpan(child: NetIconComponent()),
             TextSpan(
-              text: '를 하나 소모하여 유리병을 건집니다.',
+              text: '를 하나 소모합니다.',
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ],
@@ -156,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               (route) => route.isFirst,
             );
-            SnackBarUtil.showCustomSnackBar(context, '건지기에 성공했습니다!\n유리병 편지는 편지함에서 확인할 수 있습니다.');
+            SnackBarUtil.showCustomSnackBar(context, '건지기에 성공했습니다!');
 
           } catch (e) {
             Navigator.of(context).pop();
@@ -169,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       },
       negativeText: '닫기',
-      onNegativePressed: () async {
+      onNegativePressed: () {
         Navigator.of(context).pop();
       },
     );

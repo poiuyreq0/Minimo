@@ -84,7 +84,7 @@ class _UserDeleteScreenState extends State<UserDeleteScreen> {
           MaterialPageRoute(builder: (context) => AuthScreen(),),
           (route) => false,
         );
-        SnackBarUtil.showCustomSnackBar(context, '그동안 Minimo를 이용해 주셔서 감사합니다.');
+        SnackBarUtil.showCustomSnackBar(context, '그동안 미니모를 이용해 주셔서 감사합니다.');
 
       } catch (e) {
         SnackBarUtil.showCustomSnackBar(context, '회원 탈퇴에 실패했습니다.\n비밀번호가 올바르게 입력되었는지 확인해 주세요.');

@@ -174,7 +174,7 @@ class _IntroInputScreenState extends State<IntroInputScreen> {
           MaterialPageRoute(builder: (context) => AuthScreen(),),
           (route) => false,
         );
-        SnackBarUtil.showCustomSnackBar(context, '$selectedNickname 님 환영합니다!');
+        SnackBarUtil.showCustomSnackBar(context, '$selectedNickname 님 환영합니다 :)');
 
       } catch (e) {
         if (e is DioException && e.response?.statusCode == HttpStatus.conflict) {

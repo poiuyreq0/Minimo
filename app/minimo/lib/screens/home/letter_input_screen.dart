@@ -190,86 +190,84 @@ class _LetterInputScreenState extends State<LetterInputScreen> {
   }
 
   void _showSendLetterDialog(BuildContext context) {
-    DialogUtil.showCustomDialog(
-      context: context,
-      title: '유리병 띄우기',
-      widgetContent: Text.rich(
-        TextSpan(
-          children: [
-            WidgetSpan(child: BottleIconComponent()),
-            TextSpan(
-              text: '를 하나 소모하여 유리병을 띄웁니다.',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ],
-        ),
-      ),
-      positiveText: '띄우기',
-      onPositivePressed: () async {
-        final bottleNum = context.read<UserProvider>().userCache!.bottleNum;
-        if (bottleNum <= 0) {
-          Navigator.of(context).pop();
-          SnackBarUtil.showCustomWidgetSnackBar(
-            context: context,
-            content: Text.rich(
+    if (formKey.currentState!.validate()) {
+      DialogUtil.showCustomDialog(
+        context: context,
+        title: '유리병 띄우기',
+        widgetContent: Text.rich(
+          TextSpan(
+            children: [
+              WidgetSpan(child: BottleIconComponent()),
               TextSpan(
-                children: [
-                  WidgetSpan(child: BottleIconComponent()),
-                  TextSpan(
-                    text: '가 부족합니다.',
-                  ),
-                ],
+                text: '를 하나 소모합니다.',
+                style: Theme.of(context).textTheme.titleMedium,
               ),
-            ),
-          );
-        } else {
-          _onSavePressed(context);
-        }
-      },
-      negativeText: '닫기',
-      onNegativePressed: () async {
-        Navigator.of(context).pop();
-      },
-    );
+            ],
+          ),
+        ),
+        positiveText: '띄우기',
+        onPositivePressed: () async {
+          final bottleNum = context.read<UserProvider>().userCache!.bottleNum;
+          if (bottleNum <= 0) {
+            Navigator.of(context).pop();
+            SnackBarUtil.showCustomWidgetSnackBar(
+              context: context,
+              content: Text.rich(
+                TextSpan(
+                  children: [
+                    WidgetSpan(child: BottleIconComponent()),
+                    TextSpan(
+                      text: '가 부족합니다.',
+                    ),
+                  ],
+                ),
+              ),
+            );
+          } else {
+            _onSavePressed(context);
+          }
+        },
+        negativeText: '닫기',
+        onNegativePressed: () {
+          Navigator.of(context).pop();
+        },
+      );
+    }
   }
 
   Future<void> _onSavePressed(BuildContext context) async {
-    if (formKey.currentState!.validate()) {
-      // formKey.currentState!.save();
+    LetterProvider letterProvider = context.read<LetterProvider>();
+    UserProvider userProvider = context.read<UserProvider>();
+    final userId = userProvider.userCache!.id;
 
-      LetterProvider letterProvider = context.read<LetterProvider>();
-      UserProvider userProvider = context.read<UserProvider>();
-      final userId = userProvider.userCache!.id;
+    LetterModel letterModel = LetterModel(
+      id: 0,  // 임시 Id
+      senderId: userId,
+      letterContent: LetterContentModel(
+        title: selectedTitle!,
+        content: selectedContent!,
+      ),
+      letterOption: selectedOption,
+      userInfo: UserInfoModel(
+        name: selectedReceiverName,
+        mbti: selectedReceiverMbti,
+        gender: selectedReceiverGender,
+        birthday: selectedReceiverBirthday,
+      ),
+    );
 
-      LetterModel letterModel = LetterModel(
-        id: 0,  // 임시 Id
-        senderId: userId,
-        letterContent: LetterContentModel(
-          title: selectedTitle!,
-          content: selectedContent!,
-        ),
-        letterOption: selectedOption,
-        userInfo: UserInfoModel(
-          name: selectedReceiverName,
-          mbti: selectedReceiverMbti,
-          gender: selectedReceiverGender,
-          birthday: selectedReceiverBirthday,
-        ),
+    try {
+      await letterProvider.sendLetter(letter: letterModel);
+      await userProvider.getItemNum(item: Item.BOTTLE);
+
+      Navigator.of(context).popUntil(
+            (route) => route.isFirst,
       );
+      SnackBarUtil.showCustomSnackBar(context, '띄우기에 성공했습니다!');
 
-      try {
-        await letterProvider.sendLetter(letter: letterModel);
-        await userProvider.getItemNum(item: Item.BOTTLE);
-
-        Navigator.of(context).popUntil(
-          (route) => route.isFirst,
-        );
-        SnackBarUtil.showCustomSnackBar(context, '띄우기에 성공했습니다!\n유리병 편지는 편지함에서 확인할 수 있습니다.');
-
-      } catch (e) {
-        Navigator.of(context).pop();
-        SnackBarUtil.showCommonErrorSnackBar(context);
-      }
+    } catch (e) {
+      Navigator.of(context).pop();
+      SnackBarUtil.showCommonErrorSnackBar(context);
     }
   }
 }

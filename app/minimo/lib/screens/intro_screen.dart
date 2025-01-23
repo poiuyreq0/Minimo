@@ -44,19 +44,19 @@ class _IntroScreenState extends State<IntroScreen> {
               },
               children: [
                 _introPage(
-                  title: 'Mini Moment\n짝사랑의 작은 순간들',
-                  content: '안녕하세요! 만나서 반갑습니다.\nMinimo에 오신 것을 진심으로 환영합니다.',
+                  title: '미니모 - Mini Moment\n짝사랑의 작은 순간들',
+                  content: '안녕하세요! 만나서 반갑습니다 :)\n미니모에 오신 것을 환영합니다.',
                   subContent: '',
                 ),
                 _introPage(
-                  title: '마음을 표현하고 싶은 사람이 있나요?',
-                  content: '좋아하는 상대에게 마음을 담은 유리병 편지를 보내보세요.',
-                  subContent: 'Minimo에서 그 사람도 당신의 유리병을 기다리고 있을지 몰라요.',
+                  title: '혹시 마음을 표현하고 싶은 사람이 있나요?',
+                  content: '좋아하는 상대에게 마음을 담은 유리병 편지를 보내보세요 \u{1F970}',
+                  subContent: '미니모에서 그 사람도 당신의 유리병을 기다리고 있을지 몰라요 \u{1F97A}',
                 ),
                 _introPage(
                   title: '새로운 말동무를 원하시나요?',
-                  content: '당신의 유리병 편지는 어디로든 갈 수 있어요.',
-                  subContent: '유리병 편지를 주운 누군가가 당신과 이야기하길 원할지도 몰라요.',
+                  content: '당신의 유리병 편지는 어디로든 갈 수 있어요 \u{1F30A}',
+                  subContent: '유리병 편지를 주운 누군가가 당신과 이야기하기를 원할지도 몰라요 \u{1F340}',
                 ),
               ],
             ),
@@ -91,7 +91,9 @@ class _IntroScreenState extends State<IntroScreen> {
               const SizedBox(height: 48),
               Text(
                 title,
-                style: Theme.of(context).textTheme.titleLarge,
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  fontSize: 20,
+                ),
               ),
               const SizedBox(height: 32),
               Text(

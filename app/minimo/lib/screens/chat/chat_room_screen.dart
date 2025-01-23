@@ -70,7 +70,8 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                 if (value == '나가기') {
                   DialogUtil.showCustomDialog(
                     context: context,
-                    content: '채팅방을 나가면 다시 들어올 수 없습니다.\n정말 나가시겠습니까?',
+                    title: '채팅방 나가기',
+                    content: '나간 채팅방은 다시 들어올 수 없습니다.\n정말 나가시겠습니까?',
                     positiveText: '나가기',
                     onPositivePressed: () async {
                       try {

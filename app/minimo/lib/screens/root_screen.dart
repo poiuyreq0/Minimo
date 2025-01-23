@@ -64,7 +64,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
       final checkedRoomId = await navigatorKey.currentContext!.read<ChatProvider>().checkChatRoomByUser(roomId: int.parse(data['roomId']), userId: userId);
 
       navigatorKey.currentState!.push(
-          MaterialPageRoute(builder: (context) => ChatRoomScreen(roomId: checkedRoomId, userId: userId, otherUserId: data['senderId'], otherUserNickname: data['senderNickname'],),)
+          MaterialPageRoute(builder: (context) => ChatRoomScreen(roomId: checkedRoomId, userId: userId, otherUserId: int.parse(data['senderId']), otherUserNickname: data['senderNickname'],),)
       );
 
     } catch (e) {
@@ -117,7 +117,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
   List<Widget> _renderScreen() {
     return [
       HomeScreen(),
-      Placeholder(),
+      // Placeholder(),
       ChatListScreen(),
     ];
   }
@@ -135,10 +135,10 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
           icon: Icon(Icons.home),
           label: '홈',
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.view_list),
-          label: '게시판',
-        ),
+        // BottomNavigationBarItem(
+        //   icon: Icon(Icons.view_list),
+        //   label: '게시판',
+        // ),
         BottomNavigationBarItem(
           icon: Icon(Icons.forum),
           label: '채팅',
@@ -247,7 +247,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
         ),
         leadingWidth: 300,
       ),
-      null,
+      // null,
       AppBar(
         leading: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
@@ -281,7 +281,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
         },
         child: Icon(Icons.create),
       ),
-      null,
+      // null,
       null,
     ];
 

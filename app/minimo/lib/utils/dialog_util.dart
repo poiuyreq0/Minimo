@@ -2,24 +2,24 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class DialogUtil {
-  static void showCustomDialog({
+  static Future<void> showCustomDialog({
     required BuildContext context,
-    String? title,
+    required String title,
     String? content,
     Widget? widgetContent,
     String? positiveText,
     VoidCallback? onPositivePressed,
     required String negativeText,
     required VoidCallback onNegativePressed,
-  }) {
-    showDialog(
+  }) async {
+    await showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: title != null ? Text(
+          title: Text(
             title,
             style: Theme.of(context).textTheme.titleLarge,
-          ) : null,
+          ),
           content: content != null ? Text(
             content,
             style: Theme.of(context).textTheme.titleMedium,

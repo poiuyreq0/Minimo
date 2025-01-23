@@ -191,7 +191,7 @@ class _ProfileInputScreenState extends State<ProfileInputScreen> {
       }
 
     } else {
-      SnackBarUtil.showCustomSnackBar(context, '선택된 사진이 없습니다.');
+      SnackBarUtil.showCustomSnackBar(context, '사진이 선택되지 않았습니다.');
     }
   }
 

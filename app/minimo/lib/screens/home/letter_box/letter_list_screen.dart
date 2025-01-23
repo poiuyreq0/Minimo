@@ -47,10 +47,11 @@ class _LetterListScreenState extends State<LetterListScreen> {
                 helpText: widget.helpText,
               ),
             ),
-            // BannerAdComponent(
-            //   padding: 16,
-            // ),
             const SizedBox(height: 8),
+            BannerAdComponent(
+              padding: 16,
+            ),
+            const SizedBox(height: 16),
             Selector<LetterProvider, bool>(
               selector: (context, letterProvider) => letterProvider.letterListScreenSelectorTrigger,
               builder: (context, _, child) {
@@ -58,10 +59,7 @@ class _LetterListScreenState extends State<LetterListScreen> {
                   future: letterProvider.getLettersByUser(userId: userId, userRole: widget.userRole, letterState: widget.letterState),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
-                      return const Padding(
-                        padding: EdgeInsets.only(top: 24),
-                        child: CircularProgressIndicator(),
-                      );
+                      return const CircularProgressIndicator();
                     } else if (snapshot.data!.isEmpty) {
                       return Text(
                         '아직 편지가 없습니다.',

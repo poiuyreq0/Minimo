@@ -47,7 +47,8 @@ class _BannerAdComponentState extends State<BannerAdComponent> {
 
   Future<BannerAd> _loadAd() async {
     final size = await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-        MediaQuery.sizeOf(context).width.truncate() - widget.padding*2);
+        MediaQuery.sizeOf(context).width.truncate() - widget.padding*2
+    );
 
     bannerAd = BannerAd(
       adUnitId: adUnitId,

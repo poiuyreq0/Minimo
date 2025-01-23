@@ -37,6 +37,7 @@ class TitleComponent extends StatelessWidget {
                   onPressed: () {
                     DialogUtil.showCustomDialog(
                       context: context,
+                      title: title,
                       content: helpText,
                       negativeText: '닫기',
                       onNegativePressed: () {
