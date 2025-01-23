@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Iterator;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -43,7 +44,15 @@ public class ChatService {
         User findUser = userRepository.findUser(userId);
 
         List<ChatRoomUser> chatRoomUsers = findUser.getChatRoomUserList();
-        chatRoomUsers.removeIf(chatRoomUser -> chatRoomUser.getUser().getId().equals(userId));
+        Iterator<ChatRoomUser> iterator = chatRoomUsers.iterator();
+        while (iterator.hasNext()) {
+            ChatRoomUser chatRoomUser = iterator.next();
+            if (chatRoomUser.getChatRoom().getId().equals(roomId)) {
+                iterator.remove();
+                findChatRoom.getChatRoomUserList().remove(chatRoomUser);
+                break;
+            }
+        }
 
         deleteChatRoomIfOwnerless(findChatRoom);
     }

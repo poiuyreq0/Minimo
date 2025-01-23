@@ -71,7 +71,7 @@ public class ChatApiController {
     }
 
     @PostMapping("/room/{id}/disconnect")
-    public ResponseEntity<Map<String, Long>> disconnectChatRooms(@PathVariable("id") Long roomId, @RequestParam("userId") Long userId) {
+    public ResponseEntity<Map<String, Long>> disconnectChatRoom(@PathVariable("id") Long roomId, @RequestParam("userId") Long userId) {
         chatService.disconnectChatRoom(roomId, userId);
         return ResponseEntity.ok(Map.of("roomId", roomId));
     }

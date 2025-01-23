@@ -2,11 +2,9 @@ package com.daepa.minimo.service;
 
 import com.daepa.minimo.common.embeddables.UserInfo;
 import com.daepa.minimo.common.enums.Item;
-import com.daepa.minimo.domain.FcmToken;
-import com.daepa.minimo.domain.ImageFile;
-import com.daepa.minimo.domain.Letter;
-import com.daepa.minimo.domain.User;
+import com.daepa.minimo.domain.*;
 import com.daepa.minimo.exception.NicknameConflictException;
+import com.daepa.minimo.repository.ChatRepository;
 import com.daepa.minimo.repository.LetterRepository;
 import com.daepa.minimo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     private final UserRepository userRepository;
     private final LetterRepository letterRepository;
+    private final ChatRepository chatRepository;
 
     @Transactional(readOnly = true)
     public User findUser(Long userId) {
@@ -91,6 +90,7 @@ public class UserService {
     public void deleteUser(Long userId) {
         User findUser = userRepository.findUser(userId);
 
+        // 연관된 편지 연결 끊기
         for (Letter letter: findUser.getSentLetters()) {
             letter.removeSender();
             if (letter.getReceiver() == null) {
@@ -99,8 +99,18 @@ public class UserService {
         }
         for (Letter letter: findUser.getReceivedLetters()) {
             letter.removeReceiver();
-            if(letter.getSender() == null) {
+            if (letter.getSender() == null) {
                 letterRepository.deleteLetter(letter);
+            }
+        }
+
+        // 연관된 채팅방 나가기
+        for (ChatRoomUser chatRoomUser: findUser.getChatRoomUserList()) {
+            ChatRoom chatRoom = chatRoomUser.getChatRoom();
+
+            chatRoom.getChatRoomUserList().remove(chatRoomUser);
+            if (chatRoom.getChatRoomUserList().isEmpty()) {
+                chatRepository.deleteChatRoom(chatRoom);
             }
         }
 
