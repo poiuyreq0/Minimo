@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:minimo/components/forms/input_form_container.dart';
@@ -87,7 +88,13 @@ class _UserDeleteScreenState extends State<UserDeleteScreen> {
         SnackBarUtil.showCustomSnackBar(context, '그동안 미니모를 이용해 주셔서 감사합니다.');
 
       } catch (e) {
-        SnackBarUtil.showCustomSnackBar(context, '회원 탈퇴에 실패했습니다.\n비밀번호가 올바르게 입력되었는지 확인해 주세요.');
+        if (e is FirebaseAuthException) {
+          if (e.code == 'invalid-credential') {
+            SnackBarUtil.showCustomSnackBar(context, '비밀번호가 맞지 않습니다.');
+          }
+        } else {
+          SnackBarUtil.showCommonErrorSnackBar(context);
+        }
       }
     }
   }

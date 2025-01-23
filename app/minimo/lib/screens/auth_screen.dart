@@ -1,13 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:minimo/enums/bottom_navigation.dart';
-import 'package:minimo/providers/chat_provider.dart';
 import 'package:minimo/utils/navigator_util.dart';
 import 'package:minimo/utils/notification_util.dart';
 import 'package:minimo/utils/url_util.dart';
@@ -47,31 +42,30 @@ class _AuthScreenState extends State<AuthScreen> {
       builder: (context, snapshot) {
         // 로그인 및 이메일 인증 확인
         if (!snapshot.hasData || (snapshot.hasData && !snapshot.data!.emailVerified)) {
-          return Scaffold(
+          return SignInScreen(
             resizeToAvoidBottomInset: true,
-            body: SignInScreen(
-              actions: [
-                AuthStateChangeAction<AuthState>((context, state) async {
-                  await _handleEmailVerified(context, state, snapshot);
-                },),
-              ],
-              providers: [
-                EmailAuthProvider(),
-              ],
-              headerBuilder: (context, constraints, shrinkOffset) {
-                return Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: Image.asset(UrlUtil.iconClear),
-                  ),
-                );
-              },
-              subtitleBuilder: (context, action) {
-                return Text('Mini Moment에 오신 것을 환영합니다!');
-              },
-              showPasswordVisibilityToggle: true,
-            ),
+            actions: [
+              AuthStateChangeAction<AuthState>((context, state) async {
+                await _handleError(context, state);
+                await _handleEmailVerified(context, state, snapshot);
+              },),
+            ],
+            providers: [
+              EmailAuthProvider(),
+            ],
+            headerBuilder: (context, constraints, shrinkOffset) {
+              return Padding(
+                padding: const EdgeInsets.only(top: 36),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: Image.asset(UrlUtil.iconClear),
+                ),
+              );
+            },
+            subtitleBuilder: (context, action) {
+              return Text('미니모에 오신 것을 환영합니다 \u{1F389}');
+            },
+            showPasswordVisibilityToggle: true,
           );
 
         } else {
@@ -105,7 +99,7 @@ class _AuthScreenState extends State<AuthScreen> {
       DialogUtil.showCustomDialog(
         context: context,
         title: '회원가입 완료',
-        content: '로그인 화면에서 로그인을 완료해 주세요.',
+        content: '미니모 가입을 환영합니다 :)\n로그인 화면으로 이동합니다.',
         negativeText: '닫기',
         onNegativePressed: () {
           Navigator.of(context).pushAndRemoveUntil(
@@ -131,11 +125,25 @@ class _AuthScreenState extends State<AuthScreen> {
             snapshot.data!.sendEmailVerification();
           },
           negativeText: '닫기',
-          onNegativePressed: () async {
+          onNegativePressed: () {
             Navigator.of(context).pop();
           },
         );
       }
     }
+  }
+
+  Future<void> _handleError(
+    BuildContext context,
+    AuthState state,
+  ) async {
+    ErrorText.localizeError = (context, e) {
+      return switch (e.code) {
+        'invalid-credential' => '아이디 또는 비밀번호가 맞지 않습니다.',
+        'email-already-in-use' => '이미 사용 중인 이메일입니다.',
+        'unknown' => '비밀번호는 8자 이상으로 영문 소문자와 숫자가 필요합니다.',
+        _ => '요청 처리 중 오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.',
+      };
+    };
   }
 }

@@ -61,10 +61,10 @@ void runMinimoApp() {
           ],
           localizationsDelegates: [
             FirebaseUILocalizations.withDefaultOverrides(const FirebaseUILocalization()),
+            FirebaseUILocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
-            FirebaseUILocalizations.delegate,
           ],
           theme: AppTheme.getMainThemeData(Brightness.light),
           darkTheme: AppTheme.getMainThemeData(Brightness.dark),

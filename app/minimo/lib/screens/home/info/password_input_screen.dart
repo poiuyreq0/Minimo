@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:minimo/components/forms/input_form_container.dart';
@@ -55,13 +56,13 @@ class _PasswordInputScreenState extends State<PasswordInputScreen> {
                 const SizedBox(height: 16),
                 TitleComponent(
                   title: '새 비밀번호 입력',
-                  helpText: '6글자 이상',
+                  helpText: '비밀번호는 8자 이상으로 영문 소문자와 숫자가 필요합니다.',
                 ),
                 InputFormContainer(
                   children: [
                     PasswordFormComponent(
                       label: '새 비밀번호',
-                      hintText: '6글자 이상',
+                      hintText: '영문 소문자, 숫자 포함 8자 이상',
                       inputFormatters: [
                         FilteringTextInputFormatter.deny(RegExp(r'\s')),
                       ],
@@ -70,7 +71,7 @@ class _PasswordInputScreenState extends State<PasswordInputScreen> {
                     ),
                     PasswordFormComponent(
                       label: '새 비밀번호 확인',
-                      hintText: '새 비밀번호를 다시 한번 입력해 주세요.',
+                      hintText: '새 비밀번호 재입력',
                       inputFormatters: [
                         FilteringTextInputFormatter.deny(RegExp(r'\s')),
                       ],
@@ -105,7 +106,15 @@ class _PasswordInputScreenState extends State<PasswordInputScreen> {
         SnackBarUtil.showCustomSnackBar(context, '비밀번호가 변경되었습니다.');
 
       } catch (e) {
-        SnackBarUtil.showCustomSnackBar(context, '비밀번호 변경에 실패했습니다.\n비밀번호가 올바르게 입력되었는지 확인해 주세요.');
+        if (e is FirebaseAuthException) {
+          if (e.code == 'invalid-credential') {
+            SnackBarUtil.showCustomSnackBar(context, '비밀번호가 맞지 않습니다.');
+          } else if (e.code == 'unknown') {
+            SnackBarUtil.showCustomSnackBar(context, '비밀번호는 8자 이상으로 영문 소문자와 숫자가 필요합니다.');
+          }
+        } else {
+          SnackBarUtil.showCommonErrorSnackBar(context);
+        }
       }
     }
   }
