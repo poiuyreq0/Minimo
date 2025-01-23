@@ -157,8 +157,6 @@ class ChatProvider extends ChangeNotifier {
     required int userId,
   }) async {
     await chatRepository.disconnectChatRoom(roomId: roomId, userId: userId,);
-
-    _refreshChatListScreenSelector();
   }
 
   void refreshChatListScreen() {

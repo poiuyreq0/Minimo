@@ -20,43 +20,43 @@ class _ChatListScreenState extends State<ChatListScreen> {
     final userId = context.read<UserProvider>().userCache!.id;
 
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          // BannerAdComponent(
-          //   padding: 16,
-          // ),
-          const SizedBox(height: 8),
-          Selector<ChatProvider, bool>(
-            selector: (context, chatProvider) => chatProvider.chatListScreenSelectorTrigger,
-            builder: (context, _, child) {
-              return FutureBuilder<List<ChatRoomModel>>(
-                future: chatProvider.getChatRoomsByUser(userId: userId),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const Padding(
-                      padding: EdgeInsets.only(top: 24),
-                      child: CircularProgressIndicator(),
-                    );
-                  } else if (snapshot.data!.isEmpty) {
-                    return Text(
-                      '아직 채팅방이 없습니다.',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    );
-                  } else {
-                    return ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) {
-                        return ChatRoomElementComponent(chatRoom: snapshot.data![index], userId: userId);
-                      },
-                    );
-                  }
-                },
-              );
-            },
-          ),
-        ],
+      child: Center(
+        child: Column(
+          children: [
+            const SizedBox(height: 8),
+            BannerAdComponent(
+              padding: 16,
+            ),
+            const SizedBox(height: 16),
+            Selector<ChatProvider, bool>(
+              selector: (context, chatProvider) => chatProvider.chatListScreenSelectorTrigger,
+              builder: (context, _, child) {
+                return FutureBuilder<List<ChatRoomModel>>(
+                  future: chatProvider.getChatRoomsByUser(userId: userId),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const CircularProgressIndicator();
+                    } else if (snapshot.data!.isEmpty) {
+                      return Text(
+                        '아직 채팅방이 없습니다.',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      );
+                    } else {
+                      return ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (context, index) {
+                          return ChatRoomElementComponent(chatRoom: snapshot.data![index], userId: userId);
+                        },
+                      );
+                    }
+                  },
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
