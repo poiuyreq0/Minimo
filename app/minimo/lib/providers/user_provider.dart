@@ -128,11 +128,12 @@ class UserProvider extends ChangeNotifier {
     final credential = EmailAuthProvider.credential(email: emailCache!, password: password);
     await _auth.currentUser!.reauthenticateWithCredential(credential);
 
+    // 서버 데이터 삭제
+    await userRepository.deleteUser(userId: userCache!.id);
+
     // 파이어베이스 회원 탈퇴
     await _auth.currentUser!.delete();
 
-    // 서버 데이터 삭제
-    await userRepository.deleteUser(userId: userCache!.id);
     logout();
   }
 
