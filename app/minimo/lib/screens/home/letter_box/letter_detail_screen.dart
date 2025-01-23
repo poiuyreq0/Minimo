@@ -12,6 +12,7 @@ import 'package:minimo/providers/letter_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/chat/chat_room_screen.dart';
 import 'package:minimo/styles/app_style.dart';
+import 'package:minimo/utils/dialog_util.dart';
 import 'package:minimo/utils/notification_util.dart';
 import 'package:minimo/utils/snack_bar_util.dart';
 import 'package:minimo/utils/time_stamp_util.dart';
@@ -204,7 +205,7 @@ class _LetterDetailScreenState extends State<LetterDetailScreen> {
                   final otherUserNickname = userRole != UserRole.SENDER ? letter.senderNickname : letter.receiverNickname;
 
                   Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => ChatRoomScreen(roomId: checkedRoomId, userId: userId, otherUserId: otherUserId, otherUserNickname: otherUserNickname!,),)
+                      MaterialPageRoute(builder: (context) => ChatRoomScreen(roomId: checkedRoomId, userId: userId, otherUserId: otherUserId, otherUserNickname: otherUserNickname ?? '(알 수 없음)',),)
                   );
 
                 } catch (e) {
@@ -238,9 +239,26 @@ class _LetterDetailScreenState extends State<LetterDetailScreen> {
                 await letterProvider.returnLetter(letterId: letter.id);
                 SnackBarUtil.showCustomSnackBar(context, '유리병을 바다로 돌려보냈습니다.');
 
+              } else if (letterState == LetterState.RECEIVED && userRole == UserRole.SENDER) {
+                await letterProvider.disconnectLetter(letterId: letter.id, userId: userId, userRole: userRole);
+                SnackBarUtil.showCustomSnackBar(context, '유리병 편지와의 연결을 끊었습니다.');
+
               } else {
-                await letterProvider.disconnectLetter(letterId: letter.id, userRole: userRole);
-                SnackBarUtil.showCustomSnackBar(context, '상대방과의 연결을 끊었습니다.');
+                await DialogUtil.showCustomDialog(
+                  context: context,
+                  title: '연결 끊기',
+                  content: '편지의 연결을 끊으면 채팅방도 함께 나가집니다.\n정말 연결을 끊으시겠습니까?',
+                  positiveText: '끊기',
+                  onPositivePressed: () async {
+                    await letterProvider.disconnectLetter(letterId: letter.id, userId: userId, userRole: userRole);
+                    Navigator.of(context).pop();
+                    SnackBarUtil.showCustomSnackBar(context, '유리병 편지와의 연결을 끊었습니다.');
+                  },
+                  negativeText: '취소',
+                  onNegativePressed: () {
+                    Navigator.of(context).pop();
+                  },
+                );
               }
               Navigator.of(context).pop();
 

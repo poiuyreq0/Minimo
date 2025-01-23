@@ -21,6 +21,7 @@ public class LetterService {
     private final LetterRepository letterRepository;
     private final UserRepository userRepository;
     private final ChatRepository chatRepository;
+    private final ChatService chatService;
 
     @Transactional(readOnly = true)
     public Letter findLetter(Long letterId) {
@@ -68,16 +69,22 @@ public class LetterService {
         deleteLetterIfOwnerless(findLetter);
     }
 
-    public void disconnectLetter(Long letterId, UserRole userRole) {
+    public void disconnectLetter(Long letterId, Long userId, UserRole userRole) {
         Letter findLetter = letterRepository.findLetter(letterId);
         validateLetterNotNull(findLetter);
 
+        // 편지 연결 끊기
         if (userRole == UserRole.SENDER) {
             findLetter.removeSender();
         } else {
             findLetter.removeReceiver();
         }
         deleteLetterIfOwnerless(findLetter);
+
+        // 채팅방 나가기
+        if (findLetter.getChatRoomId() != null) {
+            chatService.disconnectChatRoom(findLetter.getChatRoomId(), userId);
+        }
     }
 
     public Letter connectLetter(Long letterId) {
@@ -114,15 +121,15 @@ public class LetterService {
         return findLetter;
     }
 
-    private void validateLetterNotNull(Letter letter) {
-        if (letter == null) {
-            throw new LetterNotFoundException();
-        }
-    }
-
     private void deleteLetterIfOwnerless(Letter letter) {
         if (letter.getSender() == null && letter.getReceiver() == null) {
             letterRepository.deleteLetter(letter);
+        }
+    }
+
+    private void validateLetterNotNull(Letter letter) {
+        if (letter == null) {
+            throw new LetterNotFoundException();
         }
     }
 

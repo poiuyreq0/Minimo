@@ -81,11 +81,13 @@ class LetterRepository {
 
   Future<int> disconnectLetter({
     required int letterId,
+    required int userId,
     required UserRole userRole,
   }) async {
     final resp = await _dio.post(
       '$_letterApiUrl/$letterId/disconnect',
       queryParameters: {
+        'userId': userId,
         'userRole': userRole.name,
       },
     );

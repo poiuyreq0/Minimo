@@ -61,8 +61,8 @@ public class LetterApiController {
     }
 
     @PostMapping("/{id}/disconnect")
-    public ResponseEntity<Map<String, Long>> disconnectLetter(@PathVariable("id") Long letterId, @RequestParam("userRole") UserRole userRole) {
-        letterService.disconnectLetter(letterId, userRole);
+    public ResponseEntity<Map<String, Long>> disconnectLetter(@PathVariable("id") Long letterId, @RequestParam("userId") Long userId, @RequestParam("userRole") UserRole userRole) {
+        letterService.disconnectLetter(letterId, userId, userRole);
         return ResponseEntity.ok(Map.of("letterId", letterId));
     }
 

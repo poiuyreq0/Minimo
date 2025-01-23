@@ -39,11 +39,9 @@ public class User extends BaseTimeEntity {
     private List<Letter> receivedLetters = new ArrayList<>();
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatRoomUser> chatRoomUserList = new ArrayList<>();
-
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "profile_image_id")
     private ImageFile profileImage;
-
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "fcm_token_id")
     private FcmToken fcmToken;

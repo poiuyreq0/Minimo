@@ -61,9 +61,10 @@ class LetterProvider extends ChangeNotifier {
 
   Future<void> disconnectLetter({
     required int letterId,
+    required int userId,
     required UserRole userRole,
   }) async {
-    await letterRepository.disconnectLetter(letterId: letterId, userRole: userRole);
+    await letterRepository.disconnectLetter(letterId: letterId, userId: userId, userRole: userRole);
 
     _refreshLetterListScreenSelector();
   }
