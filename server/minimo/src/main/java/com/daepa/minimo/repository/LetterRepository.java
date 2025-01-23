@@ -115,7 +115,7 @@ public class LetterRepository {
         em.remove(letter);
     }
 
-    // @Scheduled
+    // LetterScheduleService @Scheduled
     // 받은 편지 24시간 후 되돌리기
     public void returnLetters(LocalDateTime current) {
         queryFactory.update(letter)
