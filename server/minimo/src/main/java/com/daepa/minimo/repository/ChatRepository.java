@@ -16,6 +16,7 @@ import java.util.List;
 
 import static com.daepa.minimo.domain.QChatMessage.chatMessage;
 import static com.daepa.minimo.domain.QChatRoomUser.chatRoomUser;
+import static com.daepa.minimo.domain.QLetter.letter;
 
 @RequiredArgsConstructor
 @Repository
@@ -44,7 +45,7 @@ public class ChatRepository {
     }
 
     public List<ChatRoomDto> findChatRoomsByUser(Long userId) {
-        List<ChatRoomDto> chatRooms = queryFactory
+        List<ChatRoomDto> chatRoomDtos = queryFactory
                 .select(Projections.fields(
                         ChatRoomDto.class,
                         chatRoomUser.chatRoom.id,
@@ -54,7 +55,7 @@ public class ChatRepository {
                 .where(chatRoomUser.user.id.eq(userId))
                 .fetch();
 
-        return chatRooms.stream().map(
+        return chatRoomDtos.stream().map(
                 chatRoomDto -> {
                     List<UserNicknameDto> userNicknameDtos = queryFactory
                             .select(Projections.fields(
@@ -97,6 +98,18 @@ public class ChatRepository {
                             .readNum(readNum)
                             .createdDate(chatRoomDto.getCreatedDate())
                             .build();
+                }
+        ).sorted(
+                (o1, o2) -> {
+                    if (o1.getLastMessage() == null && o2.getLastMessage() == null) {
+                        return 0;
+                    } else if (o1.getLastMessage() == null) {
+                        return 1;
+                    } else if (o2.getLastMessage() == null) {
+                        return -1;
+                    } else {
+                        return o2.getLastMessage().getCreatedDate().compareTo(o1.getLastMessage().getCreatedDate());
+                    }
                 }
         ).toList();
     }
