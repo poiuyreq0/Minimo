@@ -9,6 +9,8 @@ import 'package:minimo/providers/chat_provider.dart';
 import 'package:minimo/providers/letter_provider.dart';
 import 'package:minimo/screens/home/item_store_screen.dart';
 import 'package:minimo/screens/home/letter_box/letter_detail_screen.dart';
+import 'package:minimo/screens/post/post_input_screen.dart';
+import 'package:minimo/screens/post/post_list_screen.dart';
 import 'package:minimo/utils/navigator_util.dart';
 import 'package:minimo/utils/url_util.dart';
 import 'package:minimo/providers/user_provider.dart';
@@ -117,7 +119,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
   List<Widget> _renderScreen() {
     return [
       HomeScreen(),
-      // Placeholder(),
+      PostListScreen(),
       ChatListScreen(),
     ];
   }
@@ -135,10 +137,10 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
           icon: Icon(Icons.home),
           label: '홈',
         ),
-        // BottomNavigationBarItem(
-        //   icon: Icon(Icons.view_list),
-        //   label: '게시판',
-        // ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.view_list),
+          label: '게시판',
+        ),
         BottomNavigationBarItem(
           icon: Icon(Icons.forum),
           label: '채팅',
@@ -247,7 +249,35 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
         ),
         leadingWidth: 300,
       ),
-      // null,
+      AppBar(
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.create),
+                  onPressed: () {
+                    _sideNavigatorPush(PostInputScreen());
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+        leading: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              '고민 게시판',
+              maxLines: 1,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+          ),
+        ),
+        leadingWidth: 200,
+      ),
       AppBar(
         leading: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
@@ -281,7 +311,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
         },
         child: Icon(Icons.create),
       ),
-      // null,
+      null,
       null,
     ];
 

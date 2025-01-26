@@ -8,9 +8,11 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:minimo/localizations/firebase_ui_localization.dart';
 import 'package:minimo/providers/chat_provider.dart';
 import 'package:minimo/providers/letter_provider.dart';
+import 'package:minimo/providers/post_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/repositories/chat_repository.dart';
 import 'package:minimo/repositories/letter_repository.dart';
+import 'package:minimo/repositories/post_repository.dart';
 import 'package:minimo/repositories/user_repository.dart';
 import 'package:minimo/screens/auth_screen.dart';
 import 'package:minimo/styles/app_theme.dart';
@@ -41,6 +43,8 @@ void runMinimoApp() {
   final userProvider = UserProvider(userRepository: userRepository);
   final letterRepository = LetterRepository();
   final letterProvider = LetterProvider(letterRepository: letterRepository);
+  final postRepository = PostRepository();
+  final postProvider = PostProvider(postRepository: postRepository);
   final chatRepository = ChatRepository();
   final chatProvider = ChatProvider(chatRepository: chatRepository);
 
@@ -49,6 +53,7 @@ void runMinimoApp() {
         providers: [
           ChangeNotifierProvider(create: (context) => userProvider),
           ChangeNotifierProvider(create: (context) => letterProvider),
+          ChangeNotifierProvider(create: (context) => postProvider),
           ChangeNotifierProvider(create: (context) => chatProvider),
         ],
         child: MaterialApp(

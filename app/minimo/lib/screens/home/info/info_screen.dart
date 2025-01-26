@@ -8,6 +8,7 @@ import 'package:minimo/enums/gender.dart';
 import 'package:minimo/models/user_model.dart';
 import 'package:minimo/providers/chat_provider.dart';
 import 'package:minimo/providers/letter_provider.dart';
+import 'package:minimo/providers/post_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/home/info/info_input_screen.dart';
 import 'package:minimo/screens/user_image_screen.dart';
@@ -182,6 +183,7 @@ class InfoScreen extends StatelessWidget {
                   onPressed: () async {
                     await context.read<UserProvider>().logout();
                     context.read<LetterProvider>().logout();
+                    context.read<PostProvider>().logout();
                     context.read<ChatProvider>().logout();
 
                     Navigator.of(context).pushAndRemoveUntil(
