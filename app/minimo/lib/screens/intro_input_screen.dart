@@ -153,7 +153,7 @@ class _IntroInputScreenState extends State<IntroInputScreen> {
       UserProvider userProvider = context.read<UserProvider>();
 
       UserModel userModel = UserModel(
-        id: 0,  // 임시 Id
+        id: 0,  // 임시 id
         email: '',  // 임시 email
         nickname: selectedNickname!,
         userInfo: UserInfoModel(
@@ -162,8 +162,8 @@ class _IntroInputScreenState extends State<IntroInputScreen> {
           gender: selectedGender,
           birthday: selectedBirthday,
         ),
-        netNum: 0, // 임시 netNum
-        bottleNum: 0, // 임시 bottleNum
+        netNum: 0,  // 임시 netNum
+        bottleNum: 0,  // 임시 bottleNum
         isProfileImageSet: false,  // 임시 isProfileImageSet
       );
 

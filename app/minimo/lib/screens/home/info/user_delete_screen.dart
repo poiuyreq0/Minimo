@@ -6,6 +6,7 @@ import 'package:minimo/components/forms/password_form_component.dart';
 import 'package:minimo/components/title_component.dart';
 import 'package:minimo/providers/chat_provider.dart';
 import 'package:minimo/providers/letter_provider.dart';
+import 'package:minimo/providers/post_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/auth_screen.dart';
 import 'package:minimo/styles/app_style.dart';
@@ -73,13 +74,12 @@ class _UserDeleteScreenState extends State<UserDeleteScreen> {
       // formKey.currentState!.save();
 
       UserProvider userProvider = context.read<UserProvider>();
-      LetterProvider letterProvider = context.read<LetterProvider>();
-      ChatProvider chatProvider = context.read<ChatProvider>();
 
       try {
         await userProvider.deleteUser(password: password!);
-        letterProvider.logout();
-        chatProvider.logout();
+        context.read<LetterProvider>().logout();
+        context.read<PostProvider>().logout();
+        context.read<ChatProvider>().logout();
 
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => AuthScreen(),),

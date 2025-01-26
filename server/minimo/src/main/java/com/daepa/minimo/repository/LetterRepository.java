@@ -4,10 +4,10 @@ import com.daepa.minimo.common.enums.LetterOption;
 import com.daepa.minimo.common.enums.LetterState;
 import com.daepa.minimo.common.enums.UserRole;
 import com.daepa.minimo.domain.Letter;
-import com.daepa.minimo.domain.ReceivedRecord;
+import com.daepa.minimo.domain.LetterReceiveRecord;
 import com.daepa.minimo.domain.User;
 import com.daepa.minimo.dto.LetterDto;
-import com.daepa.minimo.dto.LetterElementDto;
+import com.daepa.minimo.dto.SimpleLetterDto;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.daepa.minimo.domain.QLetter.letter;
-import static com.daepa.minimo.domain.QReceivedRecord.receivedRecord;
+import static com.daepa.minimo.domain.QLetterReceiveRecord.letterReceiveRecord;
 
 @RequiredArgsConstructor
 @Repository
@@ -33,8 +33,8 @@ public class LetterRepository {
         em.persist(letter);
     }
 
-    public void saveReceivedRecord(ReceivedRecord receivedRecord) {
-        em.persist(receivedRecord);
+    public void saveReceivedRecord(LetterReceiveRecord letterReceiveRecord) {
+        em.persist(letterReceiveRecord);
     }
 
     public Letter findLetter(Long letterId) {
@@ -42,13 +42,13 @@ public class LetterRepository {
     }
 
     // 새로운 편지 목록 조회
-    public List<LetterElementDto> findNewLettersByOption(User user, LetterOption letterOption, Integer count) {
+    public List<SimpleLetterDto> findNewLettersByOption(User user, LetterOption letterOption, Integer count) {
         BooleanExpression condition = matchNotReceivedLetter(user)
                 .and(matchUserInfoByOption(user, letterOption));
 
         return queryFactory
                 .select(Projections.fields(
-                        LetterElementDto.class,
+                        SimpleLetterDto.class,
                         letter.id,
                         letter.sender.nickname.as("senderNickname"),
                         letter.letterContent.title,
@@ -130,9 +130,9 @@ public class LetterRepository {
     private BooleanExpression matchNotReceivedLetter(User receiver) {
         return letter.id.notIn(
                 JPAExpressions
-                        .select(receivedRecord.letter.id)
-                        .from(receivedRecord)
-                        .where(receivedRecord.receiverId.eq(receiver.getId()))
+                        .select(letterReceiveRecord.letter.id)
+                        .from(letterReceiveRecord)
+                        .where(letterReceiveRecord.receiverId.eq(receiver.getId()))
         );
     }
 

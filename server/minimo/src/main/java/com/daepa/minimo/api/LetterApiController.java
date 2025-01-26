@@ -4,7 +4,7 @@ import com.daepa.minimo.common.enums.LetterOption;
 import com.daepa.minimo.common.enums.LetterState;
 import com.daepa.minimo.common.enums.UserRole;
 import com.daepa.minimo.domain.Letter;
-import com.daepa.minimo.dto.LetterElementDto;
+import com.daepa.minimo.dto.SimpleLetterDto;
 import com.daepa.minimo.dto.LetterDto;
 import com.daepa.minimo.service.FcmService;
 import com.daepa.minimo.service.LetterService;
@@ -30,10 +30,10 @@ public class LetterApiController {
     }
 
     @GetMapping("/new/every")
-    public ResponseEntity<Map<LetterOption, List<LetterElementDto>>> getEveryNewLetters(@RequestParam("userId") Long userId, @RequestParam("count") Integer count) {
-        Map<LetterOption, List<LetterElementDto>> result = new HashMap<>();
+    public ResponseEntity<Map<LetterOption, List<SimpleLetterDto>>> getEveryNewLetters(@RequestParam("userId") Long userId, @RequestParam("count") Integer count) {
+        Map<LetterOption, List<SimpleLetterDto>> result = new HashMap<>();
         for (LetterOption letterOption: LetterOption.values()) {
-            List<LetterElementDto> letters = letterService.findNewLettersByOption(userId, letterOption, count);
+            List<SimpleLetterDto> letters = letterService.findNewLettersByOption(userId, letterOption, count);
             result.put(letterOption, letters);
         }
         return ResponseEntity.ok(result);

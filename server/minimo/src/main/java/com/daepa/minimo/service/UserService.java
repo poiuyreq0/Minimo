@@ -3,6 +3,7 @@ package com.daepa.minimo.service;
 import com.daepa.minimo.common.embeddables.UserInfo;
 import com.daepa.minimo.common.enums.Item;
 import com.daepa.minimo.domain.*;
+import com.daepa.minimo.domain.Letter;
 import com.daepa.minimo.exception.NicknameConflictException;
 import com.daepa.minimo.repository.ChatRepository;
 import com.daepa.minimo.repository.LetterRepository;

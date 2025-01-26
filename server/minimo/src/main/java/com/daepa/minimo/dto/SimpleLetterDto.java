@@ -1,6 +1,5 @@
 package com.daepa.minimo.dto;
 
-import com.daepa.minimo.common.enums.LetterState;
 import lombok.*;
 
 
@@ -9,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Getter
-public class LetterElementDto {
+public class SimpleLetterDto {
     private Long id;
     private String senderNickname;
     private String title;

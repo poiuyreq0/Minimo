@@ -4,8 +4,8 @@ import com.daepa.minimo.common.embeddables.UserInfo;
 import com.daepa.minimo.domain.User;
 import lombok.*;
 
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Getter
 public class UserDto {

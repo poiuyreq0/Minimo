@@ -2,13 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:minimo/enums/letter_option.dart';
 import 'package:minimo/enums/letter_state.dart';
 import 'package:minimo/enums/user_role.dart';
-import 'package:minimo/models/letter_element_model.dart';
+import 'package:minimo/models/simple_letter_model.dart';
 import 'package:minimo/models/letter_model.dart';
 import 'package:minimo/repositories/letter_repository.dart';
 
 class LetterProvider extends ChangeNotifier {
   final LetterRepository letterRepository;
-  Map<LetterOption, List<LetterElementModel>> newLettersCache = {};
   bool homeScreenSelectorTrigger = true;
   bool letterListScreenSelectorTrigger = true;
 
@@ -23,14 +22,13 @@ class LetterProvider extends ChangeNotifier {
   }
 
   // FutureBuilder
-  Future<Map<LetterOption, List<LetterElementModel>>> getEveryNewLetters({
+  Future<Map<LetterOption, List<SimpleLetterModel>>> getEveryNewLetters({
     required int userId,
     required int count,
   }) async {
     final resp = await letterRepository.getEveryNewLetters(userId: userId, count: count);
-    newLettersCache = resp;
 
-    return newLettersCache;
+    return resp;
   }
 
   Future<LetterModel> receiveLetter({
@@ -105,7 +103,5 @@ class LetterProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void logout() {
-    newLettersCache = {};
-  }
+  void logout() {}
 }

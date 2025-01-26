@@ -6,16 +6,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Getter
 @Entity
-public class ReceivedRecord {
+public class LetterReceiveRecord {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "letter_user_id")
+    @Column(name = "letter_received_record_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

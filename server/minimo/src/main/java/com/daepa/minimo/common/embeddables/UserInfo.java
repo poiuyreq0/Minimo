@@ -2,7 +2,6 @@ package com.daepa.minimo.common.embeddables;
 
 import com.daepa.minimo.common.enums.Gender;
 import com.daepa.minimo.common.enums.Mbti;
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -11,8 +10,8 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Builder
 @Embeddable

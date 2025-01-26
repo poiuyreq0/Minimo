@@ -5,8 +5,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Getter
 public class FcmTokenDto {

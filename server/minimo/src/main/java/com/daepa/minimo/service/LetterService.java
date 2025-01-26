@@ -4,8 +4,10 @@ import com.daepa.minimo.common.enums.LetterOption;
 import com.daepa.minimo.common.enums.LetterState;
 import com.daepa.minimo.common.enums.UserRole;
 import com.daepa.minimo.domain.*;
+import com.daepa.minimo.domain.Letter;
+import com.daepa.minimo.domain.LetterReceiveRecord;
 import com.daepa.minimo.dto.LetterDto;
-import com.daepa.minimo.dto.LetterElementDto;
+import com.daepa.minimo.dto.SimpleLetterDto;
 import com.daepa.minimo.exception.*;
 import com.daepa.minimo.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +38,7 @@ public class LetterService {
     }
 
     @Transactional(readOnly = true)
-    public List<LetterElementDto> findNewLettersByOption(Long userId, LetterOption letterOption, Integer count) {
+    public List<SimpleLetterDto> findNewLettersByOption(Long userId, LetterOption letterOption, Integer count) {
         User user = userRepository.findUser(userId);
         return letterRepository.findNewLettersByOption(user, letterOption, count);
     }
@@ -47,7 +49,7 @@ public class LetterService {
         validateLetterNotNull(findLetter);
 
         findLetter.updateReceiver(receiver);
-        letterRepository.saveReceivedRecord(ReceivedRecord.builder()
+        letterRepository.saveReceivedRecord(LetterReceiveRecord.builder()
                         .letter(findLetter)
                         .receiverId(receiver.getId())
                         .build());

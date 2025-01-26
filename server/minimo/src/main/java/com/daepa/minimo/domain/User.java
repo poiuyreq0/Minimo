@@ -46,7 +46,6 @@ public class User extends BaseTimeEntity {
     @JoinColumn(name = "fcm_token_id")
     private FcmToken fcmToken;
 
-    // User 생성 시, 초기화
     @Column(nullable = false)
     private String email;
     @Column(nullable = false)
@@ -74,6 +73,7 @@ public class User extends BaseTimeEntity {
 
     public void updateFcmToken(FcmToken fcmToken) {
         this.fcmToken = fcmToken;
+        fcmToken.updateUser(this);
     }
 
     public Integer getItemNum(Item item) {

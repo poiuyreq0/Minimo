@@ -241,7 +241,7 @@ class _LetterInputScreenState extends State<LetterInputScreen> {
     final userId = userProvider.userCache!.id;
 
     LetterModel letterModel = LetterModel(
-      id: 0,  // 임시 Id
+      id: 0,  // 임시 id
       senderId: userId,
       letterContent: LetterContentModel(
         title: selectedTitle!,

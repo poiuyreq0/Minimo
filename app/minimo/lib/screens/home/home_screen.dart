@@ -8,7 +8,7 @@ import 'package:minimo/components/little_letter_list_component.dart';
 import 'package:minimo/enums/item.dart';
 import 'package:minimo/enums/letter_option.dart';
 import 'package:minimo/enums/user_role.dart';
-import 'package:minimo/models/letter_element_model.dart';
+import 'package:minimo/models/simple_letter_model.dart';
 import 'package:minimo/providers/letter_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/home/letter_box/letter_detail_screen.dart';
@@ -37,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return Tuple2(letterProvider.homeScreenSelectorTrigger, userProvider.homeScreenSelectorTrigger);
       },
       builder: (context, tuple, child) {
-        return FutureBuilder<Map<LetterOption, List<LetterElementModel>>>(
+        return FutureBuilder<Map<LetterOption, List<SimpleLetterModel>>>(
             future: letterProvider.getEveryNewLetters(userId: userId, count: 5),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {

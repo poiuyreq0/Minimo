@@ -1,11 +1,15 @@
-class UrlUtil {
-  // static const String domain = 'http://${Platform.isAndroid ? '10.0.2.2' : 'localhost'}:8080';
-  static const String _domain = 'http://3.36.241.194:8080';
+import 'dart:io';
 
-  static const String userApi = '$_domain/api/user';
-  static const String letterApi = '$_domain/api/letter';
-  static const String chatApi = '$_domain/api/chat';
-  static const String chatWebSocket = '$_domain/ws-chat';
+class UrlUtil {
+  // static final String _domain = 'http://${Platform.isAndroid ? '10.0.2.2' : 'localhost'}:8080';
+  static const String _domain = 'http://192.168.0.7:8080';
+  // static const String _domain = 'http://3.36.241.194:8080';
+
+  static String userApi = '$_domain/api/user';
+  static String letterApi = '$_domain/api/letter';
+  static String postApi = '$_domain/api/post';
+  static String chatApi = '$_domain/api/chat';
+  static String chatWebSocket = '$_domain/ws-chat';
 
   static const String icon = 'assets/icons/icon.png';
   static const String iconClear = 'assets/icons/icon_clear.png';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minimo/components/images/net_icon_component.dart';
-import 'package:minimo/models/letter_element_model.dart';
+import 'package:minimo/models/simple_letter_model.dart';
 import 'package:minimo/styles/app_style.dart';
 
 import 'divided_element_component.dart';
@@ -8,7 +8,7 @@ import 'title_component.dart';
 
 class LittleLetterListComponent extends StatelessWidget {
   final String title;
-  final List<LetterElementModel> letters;
+  final List<SimpleLetterModel> letters;
   final VoidCallback? onPressed;
 
   const LittleLetterListComponent({

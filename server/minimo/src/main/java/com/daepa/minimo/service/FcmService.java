@@ -1,6 +1,5 @@
 package com.daepa.minimo.service;
 
-import com.daepa.minimo.common.enums.LetterState;
 import com.daepa.minimo.domain.ChatMessage;
 import com.daepa.minimo.domain.ChatRoomUser;
 import com.daepa.minimo.domain.Letter;
@@ -11,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j

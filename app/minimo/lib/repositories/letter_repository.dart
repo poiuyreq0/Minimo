@@ -7,7 +7,7 @@ import 'package:minimo/utils/dio_util.dart';
 import 'package:minimo/utils/url_util.dart';
 import 'package:minimo/enums/letter_option.dart';
 import 'package:minimo/enums/letter_state.dart';
-import 'package:minimo/models/letter_element_model.dart';
+import 'package:minimo/models/simple_letter_model.dart';
 import 'package:minimo/models/letter_model.dart';
 
 class LetterRepository {
@@ -24,7 +24,7 @@ class LetterRepository {
     return resp.data['letterId'];
   }
 
-  Future<Map<LetterOption, List<LetterElementModel>>> getEveryNewLetters({
+  Future<Map<LetterOption, List<SimpleLetterModel>>> getEveryNewLetters({
     required int userId,
     required int count,
   }) async {
@@ -37,9 +37,9 @@ class LetterRepository {
     );
 
     return Map.fromEntries(
-      LetterOption.values.map<MapEntry<LetterOption, List<LetterElementModel>>>((letterOption) {
-        final letters = resp.data[letterOption.name].map<LetterElementModel>(
-                (letterElement) => LetterElementModel.fromJson(letterElement)
+      LetterOption.values.map<MapEntry<LetterOption, List<SimpleLetterModel>>>((letterOption) {
+        final letters = resp.data[letterOption.name].map<SimpleLetterModel>(
+                (simpleLetter) => SimpleLetterModel.fromJson(simpleLetter)
         ).toList();
 
         return MapEntry(letterOption, letters);

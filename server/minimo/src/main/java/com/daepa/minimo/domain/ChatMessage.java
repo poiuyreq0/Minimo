@@ -29,6 +29,7 @@ public class ChatMessage extends BaseTimeEntity {
     private ChatRoom chatRoom;
 
     private Long senderId;
+    @Lob
     private String content;
 
     private Boolean isRead = false;

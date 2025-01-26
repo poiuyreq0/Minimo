@@ -6,7 +6,6 @@ import 'package:minimo/repositories/chat_repository.dart';
 
 class ChatProvider extends ChangeNotifier {
   final ChatRepository chatRepository;
-  List<ChatRoomModel> chatRoomsCache = [];
   Map<int, List<ChatMessageModel>> chatMessagesCache = {};
   int? currentRoomIdCache;
   bool chatListScreenSelectorTrigger = true;
@@ -122,7 +121,7 @@ class ChatProvider extends ChangeNotifier {
 
     chatMessagesCache.update(
       roomId,
-          (value) => [
+      (value) => [
         ...resp,
       ]..sort((a, b) => b.createdDate.compareTo(a.createdDate),),
       ifAbsent: () => [
@@ -147,9 +146,8 @@ class ChatProvider extends ChangeNotifier {
     required userId,
   }) async {
     final resp = await chatRepository.getChatRoomsByUser(userId: userId);
-    chatRoomsCache = resp;
 
-    return chatRoomsCache;
+    return resp;
   }
 
   Future<void> disconnectChatRoom({
@@ -174,7 +172,6 @@ class ChatProvider extends ChangeNotifier {
   }
 
   void logout() {
-    chatRoomsCache = [];
     chatMessagesCache = {};
     currentRoomIdCache = null;
   }

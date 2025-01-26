@@ -240,12 +240,12 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     ChatProvider chatProvider = context.read<ChatProvider>();
 
     final chatMessage = ChatMessageModel(
-      id: 0,  // 임시 Id
+      id: 0,  // 임시 id
       roomId: widget.roomId,
       senderId: widget.userId,
       content: textEditingController.text,
       isRead: false,  // 임시 isRead
-      createdDate: DateTime.now(),
+      createdDate: DateTime.now(),  // 임시 createdDate
     );
 
     try {

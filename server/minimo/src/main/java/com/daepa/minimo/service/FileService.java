@@ -12,8 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class FileService {
-//    private final String USER_IMAGE_PATH = "C:/Users/poiuyreq0/Downloads/Minimo/minimo_storage/user_image/"; // 윈도우
-    private static final String USER_IMAGE_PATH = "/home/ec2-user/minimo_storage/user_image/"; // 리눅스
+    private final String USER_IMAGE_PATH = "C:/Users/poiuyreq0/Downloads/Minimo/minimo_storage/user_image/"; // 윈도우
+//    private static final String USER_IMAGE_PATH = "/home/ec2-user/minimo_storage/user_image/"; // 리눅스
 
     private final String DEFAULT_USER_IMAGE_PATH = USER_IMAGE_PATH + "icon_default_user.jpg";
 

@@ -14,8 +14,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 @NoArgsConstructor
 @Getter
 @Entity
@@ -46,11 +44,9 @@ public class Letter extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver_id")
     private User receiver;
-
     @OneToMany(mappedBy = "letter", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ReceivedRecord> receivedRecordList = new ArrayList<>();
+    private List<LetterReceiveRecord> letterReceiveRecordList = new ArrayList<>();
 
-    // Letter 생성 시, 초기화
     @Embedded
     private LetterContent letterContent;
     @Enumerated(EnumType.STRING)
@@ -59,7 +55,6 @@ public class Letter extends BaseTimeEntity {
     private UserInfo userInfo;
 
     private Long chatRoomId;
-
     @Enumerated(EnumType.STRING)
     private LetterState letterState = LetterState.NONE;
     private LocalDateTime receivedDate;

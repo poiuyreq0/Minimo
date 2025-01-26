@@ -1,14 +1,13 @@
 package com.daepa.minimo.common.embeddables;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Lob;
 import lombok.*;
 
 import java.util.Objects;
 
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Builder
 @Embeddable

@@ -16,7 +16,6 @@ import java.util.List;
 
 import static com.daepa.minimo.domain.QChatMessage.chatMessage;
 import static com.daepa.minimo.domain.QChatRoomUser.chatRoomUser;
-import static com.daepa.minimo.domain.QLetter.letter;
 
 @RequiredArgsConstructor
 @Repository
