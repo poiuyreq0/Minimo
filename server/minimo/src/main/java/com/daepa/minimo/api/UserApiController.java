@@ -1,12 +1,10 @@
 package com.daepa.minimo.api;
 
 import com.daepa.minimo.common.enums.Item;
+import com.daepa.minimo.common.enums.ReportReason;
 import com.daepa.minimo.domain.ImageFile;
 import com.daepa.minimo.domain.User;
-import com.daepa.minimo.dto.FcmTokenDto;
-import com.daepa.minimo.dto.UserDto;
-import com.daepa.minimo.dto.UserInfoDto;
-import com.daepa.minimo.dto.UserNicknameDto;
+import com.daepa.minimo.dto.*;
 import com.daepa.minimo.service.FileService;
 import com.daepa.minimo.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -27,45 +25,47 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api-user")
 public class UserApiController {
     private final UserService userService;
     private final FileService fileService;
 
-    @GetMapping("/email")
+    @GetMapping("/users/email")
     public ResponseEntity<UserDto> getUserByEmail(@RequestParam("email") String email) {
-        User user = userService.findUserByEmail(email);
+        UserDto user = userService.getUserByEmail(email);
+        log.info("test getUserByEmail: {}", user);
+
         if (user == null) {
             return ResponseEntity.ok(null);
         }
 
-        return ResponseEntity.ok(UserDto.fromUser(user));
+        return ResponseEntity.ok(user);
     }
 
-    @PostMapping
+    @PostMapping("/users")
     public ResponseEntity<Map<String, Long>> createUser(@RequestBody UserDto userDto) {
         Long userId = userService.createUser(userDto.toUser());
         return ResponseEntity.ok(Map.of("userId", userId));
     }
 
-    @GetMapping("/{id}/item-num")
+    @GetMapping("/users/{id}/item-num")
     public ResponseEntity<Map<String, Integer>> getItemNum(@PathVariable("id") Long userId, @RequestParam("item") Item item) {
-        Integer itemNum = userService.findItemNum(userId, item);
+        Integer itemNum = userService.getItemNum(userId, item);
         return ResponseEntity.ok(Map.of("itemNum", itemNum));
     }
 
-    @PostMapping("/{id}/item-num/add")
+    @PostMapping("/users/{id}/item-num/add")
     public ResponseEntity<Map<String, Integer>> addItemNum(@PathVariable("id") Long userId, @RequestParam("item") Item item, @RequestParam("amount") Integer amount) {
         Integer itemNum = userService.addItemNum(userId, item, amount);
         return ResponseEntity.ok(Map.of("itemNum", itemNum));
     }
 
-    @GetMapping("/{id}/image")
+    @GetMapping("/users/{id}/image")
     public ResponseEntity<Resource> getImage(@PathVariable("id") Long userId) throws IOException {
-        ImageFile image = userService.findImage(userId);
+        ImageFile image = userService.getImage(userId);
 
         // image가 null일 때는 icon_default_user 이미지 경로 리턴
-        String filePath = fileService.findUserImagePath(image);
+        String filePath = fileService.getUserImagePath(image);
 
         MediaType mediaType = MediaType.parseMediaType(Files.probeContentType(Paths.get(filePath)));
         UrlResource resource = new UrlResource("file:" + filePath);
@@ -75,38 +75,62 @@ public class UserApiController {
                 .body(resource);
     }
 
-    @PostMapping("/{id}/update/image")
+    @PostMapping("/users/{id}/image/update")
     public ResponseEntity<Map<String, Long>> updateImage(@PathVariable("id") Long userId, @RequestParam("image") MultipartFile image) throws IOException {
         ImageFile savedImage = fileService.saveUserImage(image);
         userService.updateImage(userId, savedImage);
         return ResponseEntity.ok(Map.of("userId", userId));
     }
 
-    @DeleteMapping("/{id}/delete/image")
+    @DeleteMapping("/users/{id}/image")
     public ResponseEntity<Map<String, Long>> deleteImage(@PathVariable("id") Long userId) {
         userService.deleteImage(userId);
         return ResponseEntity.ok(Map.of("userId", userId));
     }
 
-    @PostMapping("/{id}/update/user-info")
-    public ResponseEntity<UserInfoDto> updateUserInfo(@PathVariable("id") Long userId, @RequestBody UserInfoDto userInfoDto) {
+    @PostMapping("/users/{id}/user-info/update")
+    public ResponseEntity<Map<String, Long>> updateUserInfo(@PathVariable("id") Long userId, @RequestBody UserInfoDto userInfoDto) {
         userService.updateUserInfo(userId, userInfoDto.toUserInfo());
-        return ResponseEntity.ok(userInfoDto);
+        return ResponseEntity.ok(Map.of("userId", userId));
     }
 
-    @PostMapping("/{id}/update/nickname")
-    public ResponseEntity<Map<String, String>> updateNickname(@PathVariable("id") Long userId, @RequestBody UserNicknameDto userNicknameDto) {
-        userService.updateNickname(userId, userNicknameDto.getNickname());
-        return ResponseEntity.ok(Map.of("nickname", userNicknameDto.getNickname()));
+    @PostMapping("/users/{id}/nickname/update")
+    public ResponseEntity<Map<String, Long>> updateNickname(@PathVariable("id") Long userId, @RequestParam("nickname") String nickname) {
+        userService.updateNickname(userId, nickname);
+        return ResponseEntity.ok(Map.of("userId", userId));
     }
 
-    @PostMapping("/{id}/update/fcm-token")
+    @PostMapping("/users/{id}/fcm-token/update")
     public ResponseEntity<Map<String, Long>> updateFcmToken(@PathVariable("id") Long userId, @RequestBody FcmTokenDto fcmTokenDto) {
         userService.updateFcmToken(userId, fcmTokenDto.toFcmToken());
         return ResponseEntity.ok(Map.of("userId", userId));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/users/{id}/fcm-token")
+    public ResponseEntity<Map<String, Long>> deleteFcmToken(@PathVariable("id") Long userId) {
+        userService.deleteFcmToken(userId);
+        return ResponseEntity.ok(Map.of("userId", userId));
+    }
+
+    @PostMapping("/users/{id}/ban")
+    public ResponseEntity<Map<Long, UserBanRecordDto>> banUser(@PathVariable("id") Long userId, @RequestParam("targetId") Long targetId, @RequestParam("targetNickname") String targetNickname) {
+        Map<Long, UserBanRecordDto> userBanRecordMap = userService.banUser(userId, targetId, targetNickname);
+        return ResponseEntity.ok(userBanRecordMap);
+    }
+
+    @PostMapping("/users/{id}/unban")
+    public ResponseEntity<Map<Long, UserBanRecordDto>> unbanUser(@PathVariable("id") Long userId, @RequestParam("targetId") Long targetId) {
+        Map<Long, UserBanRecordDto> userBanRecordMap = userService.unbanUser(userId, targetId);
+        return ResponseEntity.ok(userBanRecordMap);
+    }
+
+    @PostMapping("/users/{id}/report")
+    public ResponseEntity<Map<String, Long>> reportUser(@PathVariable("id") Long userId, @RequestParam("targetId") Long targetId, @RequestParam("reportReason") ReportReason reportReason) {
+        userService.reportUser(userId, targetId, reportReason);
+        return ResponseEntity.ok(Map.of("userId", userId));
+    }
+
+    @DeleteMapping("/users/{id}")
     public ResponseEntity<Map<String, Long>> deleteUser(@PathVariable("id") Long userId) {
         userService.deleteUser(userId);
         return ResponseEntity.ok(Map.of("userId", userId));

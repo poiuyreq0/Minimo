@@ -1,16 +1,25 @@
 package com.daepa.minimo.service;
 
 import com.daepa.minimo.common.embeddables.UserInfo;
+import com.daepa.minimo.common.enums.AccountRole;
 import com.daepa.minimo.common.enums.Item;
+import com.daepa.minimo.common.enums.ReportReason;
 import com.daepa.minimo.domain.*;
 import com.daepa.minimo.domain.Letter;
+import com.daepa.minimo.dto.UserBanRecordDto;
+import com.daepa.minimo.dto.UserDto;
 import com.daepa.minimo.exception.NicknameConflictException;
+import com.daepa.minimo.exception.ReportConflictException;
 import com.daepa.minimo.repository.ChatRepository;
 import com.daepa.minimo.repository.LetterRepository;
 import com.daepa.minimo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.query.sqm.produce.function.StandardFunctionReturnTypeResolvers;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
@@ -26,8 +35,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public User findUserByEmail(String email) {
-        return userRepository.findUserByEmail(email);
+    public UserDto getUserByEmail(String email) {
+        return userRepository.getUserByEmail(email);
     }
 
     public Long createUser(User user) {
@@ -38,7 +47,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Integer findItemNum(Long userId, Item item) {
+    public Integer getItemNum(Long userId, Item item) {
         User findUser = userRepository.findUser(userId);
         return findUser.getItemNum(item);
     }
@@ -50,7 +59,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public ImageFile findImage(Long userId) {
+    public ImageFile getImage(Long userId) {
         User findUser = userRepository.findUser(userId);
         if (findUser == null) {
             return null;
@@ -88,6 +97,46 @@ public class UserService {
         }
     }
 
+    public void deleteFcmToken(Long userId) {
+        User findUser = userRepository.findUser(userId);
+        findUser.updateFcmToken(null);
+    }
+
+    public Map<Long, UserBanRecordDto> banUser(Long userId, Long targetId, String targetNickname) {
+        User findUser = userRepository.findUser(userId);
+
+        userRepository.saveUserBanRecord(UserBanRecord.builder()
+                        .targetId(targetId)
+                        .targetNickname(targetNickname)
+                        .user(findUser)
+                        .build());
+
+        return userRepository.getUserBanRecordMap(userId);
+    }
+
+    public Map<Long, UserBanRecordDto> unbanUser(Long userId, Long targetId) {
+        userRepository.unbanUser(userId, targetId);
+
+        return userRepository.getUserBanRecordMap(userId);
+    }
+
+    public void reportUser(Long userId, Long targetId, ReportReason reportReason) {
+        List<UserReportRecord> userReportRecordList = userRepository.getUserReportRecord(targetId, reportReason);
+        validateReportConflict(userId, userReportRecordList);
+
+        User findUser = userRepository.findUser(targetId);
+        UserReportRecord userReportRecord = UserReportRecord.builder()
+                        .target(findUser)
+                        .reporterId(userId)
+                        .reportReason(reportReason)
+                        .build();
+        userRepository.saveUserReportRecord(userReportRecord);
+
+        if (userReportRecordList.size() + 1 >= 1) {
+            findUser.suspendAccount(userReportRecord.getCreatedDate());
+        }
+    }
+
     public void deleteUser(Long userId) {
         User findUser = userRepository.findUser(userId);
 
@@ -119,9 +168,17 @@ public class UserService {
     }
 
     private void validateNicknameConflict(String nickname) {
-        User findUser = userRepository.findUserByNickname(nickname);
+        User findUser = userRepository.getUserByNickname(nickname);
         if (findUser != null) {
             throw new NicknameConflictException();
+        }
+    }
+
+    private void validateReportConflict(Long userId, List<UserReportRecord> userReportRecords) {
+        for (UserReportRecord userReportRecord: userReportRecords) {
+            if (userReportRecord.getReporterId().equals(userId)) {
+                throw new ReportConflictException();
+            }
         }
     }
 }

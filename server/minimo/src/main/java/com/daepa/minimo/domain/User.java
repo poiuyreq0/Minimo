@@ -2,11 +2,12 @@ package com.daepa.minimo.domain;
 
 import com.daepa.minimo.common.BaseTimeEntity;
 import com.daepa.minimo.common.embeddables.UserInfo;
-import com.daepa.minimo.common.enums.AccountState;
+import com.daepa.minimo.common.enums.AccountRole;
 import com.daepa.minimo.common.enums.Item;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +46,10 @@ public class User extends BaseTimeEntity {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "fcm_token_id")
     private FcmToken fcmToken;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserBanRecord> userBanRecordList = new ArrayList<>();
+    @OneToMany(mappedBy = "target", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserReportRecord> userReportRecordList = new ArrayList<>();
 
     @Column(nullable = false)
     private String email;
@@ -55,9 +60,10 @@ public class User extends BaseTimeEntity {
 
     private Integer netNum = 5;
     private Integer bottleNum = 5;
+
     @Enumerated(EnumType.STRING)
-    private AccountState accountState = AccountState.ACTIVE;
-    private Integer reportedCount = 0;
+    private AccountRole accountRole = AccountRole.USER;
+    private LocalDateTime suspendedDate;
 
     public void updateImage(ImageFile image) {
         this.profileImage = image;
@@ -73,7 +79,6 @@ public class User extends BaseTimeEntity {
 
     public void updateFcmToken(FcmToken fcmToken) {
         this.fcmToken = fcmToken;
-        fcmToken.updateUser(this);
     }
 
     public Integer getItemNum(Item item) {
@@ -100,12 +105,8 @@ public class User extends BaseTimeEntity {
         }
     }
 
-    public void updateAccountState() {
-        reportedCount += 1;
-        if (reportedCount >= 5) {
-            accountState = AccountState.BANNED;
-        } else {
-            accountState = AccountState.ACTIVE;
-        }
+    public void suspendAccount(LocalDateTime suspendedDate) {
+        accountRole = AccountRole.GHOST;
+        this.suspendedDate = suspendedDate;
     }
 }

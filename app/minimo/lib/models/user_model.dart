@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:minimo/models/user_ban_record_model.dart';
 import 'package:minimo/models/user_info_model.dart';
 
 part 'user_model.freezed.dart';
@@ -15,6 +16,7 @@ class UserModel with _$UserModel{
     required int netNum,
     required int bottleNum,
     required bool isProfileImageSet,
+    Map<int, UserBanRecordModel>? userBanRecordMap,
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);

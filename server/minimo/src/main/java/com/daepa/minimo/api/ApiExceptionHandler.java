@@ -8,14 +8,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
-    @ExceptionHandler(ApiUnauthorizedException.class)
-    public ResponseEntity<RuntimeException> handleApiUnauthorizedException(ApiUnauthorizedException e) {
+    @ExceptionHandler(ApiUnauthenticatedException.class)
+    public ResponseEntity<RuntimeException> handleApiUnauthorizedException(ApiUnauthenticatedException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e);
     }
 
-    @ExceptionHandler(ApiForbiddenException.class)
-    public ResponseEntity<RuntimeException> handleApiForbiddenException(ApiForbiddenException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e);
+    @ExceptionHandler(ReportConflictException.class)
+    public ResponseEntity<RuntimeException> handleReportConflictException(ReportConflictException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e);
     }
 
     @ExceptionHandler(NicknameConflictException.class)
@@ -30,11 +30,6 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(LetterNotFoundException.class)
     public ResponseEntity<RuntimeException> handleLetterNotFoundException(LetterNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e);
-    }
-
-    @ExceptionHandler(ChatRoomNotFoundException.class)
-    public ResponseEntity<RuntimeException> handleChatRoomNotFoundException(ChatRoomNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e);
     }
 }

@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:minimo/enums/item.dart';
+import 'package:minimo/enums/report_reason.dart';
+import 'package:minimo/models/user_ban_record_model.dart';
 import 'package:minimo/utils/url_util.dart';
 import 'package:minimo/models/user_info_model.dart';
 import 'package:minimo/models/user_model.dart';
@@ -17,7 +19,7 @@ class UserRepository {
     required String email,
   }) async {
     final resp = await _dio.get(
-      '$_userApiUrl/email',
+      '$_userApiUrl/users/email',
       queryParameters: {
         'email': email,
       },
@@ -33,7 +35,7 @@ class UserRepository {
     required UserModel user,
   }) async {
     final resp = await _dio.post(
-      _userApiUrl,
+      '$_userApiUrl/users',
       data: user.toJson(),
     );
     return resp.data['userId'];
@@ -44,7 +46,7 @@ class UserRepository {
     required Item item,
   }) async {
     final resp = await _dio.get(
-      '$_userApiUrl/$userId/item-num',
+      '$_userApiUrl/users/$userId/item-num',
       queryParameters: {
         'item': item.name,
       }
@@ -58,7 +60,7 @@ class UserRepository {
     required int amount,
   }) async {
     final resp = await _dio.post(
-        '$_userApiUrl/$userId/item-num/add',
+        '$_userApiUrl/users/$userId/item-num/add',
         queryParameters: {
           'item': item.name,
           'amount': amount,
@@ -81,7 +83,7 @@ class UserRepository {
     });
 
     final resp = await _dio.post(
-      '$_userApiUrl/$userId/update/image',
+      '$_userApiUrl/users/$userId/image/update',
       data: imageForm,
     );
 
@@ -92,33 +94,33 @@ class UserRepository {
     required int userId,
   }) async {
     final resp = await _dio.delete(
-      '$_userApiUrl/$userId/delete/image',
+      '$_userApiUrl/users/$userId/image',
     );
     return resp.data['userId'];
   }
 
-  Future<UserInfoModel> updateUserInfo({
+  Future<int> updateUserInfo({
     required int userId,
     required UserInfoModel userInfo,
   }) async {
     final resp = await _dio.post(
-      '$_userApiUrl/$userId/update/user-info',
+      '$_userApiUrl/users/$userId/user-info/update',
       data: userInfo.toJson(),
     );
-    return UserInfoModel.fromJson(resp.data);
+    return resp.data['userId'];
   }
 
-  Future<String> updateNickname({
+  Future<int> updateNickname({
     required int userId,
     required String nickname,
   }) async {
     final resp = await _dio.post(
-      '$_userApiUrl/$userId/update/nickname',
-      data: {
+      '$_userApiUrl/users/$userId/nickname/update',
+      queryParameters: {
         'nickname': nickname
       },
     );
-    return resp.data['nickname'];
+    return resp.data['userId'];
   }
 
   Future<int> updateFcmToken({
@@ -126,7 +128,7 @@ class UserRepository {
     required String fcmToken,
   }) async {
     final resp = await _dio.post(
-      '$_userApiUrl/$userId/update/fcm-token',
+      '$_userApiUrl/users/$userId/fcm-token/update',
       data: {
         'token': fcmToken,
       },
@@ -134,11 +136,74 @@ class UserRepository {
     return resp.data['userId'];
   }
 
+  Future<int> deleteFcmToken({
+    required int userId,
+  }) async {
+    final resp = await _dio.delete(
+      '$_userApiUrl/users/$userId/fcm-token',
+    );
+    return resp.data['userId'];
+  }
+
+  Future<Map<int, UserBanRecordModel>> banUser({
+    required int userId,
+    required int targetId,
+    required String targetNickname,
+  }) async {
+    final resp = await _dio.post(
+      '$_userApiUrl/users/$userId/ban',
+      queryParameters: {
+        'targetId': targetId,
+        'targetNickname': targetNickname,
+      },
+    );
+
+    return Map.fromEntries(
+      resp.data.keys.map<MapEntry<int, UserBanRecordModel>>((targetId) {
+        return MapEntry(int.parse(targetId), UserBanRecordModel.fromJson(resp.data[targetId]));
+      })
+    );
+  }
+
+  Future<Map<int, UserBanRecordModel>> unbanUser({
+    required int userId,
+    required int targetId,
+  }) async {
+    final resp = await _dio.post(
+      '$_userApiUrl/users/$userId/unban',
+      queryParameters: {
+        'targetId': targetId,
+      },
+    );
+
+    return Map.fromEntries(
+        resp.data.keys.map<MapEntry<int, UserBanRecordModel>>((targetId) {
+          return MapEntry(int.parse(targetId), UserBanRecordModel.fromJson(resp.data[targetId]));
+        })
+    );
+  }
+
+  Future<int> reportUser({
+    required int userId,
+    required int targetId,
+    required ReportReason reportReason,
+  }) async {
+    final resp = await _dio.post(
+      '$_userApiUrl/users/$userId/report',
+      queryParameters: {
+        'targetId': targetId,
+        'reportReason': reportReason.name,
+      },
+    );
+
+    return resp.data['userId'];
+  }
+
   Future<int> deleteUser({
     required int userId,
   }) async {
     final resp = await _dio.delete(
-      '$_userApiUrl/$userId',
+      '$_userApiUrl/users/$userId',
     );
     return resp.data['userId'];
   }
