@@ -12,16 +12,18 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Getter
+@Setter
 public class PostDto {
     private Long id;
     private Long writerId;
     private String writerNickname;
-    private List<CommentDto> comments;
     private PostContent postContent;
     private Integer likeNum;
-    private Boolean isLikeSet;
     private Integer commentNum;
     private LocalDateTime createdDate;
+    private Boolean isLikeSet;
+    @Builder.Default
+    private List<CommentDto> comments = new ArrayList<>();
 
     public Post toPost() {
         return Post.builder()

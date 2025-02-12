@@ -4,11 +4,13 @@ class BottomTextFormComponent extends StatefulWidget {
   final String hintText;
   final TextEditingController controller;
   final VoidCallback? onPressed;
+  final FocusNode? focusNode;
 
   const BottomTextFormComponent({
     required this.hintText,
     required this.controller,
     required this.onPressed,
+    this.focusNode,
     super.key
   });
 
@@ -54,6 +56,7 @@ class _BottomTextFormComponentState extends State<BottomTextFormComponent> {
             child: Padding(
               padding: const EdgeInsets.all(8),
               child: TextField(
+                focusNode: widget.focusNode,
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
                 maxLength: 1000,

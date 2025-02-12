@@ -40,35 +40,55 @@ class PostElementComponent extends StatelessWidget {
               style: Theme.of(context).textTheme.displayMedium,
             ),
             const SizedBox(height: 5),
-            Row(
-              children: [
-                FaIcon(
-                  FontAwesomeIcons.thumbsUp,
-                  color: Theme.of(context).colorScheme.tertiary,
-                  size: 12,
-                ),
-                Text(
-                  ' ${post.likeNum}  |  ',
-                  style: Theme.of(context).textTheme.displaySmall,
-                ),
-                FaIcon(
-                  FontAwesomeIcons.comment,
-                  color: Theme.of(context).colorScheme.tertiary,
-                  size: 12,
-                ),
-                Text(
-                  ' ${post.commentNum}  |  ',
-                  style: Theme.of(context).textTheme.displaySmall,
-                ),
-                Text(
-                  '${post.writerNickname}  |  ',
-                  style: Theme.of(context).textTheme.displaySmall,
-                ),
-                Text(
-                  TimeStampUtil.getElementTimeStamp(post.createdDate),
-                  style: Theme.of(context).textTheme.displaySmall,
-                ),
-              ],
+            IntrinsicHeight(
+              child: Row(
+                children: [
+                  const SizedBox(width: 2),
+                  FaIcon(
+                    FontAwesomeIcons.thumbsUp,
+                    color: Theme.of(context).colorScheme.tertiary,
+                    size: 12,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${post.likeNum}',
+                    style: Theme.of(context).textTheme.displaySmall,
+                  ),
+                  const VerticalDivider(
+                    thickness: 1.2,
+                    indent: 3,
+                    endIndent: 3,
+                  ),
+                  FaIcon(
+                    FontAwesomeIcons.comment,
+                    color: Theme.of(context).colorScheme.tertiary,
+                    size: 12,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${post.commentNum}',
+                    style: Theme.of(context).textTheme.displaySmall,
+                  ),
+                  const VerticalDivider(
+                    thickness: 1.2,
+                    indent: 3,
+                    endIndent: 3,
+                  ),
+                  Text(
+                    '${post.writerNickname}',
+                    style: Theme.of(context).textTheme.displaySmall,
+                  ),
+                  const VerticalDivider(
+                    thickness: 1.2,
+                    indent: 3,
+                    endIndent: 3,
+                  ),
+                  Text(
+                    TimeStampUtil.getElementTimeStamp(post.createdDate),
+                    style: Theme.of(context).textTheme.displaySmall,
+                  ),
+                ],
+              ),
             ),
           ],
         ),

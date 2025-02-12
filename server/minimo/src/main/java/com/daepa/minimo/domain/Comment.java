@@ -43,4 +43,30 @@ public class Comment extends BaseTimeEntity {
 
     private Integer likeNum = 0;
     private Boolean isVisible = true;
+
+    public void updatePost(Post post) {
+        this.post = post;
+    }
+
+    public void updateParentComment(Comment parentComment) {
+        this.parentComment = parentComment;
+        parentComment.childComments.add(this);
+    }
+
+    public void updateWriter(User writer) {
+        this.writer = writer;
+    }
+
+    public void decreaseLikeNum() {
+        likeNum -= 1;
+    }
+
+    public void increaseLikeNum() {
+        likeNum += 1;
+    }
+
+    public void updateIsVisible() {
+        isVisible = false;
+        post.decreaseCommentNum();
+    }
 }

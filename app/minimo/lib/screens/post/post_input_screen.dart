@@ -1,13 +1,19 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:minimo/components/forms/content_form_component.dart';
 import 'package:minimo/components/forms/input_form_container.dart';
 import 'package:minimo/components/forms/title_form_component.dart';
+import 'package:minimo/enums/bottom_navigation.dart';
 import 'package:minimo/models/post_content_model.dart';
 import 'package:minimo/models/post_model.dart';
 import 'package:minimo/models/user_model.dart';
 import 'package:minimo/providers/post_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
+import 'package:minimo/screens/auth_screen.dart';
 import 'package:minimo/styles/app_style.dart';
+import 'package:minimo/utils/dialog_util.dart';
 import 'package:minimo/utils/form_validate_util.dart';
 import 'package:minimo/utils/snack_bar_util.dart';
 import 'package:provider/provider.dart';
@@ -53,7 +59,7 @@ class _PostInputScreenState extends State<PostInputScreen> {
                       label: '내용',
                       hintText: '과도한 개인 정보 노출에 주의 바랍니다.',
                       onChanged: (value) => selectedContent = value,
-                      validator: (value) => FormValidateUtil.validateContent(value),
+                      validator: (value) => FormValidateUtil.validateLength(value),
                     ),
                   ],
                 ),
@@ -87,18 +93,31 @@ class _PostInputScreenState extends State<PostInputScreen> {
           title: selectedTitle!,
           content: selectedContent!,
         ),
-        likeNum: 0, // 임시 likeNum
+        likeNum: 0,  // 임시 likeNum
         commentNum: 0,  // 임시 commentNum
         createdDate: DateTime.now(),  // 임시 createdDate
       );
 
       try {
         await postProvider.createPost(post: postModel);
+
         Navigator.of(context).pop();
         SnackBarUtil.showCustomSnackBar(context, '게시글이 등록되었습니다.');
 
       } catch (e) {
-        SnackBarUtil.showCommonErrorSnackBar(context);
+        if (e is DioException && e.response?.statusCode == HttpStatus.forbidden) {
+          DialogUtil.showCustomDialog(
+            context: context,
+            title: '계정 정지',
+            content: '계정이 누적 신고로 인해 정지되었습니다.\n일부 기능이 30일 동안 제한되며 추가 신고가 접수될 경우 정지 기간이 연장될 수 있습니다.',
+            negativeText: '닫기',
+            onNegativePressed: () {
+              Navigator.of(context).pop();
+            },
+          );
+        } else {
+          SnackBarUtil.showCommonErrorSnackBar(context);
+        }
       }
     }
   }

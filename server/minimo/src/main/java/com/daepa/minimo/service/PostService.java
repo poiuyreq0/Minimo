@@ -1,7 +1,7 @@
 package com.daepa.minimo.service;
 
-import com.daepa.minimo.domain.Post;
-import com.daepa.minimo.domain.User;
+import com.daepa.minimo.domain.*;
+import com.daepa.minimo.dto.LikeDto;
 import com.daepa.minimo.dto.PostDto;
 import com.daepa.minimo.repository.PostRepository;
 import com.daepa.minimo.repository.UserRepository;
@@ -27,8 +27,105 @@ public class PostService {
         return post.getId();
     }
 
+    public void deletePost(Long postId) {
+        Post findPost = postRepository.findPost(postId);
+        postRepository.deletePost(findPost);
+    }
+
+    public Long sendComment(Long postId, Long parentCommentId, Long writerId, Comment comment) {
+        Post findPost = postRepository.findPost(postId);
+        comment.updatePost(findPost);
+
+        User writer = userRepository.findUser(writerId);
+        comment.updateWriter(writer);
+
+        if (parentCommentId != null) {
+            Comment parentComment = postRepository.findComment(parentCommentId);
+            comment.updateParentComment(parentComment);
+        }
+
+        postRepository.saveComment(comment);
+        findPost.increaseCommentNum();
+
+        return comment.getId();
+    }
+
+    public void deleteComment(Long commentId) {
+        Comment findComment = postRepository.findComment(commentId);
+        findComment.updateIsVisible();
+    }
+
     @Transactional(readOnly = true)
-    public List<PostDto> findPosts(LocalDateTime lastDate) {
-        return postRepository.findPosts(lastDate);
+    public List<PostDto> getPostsWithPaging(Long userId, Integer count, LocalDateTime lastDate, Boolean isPostMine, Boolean isCommentMine) {
+        if (isPostMine) {
+            return postRepository.getPostsByUserWithPaging(userId, count, lastDate);
+        } else if (isCommentMine) {
+            return postRepository.getPostsByUserCommentWithPaging(userId, count, lastDate);
+        } else {
+            return postRepository.getPostsWithPaging(userId, count, lastDate);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public PostDto getPost(Long postId, Long userId) {
+        return postRepository.getPost(postId, userId);
+    }
+
+    public LikeDto updatePostLikeNum(Long postId, Long userId) {
+        Post findPost = postRepository.findPost(postId);
+        LikeDto like = postRepository.getPostLikeNum(postId, userId);
+
+        // 좋아요 - 1
+        if (like.getIsLikeSet()) {
+            postRepository.deletePostLikeRecord(userId);
+            findPost.decreaseLikeNum();
+
+            like.setLikeNum(findPost.getLikeNum());
+            like.setIsLikeSet(false);
+
+        // 좋아요 + 1
+        } else {
+            PostLikeRecord likeRecord = PostLikeRecord.builder()
+                            .post(findPost)
+                            .likerId(userId)
+                            .build();
+
+            postRepository.savePostLikeRecord(likeRecord);
+            findPost.increaseLikeNum();
+
+            like.setLikeNum(findPost.getLikeNum());
+            like.setIsLikeSet(true);
+        }
+
+        return like;
+    }
+
+    public LikeDto updateCommentLikeNum(Long commentId, Long userId) {
+        Comment findComment = postRepository.findComment(commentId);
+        LikeDto like = postRepository.getCommentLikeNum(commentId, userId);
+
+        // 좋아요 - 1
+        if (like.getIsLikeSet()) {
+            postRepository.deleteCommentLikeRecord(userId);
+            findComment.decreaseLikeNum();
+
+            like.setLikeNum(findComment.getLikeNum());
+            like.setIsLikeSet(false);
+
+        // 좋아요 + 1
+        } else {
+            CommentLikeRecord likeRecord = CommentLikeRecord.builder()
+                    .comment(findComment)
+                    .likerId(userId)
+                    .build();
+
+            postRepository.saveCommentLikeRecord(likeRecord);
+            findComment.increaseLikeNum();
+
+            like.setLikeNum(findComment.getLikeNum());
+            like.setIsLikeSet(true);
+        }
+
+        return like;
     }
 }

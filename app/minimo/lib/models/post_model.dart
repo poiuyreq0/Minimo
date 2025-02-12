@@ -12,12 +12,12 @@ class PostModel with _$PostModel{
     required int id,
     required int writerId,
     required String writerNickname,
-    List<CommentModel>? comments,
     required PostContentModel postContent,
     required int likeNum,
-    bool? isLikeSet,
     required int commentNum,
     required DateTime createdDate,
+    bool? isLikeSet,
+    List<CommentModel>? comments,
   }) = _PostModel;
 
   factory PostModel.fromJson(Map<String, dynamic> json) => _$PostModelFromJson(json);

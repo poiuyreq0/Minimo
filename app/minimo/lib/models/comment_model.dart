@@ -7,15 +7,16 @@ part 'comment_model.g.dart';
 class CommentModel with _$CommentModel{
   const factory CommentModel({
     required int id,
-    int? postId,
+    required int postId,
+    int? parentCommentId,
     required int writerId,
     required String writerNickname,
-    List<CommentModel>? comments,
     required String content,
     required int likeNum,
-    required bool isLikeSet,
     required bool isVisible,
     required DateTime createdDate,
+    required bool isLikeSet,
+    List<CommentModel>? comments,
   }) = _CommentModel;
 
   factory CommentModel.fromJson(Map<String, dynamic> json) => _$CommentModelFromJson(json);

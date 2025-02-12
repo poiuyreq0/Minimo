@@ -46,4 +46,20 @@ public class Post extends BaseTimeEntity {
     public void updateWriter(User writer) {
         this.writer = writer;
     }
+
+    public void decreaseLikeNum() {
+        likeNum -= 1;
+    }
+
+    public void increaseLikeNum() {
+        likeNum += 1;
+    }
+
+    public void decreaseCommentNum() {
+        commentNum -= 1;
+    }
+
+    public void increaseCommentNum() {
+        commentNum += 1;
+    }
 }
