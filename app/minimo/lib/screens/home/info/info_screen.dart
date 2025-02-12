@@ -11,6 +11,7 @@ import 'package:minimo/providers/letter_provider.dart';
 import 'package:minimo/providers/post_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/home/info/info_input_screen.dart';
+import 'package:minimo/screens/home/info/user_ban_list_screen.dart';
 import 'package:minimo/screens/user_image_screen.dart';
 import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/time_stamp_util.dart';
@@ -165,6 +166,16 @@ class InfoScreen extends StatelessWidget {
                     );
                   },
                 ),
+                LittleTitleComponent(
+                  title: '사용자 차단 관리',
+                  onPressed: () {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => UserBanListScreen(),
+                        )
+                    );
+                  },
+                ),
                 const Divider(
                   height: 48,
                   indent: 16,
@@ -182,9 +193,9 @@ class InfoScreen extends StatelessWidget {
                   title: '로그아웃',
                   onPressed: () async {
                     await context.read<UserProvider>().logout();
-                    context.read<LetterProvider>().logout();
-                    context.read<PostProvider>().logout();
-                    context.read<ChatProvider>().logout();
+                    context.read<LetterProvider>().cleanCache();
+                    context.read<PostProvider>().cleanCache();
+                    context.read<ChatProvider>().cleanCache();
 
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(builder: (context) => AuthScreen(),),

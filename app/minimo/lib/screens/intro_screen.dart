@@ -13,20 +13,7 @@ class IntroScreen extends StatefulWidget {
 }
 
 class _IntroScreenState extends State<IntroScreen> {
-  late final PageController pageController;
-  int currentPage = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    pageController = PageController();
-  }
-
-  @override
-  void dispose() {
-    pageController.dispose();
-    super.dispose();
-  }
+  int currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -36,17 +23,16 @@ class _IntroScreenState extends State<IntroScreen> {
         children: [
           Expanded(
             child: PageView(
-              controller: pageController,
               onPageChanged: (int page) {
                 setState(() {
-                  currentPage = page;
+                  currentIndex = page;
                 });
               },
               children: [
                 _introPage(
                   title: '미니모 - Mini Moment\n짝사랑의 작은 순간들',
                   content: '안녕하세요! 만나서 반갑습니다 :)\n미니모에 오신 것을 환영합니다.',
-                  subContent: '',
+                  isImageSet: true,
                 ),
                 _introPage(
                   title: '혹시 마음을 표현하고 싶은 사람이 있나요?',
@@ -57,6 +43,7 @@ class _IntroScreenState extends State<IntroScreen> {
                   title: '새로운 말동무를 원하시나요?',
                   content: '당신의 유리병 편지는 어디로든 갈 수 있어요 \u{1F30A}',
                   subContent: '유리병 편지를 주운 누군가가 당신과 이야기하기를 원할지도 몰라요 \u{1F340}',
+                  isButtonSet: true,
                 ),
               ],
             ),
@@ -72,7 +59,9 @@ class _IntroScreenState extends State<IntroScreen> {
   Widget _introPage({
     required String title,
     required String content,
-    required String subContent,
+    String? subContent,
+    bool isImageSet = false,
+    bool isButtonSet = false,
   }) {
     return Stack(
       children: [
@@ -82,7 +71,7 @@ class _IntroScreenState extends State<IntroScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (currentPage == 0)
+              if (isImageSet)
                 Image.asset(
                   UrlUtil.iconClear,
                   width: 200,
@@ -104,17 +93,18 @@ class _IntroScreenState extends State<IntroScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              Text(
-                subContent,
-                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  fontSize: 18,
-                  color: Theme.of(context).colorScheme.secondary,
+              if (subContent != null)
+                Text(
+                  subContent,
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontSize: 18,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
                 ),
-              ),
             ],
           ),
         ),
-        if (currentPage == 2)
+        if (isButtonSet)
           Positioned(
             bottom: 0,
             right: 0,
@@ -140,18 +130,21 @@ class _IntroScreenState extends State<IntroScreen> {
   Widget _pageIndicator() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(3, (index) {
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          margin: const EdgeInsets.symmetric(horizontal: 4.0),
-          width: currentPage == index ? 20.0 : 8.0,
-          height: 8.0,
-          decoration: BoxDecoration(
-            color: currentPage == index ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.tertiary,
-            borderRadius: BorderRadius.circular(4.0),
-          ),
-        );
-      }),
+      children: List.generate(
+        3,
+        (index) {
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            margin: const EdgeInsets.symmetric(horizontal: 4.0),
+            width: currentIndex == index ? 20.0 : 8.0,
+            height: 8.0,
+            decoration: BoxDecoration(
+              color: currentIndex == index ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.tertiary,
+              borderRadius: BorderRadius.circular(4.0),
+            ),
+          );
+        },
+      ),
     );
   }
 }

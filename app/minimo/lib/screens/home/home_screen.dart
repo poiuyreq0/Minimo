@@ -14,6 +14,7 @@ import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/home/letter_box/letter_detail_screen.dart';
 import 'package:minimo/utils/dialog_util.dart';
 import 'package:minimo/utils/snack_bar_util.dart';
+import 'package:minimo/utils/url_util.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 
@@ -38,17 +39,17 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       builder: (context, tuple, child) {
         return FutureBuilder<Map<LetterOption, List<SimpleLetterModel>>>(
-            future: letterProvider.getEveryNewLetters(userId: userId, count: 5),
+            future: letterProvider.getSimpleLetters(userId: userId, count: 5),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
-                return SplashScreen();
+                return const SizedBox.shrink();
               } else {
                 return RefreshIndicator(
                   onRefresh: () async {
                     setState(() {});
                   },
                   child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
+                    physics: const AlwaysScrollableScrollPhysics(),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24.0),
                       child: Column(
@@ -59,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const SizedBox(height: 8),
                           LittleLetterListComponent(
-                            title: '당신에게 온 편지',
+                            title: '나에게 온 편지',
                             letters: snapshot.data![LetterOption.ALL]!,
                             onPressed: () async {
                               _showReceiveLetterDialog(context, LetterOption.ALL);
@@ -147,8 +148,9 @@ class _HomeScreenState extends State<HomeScreen> {
           try {
             LetterProvider letterProvider = context.read<LetterProvider>();
             UserProvider userProvider = context.read<UserProvider>();
+            final userId = userProvider.userCache!.id;
 
-            final letter = await letterProvider.receiveLetter(receiverId: userProvider.userCache!.id, letterOption: letterOption);
+            final letter = await letterProvider.receiveLetter(receiverId: userId, letterOption: letterOption);
             await userProvider.getItemNum(item: Item.NET);
 
             Navigator.of(context).pushAndRemoveUntil(

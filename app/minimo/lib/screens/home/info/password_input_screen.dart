@@ -56,7 +56,7 @@ class _PasswordInputScreenState extends State<PasswordInputScreen> {
                 const SizedBox(height: 16),
                 TitleComponent(
                   title: '새 비밀번호 입력',
-                  helpText: '비밀번호는 8자 이상으로 영문 소문자와 숫자가 필요합니다.',
+                  helpText: '비밀번호는 영문 소문자와 숫자를 포함하여 최소 8자 이상이어야 합니다.',
                 ),
                 InputFormContainer(
                   children: [
@@ -110,7 +110,7 @@ class _PasswordInputScreenState extends State<PasswordInputScreen> {
           if (e.code == 'invalid-credential') {
             SnackBarUtil.showCustomSnackBar(context, '비밀번호가 맞지 않습니다.');
           } else if (e.code == 'unknown') {
-            SnackBarUtil.showCustomSnackBar(context, '비밀번호는 8자 이상으로 영문 소문자와 숫자가 필요합니다.');
+            SnackBarUtil.showCustomSnackBar(context, '비밀번호는 영문 소문자와 숫자를 포함하여 최소 8자 이상이어야 합니다.');
           }
         } else {
           SnackBarUtil.showCommonErrorSnackBar(context);

@@ -1,16 +1,19 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:minimo/components/ads/banner_ad_component.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:minimo/components/images/bottle_icon_component.dart';
 import 'package:minimo/components/images/net_icon_component.dart';
 import 'package:minimo/enums/bottom_navigation.dart';
 import 'package:minimo/enums/user_role.dart';
 import 'package:minimo/providers/chat_provider.dart';
 import 'package:minimo/providers/letter_provider.dart';
+import 'package:minimo/providers/post_provider.dart';
 import 'package:minimo/screens/home/item_store_screen.dart';
 import 'package:minimo/screens/home/letter_box/letter_detail_screen.dart';
+import 'package:minimo/screens/post/post_detail_screen.dart';
 import 'package:minimo/screens/post/post_input_screen.dart';
 import 'package:minimo/screens/post/post_list_screen.dart';
+import 'package:minimo/screens/post/user_post_list_screen.dart';
 import 'package:minimo/utils/navigator_util.dart';
 import 'package:minimo/utils/url_util.dart';
 import 'package:minimo/providers/user_provider.dart';
@@ -37,7 +40,7 @@ class RootScreen extends StatefulWidget {
 }
 
 class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
-  int currentIndex = BottomNavigation.HOME.index;
+  ValueNotifier<int> currentIndex = ValueNotifier<int>(BottomNavigation.HOME.index);
 
   @override
   void initState() {
@@ -46,12 +49,16 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
     // 알림 클릭 시 넘어온 데이터에 따라 화면 이동
     if (widget.data != null) {
       if (widget.data!['tag'] == 'chat') {
-        currentIndex = BottomNavigation.CHAT.index;
+        currentIndex.value = BottomNavigation.CHAT.index;
         _moveChatRoom(NavigatorUtil.navigatorKey, widget.data!);
 
       } else if (widget.data!['tag'] == 'letter') {
-        currentIndex = BottomNavigation.HOME.index;
+        currentIndex.value = BottomNavigation.HOME.index;
         _moveLetterDetail(NavigatorUtil.navigatorKey, widget.data!);
+
+      } else if (widget.data!['tag'] == 'comment' || widget.data!['tag'] == 'subComment') {
+        currentIndex.value = BottomNavigation.POST.index;
+        _movePostDetail(NavigatorUtil.navigatorKey, widget.data!);
       }
     }
 
@@ -62,11 +69,8 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
     int userId = navigatorKey.currentContext!.read<UserProvider>().userCache!.id;
 
     try {
-      // 채팅방이 존재하는지 확인
-      final checkedRoomId = await navigatorKey.currentContext!.read<ChatProvider>().checkChatRoomByUser(roomId: int.parse(data['roomId']), userId: userId);
-
       navigatorKey.currentState!.push(
-          MaterialPageRoute(builder: (context) => ChatRoomScreen(roomId: checkedRoomId, userId: userId, otherUserId: int.parse(data['senderId']), otherUserNickname: data['senderNickname'],),)
+          MaterialPageRoute(builder: (context) => ChatRoomScreen(roomId: int.parse(data['roomId']), userId: userId, otherUserId: int.parse(data['senderId']), otherUserNickname: data['senderNickname'],),)
       );
 
     } catch (e) {
@@ -75,8 +79,10 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
   }
 
   void _moveLetterDetail(GlobalKey<NavigatorState> navigatorKey, Map<String, dynamic> data) async {
+    int userId = navigatorKey.currentContext!.read<UserProvider>().userCache!.id;
+
     try {
-      final letter = await navigatorKey.currentContext!.read<LetterProvider>().getLetterByUser(letterId: int.parse(data['letterId']));
+      final letter = await navigatorKey.currentContext!.read<LetterProvider>().getLetterByUser(letterId: int.parse(data['letterId']), userId: userId, userRole: UserRole.SENDER);
 
       navigatorKey.currentState!.push(
           MaterialPageRoute(builder: (context) => LetterDetailScreen(letter: letter, userRole: UserRole.SENDER,),),
@@ -84,6 +90,21 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
 
     } catch (e) {
       debugPrint('RootScreen moveLetterDetail error: $e');
+    }
+  }
+
+  void _movePostDetail(GlobalKey<NavigatorState> navigatorKey, Map<String, dynamic> data) async {
+    int userId = navigatorKey.currentContext!.read<UserProvider>().userCache!.id;
+
+    try {
+      final post = await navigatorKey.currentContext!.read<PostProvider>().getPost(postId: int.parse(data['postId']), userId: userId);
+
+      navigatorKey.currentState!.push(
+        MaterialPageRoute(builder: (context) => PostDetailScreen(post: post),)
+      );
+
+    } catch (e) {
+      debugPrint('RootScreen _movePostDetail error: $e');
     }
   }
 
@@ -105,51 +126,62 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _renderAppBar(context, currentIndex),
-      body: IndexedStack(
-        index: currentIndex,
-        children: _renderScreen(),
-      ),
-      bottomNavigationBar: _renderBottomNavigationBar(),
-      floatingActionButton: _renderFloatingActionButton(currentIndex),
+    return ValueListenableBuilder<int>(
+      valueListenable: currentIndex,
+      builder: (context, index, child) {
+        return Scaffold(
+          appBar: _renderAppBar(context, index),
+          body: _renderScreen(index),
+          bottomNavigationBar: _renderBottomNavigationBar(index),
+          floatingActionButton: _renderFloatingActionButton(index),
+        );
+      }
     );
   }
 
-  List<Widget> _renderScreen() {
-    return [
+  Widget _renderScreen(index) {
+    final screens = [
       HomeScreen(),
       PostListScreen(),
       ChatListScreen(),
     ];
+
+    return screens[index];
   }
 
-  BottomNavigationBar _renderBottomNavigationBar() {
+  BottomNavigationBar _renderBottomNavigationBar(int index) {
     return BottomNavigationBar(
-      currentIndex: currentIndex,
+      currentIndex: index,
       onTap: (index) {
-        setState(() {
-          currentIndex = index;
-        });
+        currentIndex.value = index;
       },
       items: [
         BottomNavigationBarItem(
-          icon: Icon(Icons.home),
+          icon: FaIcon(
+            FontAwesomeIcons.house,
+            size: 20,
+          ),
           label: '홈',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.view_list),
+          icon: FaIcon(
+            FontAwesomeIcons.tableList,
+            size: 20,
+          ),
           label: '게시판',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.forum),
+          icon: FaIcon(
+            FontAwesomeIcons.solidComments,
+            size: 20,
+          ),
           label: '채팅',
         ),
       ],
     );
   }
 
-  AppBar? _renderAppBar(BuildContext context, int currentIndex) {
+  AppBar? _renderAppBar(BuildContext context, int index) {
     List<AppBar?> appBars = [
       AppBar(
         actions: [
@@ -191,56 +223,59 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
                 child: Ink(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
                   decoration: AppStyle.getSubBoxDecoration(context),
-                  child: Row(
-                    children: [
-                      NetIconComponent(),
-                      const SizedBox(width: 4),
-                      Selector<UserProvider, int>(
-                        selector: (context, userProvider) => userProvider.userCache!.netNum,
-                        builder: (context, netNum, child) {
-                          if (netNum < 100) {
-                            return Text(
-                              '$netNum',
-                              style: Theme.of(context).textTheme.titleMedium,
-                            );
-                          } else {
-                            return Text(
-                              '99+',
-                              style: Theme.of(context).textTheme.titleMedium,
-                            );
-                          }
-                        },
-                      ),
-                      const SizedBox(width: 8),
-                      BottleIconComponent(),
-                      const SizedBox(width: 4),
-                      Selector<UserProvider, int>(
-                        selector: (context, userProvider) => userProvider.userCache!.bottleNum,
-                        builder: (context, bottleNum, child) {
-                          if (bottleNum < 100) {
-                            return Text(
-                              '$bottleNum',
-                              style: Theme.of(context).textTheme.titleMedium,
-                            );
-                          } else {
-                            return Text(
-                              '99+',
-                              style: Theme.of(context).textTheme.titleMedium,
-                            );
-                          }
-                        },
-                      ),
-                      const SizedBox(width: 4),
-                      SizedBox(
-                        height: 16,
-                        child: VerticalDivider(),
-                      ),
-                      Icon(
-                        Icons.add_circle,
-                        color: Theme.of(context).colorScheme.primary,
-                        size: 18,
-                      ),
-                    ],
+                  child: IntrinsicHeight(
+                    child: Row(
+                      children: [
+                        NetIconComponent(),
+                        const SizedBox(width: 4),
+                        Selector<UserProvider, int>(
+                          selector: (context, userProvider) => userProvider.userCache!.netNum,
+                          builder: (context, netNum, child) {
+                            if (netNum < 100) {
+                              return Text(
+                                '$netNum',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              );
+                            } else {
+                              return Text(
+                                '99+',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              );
+                            }
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        BottleIconComponent(),
+                        const SizedBox(width: 4),
+                        Selector<UserProvider, int>(
+                          selector: (context, userProvider) => userProvider.userCache!.bottleNum,
+                          builder: (context, bottleNum, child) {
+                            if (bottleNum < 100) {
+                              return Text(
+                                '$bottleNum',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              );
+                            } else {
+                              return Text(
+                                '99+',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              );
+                            }
+                          },
+                        ),
+                        const SizedBox(width: 4),
+                        const VerticalDivider(
+                          thickness: 1.2,
+                          indent: 3,
+                          endIndent: 3,
+                        ),
+                        Icon(
+                          Icons.add_circle,
+                          color: Theme.of(context).colorScheme.primary,
+                          size: 18,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -259,6 +294,33 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
                   icon: Icon(Icons.create),
                   onPressed: () {
                     _sideNavigatorPush(PostInputScreen());
+                  },
+                ),
+                PopupMenuButton<String>(
+                  onSelected: (value) {
+                    if (value == '작성한 게시글') {
+                      _sideNavigatorPush(UserPostListScreen(isPostMine: true));
+                    } else if (value == '댓글 단 게시글') {
+                      _sideNavigatorPush(UserPostListScreen(isCommentMine: true));
+                    }
+                  },
+                  itemBuilder: (context) {
+                    return [
+                      PopupMenuItem<String>(
+                        value: '작성한 게시글',
+                        child: Text(
+                          '작성한 게시글',
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                      ),
+                      PopupMenuItem<String>(
+                        value: '댓글 단 게시글',
+                        child: Text(
+                          '댓글 단 게시글',
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                      ),
+                    ];
                   },
                 ),
               ],
@@ -294,10 +356,10 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
       ),
     ];
 
-    return appBars[currentIndex];
+    return appBars[index];
   }
 
-  FloatingActionButton? _renderFloatingActionButton(int currentIndex) {
+  FloatingActionButton? _renderFloatingActionButton(int index) {
     List<FloatingActionButton?> buttons = [
       FloatingActionButton(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -309,13 +371,16 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
             )
           );
         },
-        child: Icon(Icons.create),
+        child: FaIcon(
+          FontAwesomeIcons.pencil,
+          size: 20,
+        ),
       ),
       null,
       null,
     ];
 
-    return buttons[currentIndex];
+    return buttons[index];
   }
 
   void _sideNavigatorPush(Widget screen) {

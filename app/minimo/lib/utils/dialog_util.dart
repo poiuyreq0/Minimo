@@ -11,9 +11,11 @@ class DialogUtil {
     VoidCallback? onPositivePressed,
     required String negativeText,
     required VoidCallback onNegativePressed,
+    bool barrierDismissible = true,
   }) async {
     await showDialog(
       context: context,
+      barrierDismissible: barrierDismissible,
       builder: (context) {
         return AlertDialog(
           title: Text(
@@ -25,6 +27,15 @@ class DialogUtil {
             style: Theme.of(context).textTheme.titleMedium,
           ) : widgetContent,
           actions: [
+            TextButton(
+              onPressed: onNegativePressed,
+              child: Text(
+                negativeText,
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  color: Theme.of(context).colorScheme.tertiary,
+                ),
+              ),
+            ),
             if (positiveText != null)
               TextButton(
                 onPressed: onPositivePressed,
@@ -35,15 +46,6 @@ class DialogUtil {
                   ),
                 ),
               ),
-            TextButton(
-              onPressed: onNegativePressed,
-              child: Text(
-                negativeText,
-                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color: Theme.of(context).colorScheme.tertiary,
-                ),
-              ),
-            ),
           ],
         );
       },

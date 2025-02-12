@@ -27,7 +27,7 @@ class UserImageScreen extends StatelessWidget {
                     future: auth.currentUser!.getIdToken(),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
-                        return const CircularProgressIndicator();
+                        return const SizedBox.shrink();
                       } else {
                         return ExtendedImage.network(
                           UrlUtil.getUserImageUrl(userId!),
@@ -38,7 +38,7 @@ class UserImageScreen extends StatelessWidget {
                           fit: BoxFit.contain,
                           loadStateChanged: (state) {
                             if (state.extendedImageLoadState == LoadState.loading || state.extendedImageInfo == null) {
-                              return const CircularProgressIndicator();
+                              return const SizedBox.shrink();
                             }
                           },
                           mode: ExtendedImageMode.gesture,

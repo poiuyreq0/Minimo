@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -62,7 +65,7 @@ class _LetterInputScreenState extends State<LetterInputScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: Text('유리병 편지 띄우기'),
+        title: Text('편지 쓰기'),
       ),
       body: SingleChildScrollView(
         child: Form(
@@ -167,17 +170,13 @@ class _LetterInputScreenState extends State<LetterInputScreen> {
                 ElevatedButton(
                   style: AppStyle.getPositiveElevatedButtonStyle(context),
                   onPressed: () => _showSendLetterDialog(context),
-                  child: Text.rich(
-                    TextSpan(
-                      children: [
-                        TextSpan(
-                          text: '유리병 편지 띄우기 ',
-                        ),
-                        WidgetSpan(
-                          child: BottleIconComponent(),
-                        ),
-                      ],
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('유리병 편지 띄우기'),
+                      const SizedBox(width: 4),
+                      BottleIconComponent(),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -267,7 +266,19 @@ class _LetterInputScreenState extends State<LetterInputScreen> {
 
     } catch (e) {
       Navigator.of(context).pop();
-      SnackBarUtil.showCommonErrorSnackBar(context);
+      if (e is DioException && e.response?.statusCode == HttpStatus.forbidden) {
+        DialogUtil.showCustomDialog(
+          context: context,
+          title: '계정 정지',
+          content: '계정이 누적 신고로 인해 정지되었습니다.\n일부 기능이 30일 동안 제한되며 추가 신고가 접수될 경우 정지 기간이 연장될 수 있습니다.',
+          negativeText: '닫기',
+          onNegativePressed: () {
+            Navigator.of(context).pop();
+          },
+        );
+      } else {
+        SnackBarUtil.showCommonErrorSnackBar(context);
+      }
     }
   }
 }

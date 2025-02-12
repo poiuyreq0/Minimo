@@ -61,20 +61,17 @@ class _RewardAdComponentState extends State<RewardAdComponent> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        WidgetSpan(
-                          child: icon,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      icon,
+                      Text(
+                        ' x ${widget.count} ',
+                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                          fontSize: 18,
                         ),
-                        TextSpan(
-                          text: ' x ${widget.count}',
-                          style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            fontSize: 18,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                   const Divider(
                     height: 32,

@@ -147,6 +147,7 @@ class AppStyle {
 
   static ButtonStyle getPositiveElevatedButtonStyle(BuildContext context) {
     return ElevatedButton.styleFrom(
+      textStyle: Theme.of(context).textTheme.titleMedium,
       backgroundColor: Theme.of(context).colorScheme.primary,
       foregroundColor: Theme.of(context).colorScheme.onPrimary,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -155,6 +156,7 @@ class AppStyle {
 
   static ButtonStyle getNegativeElevatedButtonStyle(BuildContext context) {
     return ElevatedButton.styleFrom(
+      textStyle: Theme.of(context).textTheme.titleMedium,
       backgroundColor: Theme.of(context).colorScheme.tertiary,
       foregroundColor: Theme.of(context).colorScheme.onTertiary,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

@@ -1,3 +1,3 @@
 enum BottomNavigation {
-  HOME, CHAT
+  HOME, POST, CHAT,
 }

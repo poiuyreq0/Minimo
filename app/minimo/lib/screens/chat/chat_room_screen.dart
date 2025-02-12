@@ -53,12 +53,12 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   @override
   Widget build(BuildContext context) {
     ChatProvider chatProvider = context.read<ChatProvider>();
-    chatProvider.currentRoomIdCache = widget.roomId;
-    final userId = context.read<UserProvider>().userCache!.id;
 
     return PopScope(
       onPopInvoked: (didPop) {
-        chatProvider.exitChatRoom(userId: widget.userId);
+        if (didPop) {
+          chatProvider.exitChatRoom();
+        }
       },
       child: Scaffold(
         resizeToAvoidBottomInset: true,
@@ -66,6 +66,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           title: Text(widget.otherUserNickname),
           actions: [
             PopupMenuButton<String>(
+              padding: const EdgeInsets.all(16),
               onSelected: (value) {
                 if (value == '나가기') {
                   DialogUtil.showCustomDialog(
@@ -83,6 +84,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                         SnackBarUtil.showCustomSnackBar(context, '채팅방을 나갔습니다.');
 
                       } catch (e) {
+                        Navigator.of(context).pop();
                         SnackBarUtil.showCommonErrorSnackBar(context);
                       }
                     },
@@ -108,114 +110,133 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           ],
         ),
         body: FutureBuilder<List<ChatMessageModel>>(
-          future: chatProvider.enterChatRoom(roomId: widget.roomId, userId: widget.userId),
+          future: chatProvider.enterChatRoom(roomId: widget.roomId, userId: widget.userId, count: 50),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
+              return const SizedBox.shrink();
+            } else if (snapshot.hasError) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                DialogUtil.showCustomDialog(
+                  context: context,
+                  title: '채팅방',
+                  content: '사라진 채팅방입니다.',
+                  negativeText: '닫기',
+                  onNegativePressed: () {
+                    Navigator.of(context).popUntil(
+                          (route) => route.isFirst,
+                    );
+                  },
+                );
+              });
+              return const SizedBox.shrink();
             } else {
               return Column(
                 children: [
                   Expanded(
                     child: GestureDetector(
+                      behavior: HitTestBehavior.translucent,
                       onTap: () {
                         FocusScope.of(context).unfocus();
                       },
-                      child: Container(
-                        color: Theme.of(context).colorScheme.surface,
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          child: Selector<ChatProvider, bool>(
-                            selector: (context, chatProvider) => chatProvider.chatRoomScreenSelectorTrigger,
-                            builder: (context, _, child) {
-                              final chatMessages = chatProvider.chatMessagesCache[widget.roomId]!;
+                      child: NotificationListener<ScrollNotification>(
+                        onNotification: (scrollNotification) {
+                          if (scrollNotification is ScrollUpdateNotification) {
+                            if (scrollNotification.metrics.pixels >= scrollNotification.metrics.maxScrollExtent) {
+                              chatProvider.getMessagesByRoomWithPaging(roomId: widget.roomId, userId: widget.userId, count: 50, isFirst: false);
+                            }
+                          }
+                          return false;
+                        },
+                        child: Selector<ChatProvider, bool>(
+                          selector: (context, chatProvider) => chatProvider.chatRoomScreenSelectorTrigger,
+                          builder: (context, _, child) {
+                            // createdDate 내림차순 리스트를 오름차순으로 바꿈으로써 최신 메시지를 뒤(아래)로 이동
+                            final chatMessages = chatProvider.chatMessagesCache[widget.roomId]!..reversed.toList();
 
-                              return ListView.separated(
-                                reverse: true,
-                                shrinkWrap: true,
-                                itemCount: chatMessages.length,
-                                itemBuilder: (context, index) {
-                                  final isMine = userId == chatMessages[index].senderId;
+                            return ListView.separated(
+                              controller: scrollController,
+                              reverse: true,  // 스크롤 방향만 변환
+                              shrinkWrap: true,
+                              itemCount: chatMessages.length,
+                              itemBuilder: (context, index) {
+                                final isMine = widget.userId == chatMessages[index].senderId;
 
-                                  late final bool isShowTimeStamp;
-                                  if (index == 0) {
+                                late final bool isShowTimeStamp;
+                                if (index == 0) {
+                                  isShowTimeStamp = true;
+                                } else {
+                                  final isSameNextMinute = TimeStampUtil.isSameMinute(chatMessages[index].createdDate, chatMessages[index-1].createdDate);
+                                  final isSameNextUser = chatMessages[index].senderId == chatMessages[index-1].senderId;
+                                  if (!isSameNextMinute) {
+                                    isShowTimeStamp = true;
+                                  } else if (!isSameNextUser) {
                                     isShowTimeStamp = true;
                                   } else {
-                                    final isSameNextMinute = TimeStampUtil.isSameMinute(chatMessages[index].createdDate, chatMessages[index-1].createdDate);
-                                    final isSameNextUser = chatMessages[index].senderId == chatMessages[index-1].senderId;
-                                    if (!isSameNextMinute) {
-                                      isShowTimeStamp = true;
-                                    } else if (!isSameNextUser) {
-                                      isShowTimeStamp = true;
-                                    } else {
-                                      isShowTimeStamp = false;
-                                    }
+                                    isShowTimeStamp = false;
                                   }
+                                }
 
-                                  late final bool isShowFirst;
-                                  if (index == chatMessages.length - 1) {
+                                late final bool isShowFirst;
+                                if (index == chatMessages.length - 1) {
+                                  isShowFirst = true;
+                                } else {
+                                  final isSamePreviousMinute = TimeStampUtil.isSameMinute(chatMessages[index].createdDate, chatMessages[index+1].createdDate);
+                                  final isSamePreviousUser = chatMessages[index].senderId == chatMessages[index+1].senderId;
+                                  if (!isSamePreviousMinute) {
+                                    isShowFirst = true;
+                                  } else if (!isSamePreviousUser) {
                                     isShowFirst = true;
                                   } else {
-                                    final isSamePreviousMinute = TimeStampUtil.isSameMinute(chatMessages[index].createdDate, chatMessages[index+1].createdDate);
-                                    final isSamePreviousUser = chatMessages[index].senderId == chatMessages[index+1].senderId;
-                                    if (!isSamePreviousMinute) {
-                                      isShowFirst = true;
-                                    } else if (!isSamePreviousUser) {
-                                      isShowFirst = true;
-                                    } else {
-                                      isShowFirst = false;
-                                    }
+                                    isShowFirst = false;
                                   }
+                                }
 
-                                  return Column(
-                                    children: [
-                                      if (index == chatMessages.length - 1)
-                                        Padding(
-                                          padding: const EdgeInsets.all(16),
-                                          child: Text(
-                                            TimeStampUtil.getRoomTimeStamp(chatMessages[index].createdDate),
-                                            style: Theme.of(context).textTheme.displaySmall,
-                                          ),
-                                        ),
-                                      ChatMessageComponent(
-                                        otherUserId: widget.otherUserId,
-                                        otherUserNickname: widget.otherUserNickname,
-                                        chatMessage: chatMessages[index],
-                                        isMine: isMine,
-                                        isShowFirst: isShowFirst,
-                                        isShowTimeStamp: isShowTimeStamp,
-                                      ),
-                                      if (index == 0)
-                                        const SizedBox(height: 10),
-                                    ],
-                                  );
-                                },
-                                separatorBuilder: (context, index) {
-                                  late final bool isSameDay;
-                                  if (index < chatMessages.length - 1) {
-                                    isSameDay = TimeStampUtil.isSameDay(chatMessages[index].createdDate, chatMessages[index+1].createdDate);
-                                  } else {
-                                    isSameDay = false;
-                                  }
-                                  if (!isSameDay) {
-                                    return Padding(
-                                      padding: const EdgeInsets.only(left: 16, right: 16, top: 36, bottom: 16),
-                                      child: Center(
+                                return Column(
+                                  children: [
+                                    if (index == chatMessages.length - 1)
+                                      Padding(
+                                        padding: const EdgeInsets.all(16),
                                         child: Text(
                                           TimeStampUtil.getRoomTimeStamp(chatMessages[index].createdDate),
                                           style: Theme.of(context).textTheme.displaySmall,
                                         ),
                                       ),
-                                    );
-                                  } else {
-                                    return const SizedBox(height: 6);
-                                  }
-                                },
-                                controller: scrollController,
-                              );
-                            },
-                          ),
+                                    ChatMessageComponent(
+                                      otherUserId: widget.otherUserId,
+                                      otherUserNickname: widget.otherUserNickname,
+                                      chatMessage: chatMessages[index],
+                                      isMine: isMine,
+                                      isShowFirst: isShowFirst,
+                                      isShowTimeStamp: isShowTimeStamp,
+                                    ),
+                                    if (index == 0)
+                                      const SizedBox(height: 10),
+                                  ],
+                                );
+                              },
+                              separatorBuilder: (context, index) {
+                                late final bool isSameDay;
+                                if (index < chatMessages.length - 1) {
+                                  isSameDay = TimeStampUtil.isSameDay(chatMessages[index].createdDate, chatMessages[index+1].createdDate);
+                                } else {
+                                  isSameDay = false;
+                                }
+                                if (!isSameDay) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(left: 16, right: 16, top: 36, bottom: 16),
+                                    child: Center(
+                                      child: Text(
+                                        TimeStampUtil.getRoomTimeStamp(chatMessages[index].createdDate),
+                                        style: Theme.of(context).textTheme.displaySmall,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  return const SizedBox(height: 6);
+                                }
+                              },
+                            );
+                          },
                         ),
                       ),
                     ),

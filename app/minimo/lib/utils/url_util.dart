@@ -5,10 +5,10 @@ class UrlUtil {
   static const String _domain = 'http://192.168.0.7:8080';
   // static const String _domain = 'http://3.36.241.194:8080';
 
-  static String userApi = '$_domain/api/user';
-  static String letterApi = '$_domain/api/letter';
-  static String postApi = '$_domain/api/post';
-  static String chatApi = '$_domain/api/chat';
+  static String userApi = '$_domain/api-user';
+  static String letterApi = '$_domain/api-letter';
+  static String postApi = '$_domain/api-post';
+  static String chatApi = '$_domain/api-chat';
   static String chatWebSocket = '$_domain/ws-chat';
 
   static const String icon = 'assets/icons/icon.png';
@@ -18,6 +18,6 @@ class UrlUtil {
   static const String iconBottle = 'assets/icons/bottle.png';
 
   static String getUserImageUrl(int userId) {
-    return '$userApi/$userId/image';
+    return '$userApi/users/$userId/image';
   }
 }

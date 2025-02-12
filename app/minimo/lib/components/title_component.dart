@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:minimo/utils/dialog_util.dart';
 
 class TitleComponent extends StatelessWidget {
@@ -33,7 +34,11 @@ class TitleComponent extends StatelessWidget {
               if (helpText.isNotEmpty)
                 IconButton(
                   iconSize: 16,
-                  icon: Icon(Icons.help_outline),
+                  icon: FaIcon(
+                    FontAwesomeIcons.circleQuestion,
+                    color: Theme.of(context).colorScheme.tertiary,
+                    size: 14,
+                  ),
                   onPressed: () {
                     DialogUtil.showCustomDialog(
                       context: context,
@@ -51,18 +56,12 @@ class TitleComponent extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text.rich(
-                TextSpan(
-                  children: [
-                    TextSpan(
-                      text: buttonText,
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    if (buttonTextIcon != null)
-                      WidgetSpan(child: buttonTextIcon!),
-                  ],
-                ),
+              Text(
+                buttonText,
+                style: Theme.of(context).textTheme.titleSmall,
               ),
+              if (buttonTextIcon != null)
+                buttonTextIcon!,
               if (onPressed != null)
                 Icon(
                   Icons.chevron_right,

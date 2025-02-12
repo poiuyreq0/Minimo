@@ -22,8 +22,21 @@ class TimeStampUtil {
     return DateFormat('yyyy-MM-dd').format(target);
   }
 
-  static String getLetterTimeStamp(DateTime target) {
-    return DateFormat('yy년 M월 d일 a h시 m분', 'ko_KR').format(target);
+  static String getDetailTimeStamp(DateTime target) {
+    return DateFormat('yyyy.MM.dd a h시 m분', 'ko_KR').format(target);
+  }
+
+  static String getSimpleTimeStamp(DateTime target) {
+    final current = DateTime.now();
+    late final String result;
+
+    if (isSameYear(current, target)) {
+      result = DateFormat('MM/dd HH:mm').format(target);
+    } else {
+      result = DateFormat('yy/MM/dd HH:mm').format(target);
+    }
+
+    return result;
   }
 
   static String getMessageTimeStamp(DateTime target) {

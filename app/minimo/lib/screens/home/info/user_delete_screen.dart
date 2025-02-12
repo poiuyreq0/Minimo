@@ -77,9 +77,9 @@ class _UserDeleteScreenState extends State<UserDeleteScreen> {
 
       try {
         await userProvider.deleteUser(password: password!);
-        context.read<LetterProvider>().logout();
-        context.read<PostProvider>().logout();
-        context.read<ChatProvider>().logout();
+        context.read<LetterProvider>().cleanCache();
+        context.read<PostProvider>().cleanCache();
+        context.read<ChatProvider>().cleanCache();
 
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => AuthScreen(),),
