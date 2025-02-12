@@ -9,6 +9,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:image/image.dart' as img;
 import 'package:minimo/enums/letter_state.dart';
 import 'package:minimo/providers/chat_provider.dart';
+import 'package:minimo/providers/letter_provider.dart';
+import 'package:minimo/providers/post_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/utils/dio_util.dart';
 import 'package:minimo/screens/auth_screen.dart';
@@ -30,6 +32,14 @@ class NotificationUtil {
   static const letterChannelName = '편지';
   static const letterTag = 'letter';
 
+  static const commentChannelId = 'minimo_comment_channel_id';
+  static const commentChannelName = '댓글';
+  static const commentTag = 'comment';
+
+  static const subCommentChannelId = 'minimo_sub_comment_channel_id';
+  static const subCommentChannelName = '대댓글';
+  static const subCommentTag = 'subComment';
+
   static void initializeNotification(GlobalKey<NavigatorState> navigatorKey) async {
     // Flutter Local Notifications
 
@@ -40,7 +50,7 @@ class NotificationUtil {
         const AndroidNotificationChannel(
           defaultChannelId,
           defaultChannelName,
-          importance: Importance.defaultImportance,
+          importance: Importance.high,
         ));
 
     // chat 알림 채널 생성
@@ -60,6 +70,26 @@ class NotificationUtil {
         const AndroidNotificationChannel(
           letterChannelId,
           letterChannelName,
+          importance: Importance.max,
+        ));
+
+    // comment 알림 채널 생성
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(
+        const AndroidNotificationChannel(
+          commentChannelId,
+          commentChannelName,
+          importance: Importance.max,
+        ));
+
+    // subComment 알림 채널 생성
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(
+        const AndroidNotificationChannel(
+          subCommentChannelId,
+          subCommentChannelName,
           importance: Importance.max,
         ));
 
@@ -119,6 +149,12 @@ class NotificationUtil {
 
     } else if (message.data['tag'] == letterTag) {
       _showLetterNotification(message);
+
+    } else if (message.data['tag'] == commentTag) {
+      _showCommentNotification(message);
+
+    } else if (message.data['tag'] == subCommentTag) {
+      _showSubCommentNotification(message);
     }
   }
 
@@ -126,17 +162,35 @@ class NotificationUtil {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       debugPrint('FCM | 포그라운드 메시지 수신: ${message.data}');
 
+      LetterProvider letterProvider = navigatorKey.currentContext!.read<LetterProvider>();
       ChatProvider chatProvider = navigatorKey.currentContext!.read<ChatProvider>();
-      final userId = navigatorKey.currentContext!.read<UserProvider>().userCache!.id;
+      PostProvider postProvider = navigatorKey.currentContext!.read<PostProvider>();
+
       final currentRoomId = chatProvider.currentRoomIdCache;
+      final currentPostId = postProvider.currentPostIdCache;
 
       // 현재 채팅방에 있지 않을 때
       if (message.data['tag'] == chatTag && currentRoomId != int.parse(message.data['roomId'])) {
-        chatProvider.refreshChatListScreen();
+        chatProvider.refreshChatListScreenNewChatRooms();
         _showChatNotification(message);
 
       } else if (message.data['tag'] == letterTag) {
+        // 편지 화면 추가 필요
+        letterProvider.refreshLetterListScreenNewLetters();
         _showLetterNotification(message);
+
+      } else if (message.data['tag'] == commentTag || message.data['tag'] == subCommentTag) {
+        // 현재 해당 게시글에 있을 때
+        if (currentPostId == int.parse(message.data['postId'])) {
+          postProvider.refreshPostDetailScreen();
+        // 현재 해당 게시글에 있지 않을 때
+        } else {
+          if (message.data['tag'] == commentTag) {
+            _showCommentNotification(message);
+          } else if (message.data['tag'] == subCommentTag) {
+            _showSubCommentNotification(message);
+          }
+        }
       }
     });
   }
@@ -231,6 +285,56 @@ class NotificationUtil {
           importance: Importance.max,
           priority: Priority.high,
           tag: letterTag,
+          largeIcon: ByteArrayAndroidBitmap(userIcon),
+        ),
+      ),
+      payload: jsonEncode(message.data),
+    );
+  }
+
+  static void _showCommentNotification(RemoteMessage message) async {
+    final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    final userIcon = await _getUserIcon(int.parse(message.data['writerId']));
+
+    final title = '${message.data['writerNickname']} 님이 댓글을 남겼어요 \u{1F4AC}';
+    final body = message.data['content'];
+
+    await flutterLocalNotificationsPlugin.show(
+      int.parse(message.data['postId']),
+      title,
+      body,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          commentChannelId,
+          commentChannelName,
+          importance: Importance.max,
+          priority: Priority.high,
+          tag: commentTag,
+          largeIcon: ByteArrayAndroidBitmap(userIcon),
+        ),
+      ),
+      payload: jsonEncode(message.data),
+    );
+  }
+
+  static void _showSubCommentNotification(RemoteMessage message) async {
+    final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    final userIcon = await _getUserIcon(int.parse(message.data['writerId']));
+
+    final title = '${message.data['writerNickname']} 님이 대댓글을 남겼어요 \u{1F4AC}';
+    final body = message.data['content'];
+
+    await flutterLocalNotificationsPlugin.show(
+      int.parse(message.data['postId']),
+      title,
+      body,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          subCommentChannelId,
+          subCommentChannelName,
+          importance: Importance.max,
+          priority: Priority.high,
+          tag: subCommentTag,
           largeIcon: ByteArrayAndroidBitmap(userIcon),
         ),
       ),
