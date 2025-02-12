@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:minimo/components/images/user_network_image_component.dart';
 import 'package:minimo/models/chat_room_model.dart';
-import 'package:minimo/models/user_nickname_model.dart';
+import 'package:minimo/models/chat_room_user_model.dart';
 import 'package:minimo/screens/chat/chat_room_screen.dart';
 import 'package:minimo/utils/time_stamp_util.dart';
 import 'package:tuple/tuple.dart';
@@ -118,7 +118,7 @@ class ChatRoomElementComponent extends StatelessWidget {
     );
   }
 
-  Tuple2<int?, String?> _getOtherUser(List<UserNicknameModel> userNicknameModels) {
+  Tuple2<int?, String?> _getOtherUser(List<ChatRoomUserModel> userNicknameModels) {
     if (userNicknameModels.length == 1) {
       return const Tuple2(null, null);
     }

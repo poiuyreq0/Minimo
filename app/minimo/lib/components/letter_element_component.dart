@@ -21,6 +21,8 @@ class LetterElementComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userId = context.read<UserProvider>().userCache!.id;
+
     final displayUser = _getDisplayUser(context);
     final displayUserRole = displayUser.item1;
     final displayUserId = displayUser.item2;

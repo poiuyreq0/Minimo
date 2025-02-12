@@ -6,13 +6,13 @@ import com.daepa.minimo.domain.ChatRoomUser;
 import com.daepa.minimo.domain.User;
 import com.daepa.minimo.dto.ChatMessageDto;
 import com.daepa.minimo.dto.ChatRoomDto;
-import com.daepa.minimo.exception.ChatRoomNotFoundException;
 import com.daepa.minimo.repository.ChatRepository;
 import com.daepa.minimo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
 
@@ -35,8 +35,8 @@ public class ChatService {
         findChatMessage.updateIsRead();
     }
 
-    public List<ChatMessageDto> findMessagesByRoom(Long roomId, Long userId) {
-        return chatRepository.findMessagesByRoom(roomId, userId);
+    public List<ChatMessageDto> getMessagesByRoomWithPaging(Long roomId, Long userId, Integer count, LocalDateTime lastDate) {
+        return chatRepository.getMessagesByRoomWithPaging(roomId, userId, lastDate, count);
     }
 
     public void disconnectChatRoom(Long roomId, Long userId) {
@@ -58,30 +58,13 @@ public class ChatService {
     }
 
     @Transactional(readOnly = true)
-    public void checkChatRoomByUser(Long roomId, Long userId) {
-        User findUser = userRepository.findUser(userId);
-        List<ChatRoomUser> chatRoomUsers = findUser.getChatRoomUserList();
-        validateChatRoomNotNull(roomId, chatRoomUsers);
-    }
-
-    @Transactional(readOnly = true)
-    public List<ChatRoomDto> findChatRoomsByUser(Long userId) {
-        return chatRepository.findChatRoomsByUser(userId);
+    public List<ChatRoomDto> getChatRoomsByUserWithPaging(Long userId, Integer count, LocalDateTime lastDate) {
+        return chatRepository.getChatRoomsByUserWithPaging(userId, count, lastDate);
     }
 
     private void deleteChatRoomIfOwnerless(ChatRoom chatRoom) {
         if (chatRoom.getChatRoomUserList().isEmpty()) {
             chatRepository.deleteChatRoom(chatRoom);
-        }
-    }
-
-    private void validateChatRoomNotNull(Long roomId, List<ChatRoomUser> chatRoomUsers) {
-        ChatRoomUser findChatRoomUser = chatRoomUsers.stream()
-                .filter(chatRoomUser -> chatRoomUser.getChatRoom().getId().equals(roomId))
-                .findFirst()
-                .orElse(null);
-        if (findChatRoomUser == null) {
-            throw new ChatRoomNotFoundException();
         }
     }
 }

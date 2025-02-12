@@ -11,18 +11,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/chat")
+@RequestMapping("/api-chat")
 public class ChatApiController {
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatService chatService;
     private final FcmService fcmService;
 
-    @PostMapping("/message/send")
+    @PostMapping("/messages")
     public ResponseEntity<Map<String, Long>> sendMessage(@RequestBody ChatMessageDto chatMessageDto) {
         ChatMessage chatMessage = chatService.sendMessage(chatMessageDto.getRoomId(), chatMessageDto.toChatMessage());
 
@@ -36,7 +37,7 @@ public class ChatApiController {
         return ResponseEntity.ok(Map.of("messageId", chatMessage.getId()));
     }
 
-    @PostMapping("/message/read")
+    @PostMapping("/messages/read")
     public ResponseEntity<Map<String, Long>> readMessage(@RequestBody ReadChatDto readChatDto) {
         messagingTemplate.convertAndSend(
                 "/topic/room/" + readChatDto.getRoomId() + "/read",
@@ -47,30 +48,27 @@ public class ChatApiController {
         return ResponseEntity.ok(Map.of("messageId", readChatDto.getMessageId()));
     }
 
-    @PostMapping("/room/{id}")
-    public ResponseEntity<List<ChatMessageDto>> getMessagesByRoom(@PathVariable("id") Long roomId, @RequestParam("userId") Long userId) {
-        messagingTemplate.convertAndSend(
-                "/topic/room/" + roomId + "/enter",
-                userId
-        );
+    @PostMapping("/rooms/{id}/messages")
+    public ResponseEntity<List<ChatMessageDto>> getMessagesByRoomWithPaging(@PathVariable("id") Long roomId, @RequestParam("userId") Long userId, @RequestParam("count") Integer count, @RequestParam(value = "lastDate", required = false) LocalDateTime lastDate) {
+        // 처음 채팅방 입장 시 메시지 읽음 표시
+        if (lastDate == null) {
+            messagingTemplate.convertAndSend(
+                    "/topic/room/" + roomId + "/enter",
+                    userId
+            );
+        }
 
-        List<ChatMessageDto> messageDtos = chatService.findMessagesByRoom(roomId, userId);
+        List<ChatMessageDto> messageDtos = chatService.getMessagesByRoomWithPaging(roomId, userId, count, lastDate);
         return ResponseEntity.ok(messageDtos);
     }
 
-    @GetMapping("/room/{id}/check")
-    public ResponseEntity<Map<String, Long>> checkChatRoomByUser(@PathVariable("id") Long roomId, @RequestParam("userId") Long userId) {
-        chatService.checkChatRoomByUser(roomId, userId);
-        return ResponseEntity.ok(Map.of("roomId", roomId));
-    }
-
-    @GetMapping("/room/user")
-    public ResponseEntity<List<ChatRoomDto>> getChatRoomsByUser(@RequestParam("userId") Long userId) {
-        List<ChatRoomDto> chatRooms = chatService.findChatRoomsByUser(userId);
+    @GetMapping("/rooms/user")
+    public ResponseEntity<List<ChatRoomDto>> getChatRoomsByUserWithPaging(@RequestParam("userId") Long userId, @RequestParam("count") Integer count, @RequestParam(value = "lastDate", required = false) LocalDateTime lastDate) {
+        List<ChatRoomDto> chatRooms = chatService.getChatRoomsByUserWithPaging(userId, count, lastDate);
         return ResponseEntity.ok(chatRooms);
     }
 
-    @PostMapping("/room/{id}/disconnect")
+    @PostMapping("/rooms/{id}/disconnect")
     public ResponseEntity<Map<String, Long>> disconnectChatRoom(@PathVariable("id") Long roomId, @RequestParam("userId") Long userId) {
         chatService.disconnectChatRoom(roomId, userId);
         return ResponseEntity.ok(Map.of("roomId", roomId));

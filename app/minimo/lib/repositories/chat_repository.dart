@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:minimo/models/read_chat_model.dart';
+import 'package:minimo/utils/date_picker_util.dart';
 import 'package:minimo/utils/dio_util.dart';
 import 'package:minimo/utils/url_util.dart';
 import 'package:minimo/models/chat_message_model.dart';
@@ -93,7 +93,7 @@ class ChatRepository {
     required ChatMessageModel chatMessage,
   }) async {
     final resp = await _dio.post(
-        '$_chatApiUrl/message/send',
+        '$_chatApiUrl/messages',
         data: chatMessage.toJson(),
     );
 
@@ -104,21 +104,26 @@ class ChatRepository {
     required ReadChatModel readChat,
   }) async {
     final resp = await _dio.post(
-      '$_chatApiUrl/message/read',
+      '$_chatApiUrl/messages/read',
       data: readChat.toJson(),
     );
 
     return resp.data['messageId'];
   }
 
-  Future<List<ChatMessageModel>> readMessages({
+  Future<List<ChatMessageModel>> getMessagesByRoom({
     required int roomId,
     required int userId,
+    required int count,
+    required DateTime? lastDate,
   }) async {
     final resp = await _dio.post(
-      '$_chatApiUrl/room/$roomId',
+      '$_chatApiUrl/rooms/$roomId/messages',
       queryParameters: {
         'userId': userId,
+        'count': count,
+        if (lastDate != null)
+          'lastDate': lastDate.toIso8601String(),
       }
     );
 
@@ -127,27 +132,18 @@ class ChatRepository {
     ).toList();
   }
 
-  Future<int> checkChatRoomByUser({
-    required int roomId,
+  Future<List<ChatRoomModel>> getChatRoomsByUserWithPaging({
     required int userId,
+    required int count,
+    required DateTime? lastDate,
   }) async {
     final resp = await _dio.get(
-      '$_chatApiUrl/room/$roomId/check',
+      '$_chatApiUrl/rooms/user',
       queryParameters: {
         'userId': userId,
-      }
-    );
-
-    return resp.data['roomId'];
-  }
-
-  Future<List<ChatRoomModel>> getChatRoomsByUser({
-    required int userId,
-  }) async {
-    final resp = await _dio.get(
-      '$_chatApiUrl/room/user',
-      queryParameters: {
-        'userId': userId,
+        'count': count,
+        if (lastDate != null)
+          'lastDate': lastDate.toIso8601String(),
       }
     );
 
@@ -161,7 +157,7 @@ class ChatRepository {
     required int userId,
   }) async {
     final resp = await _dio.post(
-      '$_chatApiUrl/room/$roomId/disconnect',
+      '$_chatApiUrl/rooms/$roomId/disconnect',
       queryParameters: {
         'userId': userId,
       }

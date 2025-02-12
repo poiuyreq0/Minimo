@@ -18,18 +18,18 @@ class LetterRepository {
     required LetterModel letter,
   }) async {
     final resp = await _dio.post(
-      '$_letterApiUrl/send',
+      '$_letterApiUrl/letters',
       data: letter.toJson(),
     );
     return resp.data['letterId'];
   }
 
-  Future<Map<LetterOption, List<SimpleLetterModel>>> getEveryNewLetters({
+  Future<Map<LetterOption, List<SimpleLetterModel>>> getSimpleLetters({
     required int userId,
     required int count,
   }) async {
     final resp = await _dio.get(
-      '$_letterApiUrl/new/every',
+      '$_letterApiUrl/letters/simple',
       queryParameters: {
         'userId': userId,
         'count': count,
@@ -52,7 +52,7 @@ class LetterRepository {
     required LetterOption letterOption,
   }) async {
     final resp = await _dio.post(
-      '$_letterApiUrl/receive',
+      '$_letterApiUrl/letters/receive',
       queryParameters: {
         'receiverId': receiverId,
         'letterOption': letterOption.name,
@@ -63,18 +63,30 @@ class LetterRepository {
 
   Future<int> sinkLetter({
     required int letterId,
+    required int userId,
+    required UserRole userRole,
   }) async {
     final resp = await _dio.post(
-      '$_letterApiUrl/$letterId/sink',
+      '$_letterApiUrl/letters/$letterId/sink',
+      queryParameters: {
+        'userId': userId,
+        'userRole': userRole.name,
+      },
     );
     return resp.data['letterId'];
   }
 
   Future<int> returnLetter({
     required int letterId,
+    required int userId,
+    required UserRole userRole,
   }) async {
     final resp = await _dio.post(
-      '$_letterApiUrl/$letterId/return',
+      '$_letterApiUrl/letters/$letterId/return',
+      queryParameters: {
+        'userId': userId,
+        'userRole': userRole.name,
+      },
     );
     return resp.data['letterId'];
   }
@@ -85,7 +97,7 @@ class LetterRepository {
     required UserRole userRole,
   }) async {
     final resp = await _dio.post(
-      '$_letterApiUrl/$letterId/disconnect',
+      '$_letterApiUrl/letters/$letterId/disconnect',
       queryParameters: {
         'userId': userId,
         'userRole': userRole.name,
@@ -96,24 +108,58 @@ class LetterRepository {
 
   Future<int> connectLetter({
     required int letterId,
+    required int userId,
+    required UserRole userRole,
   }) async {
     final resp = await _dio.post(
-      '$_letterApiUrl/$letterId/connect',
+      '$_letterApiUrl/letters/$letterId/connect',
+      queryParameters: {
+        'userId': userId,
+        'userRole': userRole.name,
+      },
     );
     return resp.data['chatRoomId'];
   }
 
-  Future<List<LetterModel>> getLettersByUser({
+  Future<List<LetterModel>> getLettersByUserWithPaging({
     required int userId,
     required UserRole userRole,
     required LetterState letterState,
+    required int count,
+    required DateTime? lastDate,
   }) async {
     final resp = await _dio.get(
-      '$_letterApiUrl/user',
+      '$_letterApiUrl/letters/user',
       queryParameters: {
         'userId': userId,
         'userRole': userRole.name,
         'letterState': letterState.name,
+        'count': count,
+        if (lastDate != null)
+          'lastDate': lastDate.toIso8601String(),
+      },
+    );
+
+    return resp.data.map<LetterModel>(
+            (letter) => LetterModel.fromJson(letter)
+    ).toList();
+  }
+
+  Future<List<LetterModel>> getPreviousLettersByUser({
+    required int userId,
+    required UserRole userRole,
+    required LetterState letterState,
+    required DateTime lastDate,
+    required int count,
+  }) async {
+    final resp = await _dio.get(
+      '$_letterApiUrl/letters/user/previous',
+      queryParameters: {
+        'userId': userId,
+        'userRole': userRole.name,
+        'letterState': letterState.name,
+        'lastDate': lastDate.toIso8601String(),
+        'count': count,
       },
     );
 
@@ -124,9 +170,15 @@ class LetterRepository {
 
   Future<LetterModel> getLetterByUser({
     required int letterId,
+    required int userId,
+    required UserRole userRole,
   }) async {
     final resp = await _dio.get(
-      '$_letterApiUrl/$letterId/user',
+      '$_letterApiUrl/letters/$letterId/user',
+      queryParameters: {
+        'userId': userId,
+        'userRole': userRole.name,
+      },
     );
 
     return LetterModel.fromJson(resp.data);

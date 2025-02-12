@@ -8,8 +8,10 @@ import 'package:minimo/repositories/letter_repository.dart';
 
 class LetterProvider extends ChangeNotifier {
   final LetterRepository letterRepository;
+  List<LetterModel> lettersCache = [];
   bool homeScreenSelectorTrigger = true;
-  bool letterListScreenSelectorTrigger = true;
+  bool letterListScreenNewLettersSelectorTrigger = true;
+  bool letterListScreenPreviousLettersSelectorTrigger = true;
 
   LetterProvider({
     required this.letterRepository,
@@ -21,12 +23,11 @@ class LetterProvider extends ChangeNotifier {
     await letterRepository.sendLetter(letter: letter);
   }
 
-  // FutureBuilder
-  Future<Map<LetterOption, List<SimpleLetterModel>>> getEveryNewLetters({
+  Future<Map<LetterOption, List<SimpleLetterModel>>> getSimpleLetters({
     required int userId,
     required int count,
   }) async {
-    final resp = await letterRepository.getEveryNewLetters(userId: userId, count: count);
+    final resp = await letterRepository.getSimpleLetters(userId: userId, count: count);
 
     return resp;
   }
@@ -43,18 +44,22 @@ class LetterProvider extends ChangeNotifier {
 
   Future<void> sinkLetter({
     required int letterId,
+    required int userId,
+    required UserRole userRole,
   }) async {
-    await letterRepository.sinkLetter(letterId: letterId);
+    await letterRepository.sinkLetter(letterId: letterId, userId: userId, userRole: userRole);
 
-    _refreshLetterListScreenSelector();
+    _refreshLetterListScreenNewLettersSelector();
   }
 
   Future<void> returnLetter({
     required int letterId,
+    required int userId,
+    required UserRole userRole,
   }) async {
-    await letterRepository.returnLetter(letterId: letterId);
+    await letterRepository.returnLetter(letterId: letterId, userId: userId, userRole: userRole);
 
-    _refreshLetterListScreenSelector();
+    _refreshLetterListScreenNewLettersSelector();
   }
 
   Future<void> disconnectLetter({
@@ -64,33 +69,76 @@ class LetterProvider extends ChangeNotifier {
   }) async {
     await letterRepository.disconnectLetter(letterId: letterId, userId: userId, userRole: userRole);
 
-    _refreshLetterListScreenSelector();
+    _refreshLetterListScreenNewLettersSelector();
   }
 
   Future<int> connectLetter({
     required int letterId,
+    required int userId,
+    required UserRole userRole,
   }) async {
-    final resp = await letterRepository.connectLetter(letterId: letterId);
+    final resp = await letterRepository.connectLetter(letterId: letterId, userId: userId, userRole: userRole);
 
-    _refreshLetterListScreenSelector();
+    _refreshLetterListScreenNewLettersSelector();
     return resp;
   }
 
-  // FutureBuilder
-  Future<List<LetterModel>> getLettersByUser({
+  Future<List<LetterModel>> getLettersByUserWithPaging({
     required int userId,
     required UserRole userRole,
     required LetterState letterState,
+    required int count,
+    required bool isFirst,
   }) async {
-    final resp = await letterRepository.getLettersByUser(userId: userId, userRole: userRole, letterState: letterState);
-    return resp;
+    DateTime? lastDate;
+    if (isFirst) {
+      lastDate = null;
+    } else {
+      if (lettersCache.isEmpty) {
+        lastDate = DateTime.now();
+      } else {
+        if (letterState == LetterState.CONNECTED) {
+          lastDate = lettersCache.last.connectedDate!;
+        } else if (userRole == UserRole.SENDER) {
+          lastDate = lettersCache.last.createdDate!;
+        } else {
+          lastDate = lettersCache.last.receivedDate!;
+        }
+      }
+    }
+
+    final resp = await letterRepository.getLettersByUserWithPaging(userId: userId, userRole: userRole, letterState: letterState, count: count, lastDate: lastDate);
+    if (isFirst) {
+      lettersCache = resp;
+    } else {
+      lettersCache.addAll(resp);
+      _refreshLetterListScreenPreviousLettersSelector();
+    }
+
+    return lettersCache;
   }
 
   Future<LetterModel> getLetterByUser({
     required int letterId,
+    required int userId,
+    required UserRole userRole,
   }) async {
-    final resp = await letterRepository.getLetterByUser(letterId: letterId);
+    final resp = await letterRepository.getLetterByUser(letterId: letterId, userId: userId, userRole: userRole);
     return resp;
+  }
+
+  void refreshLetterListScreenNewLetters() {
+    _refreshLetterListScreenNewLettersSelector();
+  }
+
+  void _refreshLetterListScreenNewLettersSelector() {
+    letterListScreenNewLettersSelectorTrigger = !letterListScreenNewLettersSelectorTrigger;
+    notifyListeners();
+  }
+
+  void _refreshLetterListScreenPreviousLettersSelector() {
+    letterListScreenPreviousLettersSelectorTrigger = !letterListScreenPreviousLettersSelectorTrigger;
+    notifyListeners();
   }
 
   void _refreshHomeScreenSelector() {
@@ -98,10 +146,7 @@ class LetterProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _refreshLetterListScreenSelector() {
-    letterListScreenSelectorTrigger = !letterListScreenSelectorTrigger;
-    notifyListeners();
+  void cleanCache() {
+    lettersCache = [];
   }
-
-  void logout() {}
 }

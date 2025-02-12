@@ -6,9 +6,13 @@ import 'package:minimo/repositories/chat_repository.dart';
 
 class ChatProvider extends ChangeNotifier {
   final ChatRepository chatRepository;
+
+  List<ChatRoomModel> chatRoomsCache = [];
   Map<int, List<ChatMessageModel>> chatMessagesCache = {};
   int? currentRoomIdCache;
-  bool chatListScreenSelectorTrigger = true;
+
+  bool chatListScreenNewChatRoomsSelectorTrigger = true;
+  bool chatListScreenPreviousChatRoomsSelectorTrigger = true;
   bool chatRoomScreenSelectorTrigger = true;
 
   ChatProvider({
@@ -19,20 +23,21 @@ class ChatProvider extends ChangeNotifier {
   Future<List<ChatMessageModel>> enterChatRoom({
     required int roomId,
     required int userId,
+    required int count,
   }) async {
+    currentRoomIdCache = roomId;
+
     await chatRepository.enterChatRoom(roomId: roomId, userId: userId, updateChat: _updateChat, updateRead: _updateRead, updateReads: _updateReads);
-    final resp = await getMessagesByRoom(roomId: roomId, userId: userId);
+    final resp = await getMessagesByRoomWithPaging(roomId: roomId, userId: userId, count: count, isFirst: true);
 
     return resp;
   }
 
-  void exitChatRoom({
-    required int userId,
-  }) {
+  void exitChatRoom() {
     chatRepository.exitChatRoom();
     currentRoomIdCache = null;
 
-    _refreshChatListScreenSelector();
+    _refreshChatListScreenNewChatRoomsSelector();
   }
 
   // 웹소켓: 누군가가 보낸 메시지를 받았을 때
@@ -111,43 +116,69 @@ class ChatProvider extends ChangeNotifier {
     await chatRepository.readMessage(readChat: readChat);
   }
 
-  // 채팅방 입장 시 메시지 가져오기
-  // 후에 페이징 구현 필요
-  Future<List<ChatMessageModel>> getMessagesByRoom({
+  Future<List<ChatMessageModel>> getMessagesByRoomWithPaging({
     required int roomId,
     required int userId,
+    required int count,
+    required bool isFirst,
   }) async {
-    final resp = await chatRepository.readMessages(roomId: roomId, userId: userId);
+    DateTime? lastDate;
+    if (isFirst) {
+      lastDate = null;
+    } else {
+      if (chatMessagesCache[roomId]!.isEmpty) {
+        lastDate = DateTime.now();
+      } else {
+        lastDate = chatMessagesCache[roomId]!.last.createdDate;
+      }
+    }
 
-    chatMessagesCache.update(
-      roomId,
-      (value) => [
-        ...resp,
-      ]..sort((a, b) => b.createdDate.compareTo(a.createdDate),),
-      ifAbsent: () => [
-        ...resp,
-      ]..sort((a, b) => b.createdDate.compareTo(a.createdDate),),
-    );
+    final resp = await chatRepository.getMessagesByRoom(roomId: roomId, userId: userId, count: count, lastDate: lastDate);
+    if (isFirst) {
+      chatMessagesCache.update(
+        roomId,
+            (value) => resp,
+        ifAbsent: () => resp,
+      );
+    } else {
+      chatMessagesCache.update(
+        roomId,
+        (value) => [
+          ...value,
+          ...resp,
+        ],
+      );
+      _refreshChatRoomScreenSelector();
+    }
 
     return chatMessagesCache[roomId]!;
   }
 
-  Future<int> checkChatRoomByUser({
-    required int roomId,
+  Future<List<ChatRoomModel>> getChatRoomsByUserWithPaging({
     required int userId,
+    required int count,
+    required bool isFirst,
   }) async {
-    final resp = await chatRepository.checkChatRoomByUser(roomId: roomId, userId: userId);
+    DateTime? lastDate;
+    if (isFirst) {
+      lastDate = null;
+    } else {
+      if (chatRoomsCache.isEmpty) {
+        lastDate = DateTime.now();
+      } else {
+        lastDate = chatRoomsCache.last.lastMessage?.createdDate ?? chatRoomsCache.last.createdDate;
+      }
+    }
 
-    return resp;
-  }
+    final resp = await chatRepository.getChatRoomsByUserWithPaging(userId: userId, count: count, lastDate: lastDate);
+    if (isFirst) {
+      chatRoomsCache = resp;
+    } else {
+      chatRoomsCache.addAll(resp);
+      _refreshChatListScreenPreviousChatRoomsSelector();
+    }
 
-  // FutureBuilder
-  Future<List<ChatRoomModel>> getChatRoomsByUser({
-    required userId,
-  }) async {
-    final resp = await chatRepository.getChatRoomsByUser(userId: userId);
-
-    return resp;
+    return chatRoomsCache;
   }
 
   Future<void> disconnectChatRoom({
@@ -157,12 +188,17 @@ class ChatProvider extends ChangeNotifier {
     await chatRepository.disconnectChatRoom(roomId: roomId, userId: userId,);
   }
 
-  void refreshChatListScreen() {
-    _refreshChatListScreenSelector();
+  void refreshChatListScreenNewChatRooms() {
+    _refreshChatListScreenNewChatRoomsSelector();
   }
 
-  void _refreshChatListScreenSelector() {
-    chatListScreenSelectorTrigger = !chatListScreenSelectorTrigger;
+  void _refreshChatListScreenNewChatRoomsSelector() {
+    chatListScreenNewChatRoomsSelectorTrigger = !chatListScreenNewChatRoomsSelectorTrigger;
+    notifyListeners();
+  }
+
+  void _refreshChatListScreenPreviousChatRoomsSelector() {
+    chatListScreenPreviousChatRoomsSelectorTrigger = !chatListScreenPreviousChatRoomsSelectorTrigger;
     notifyListeners();
   }
 
@@ -171,7 +207,8 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void logout() {
+  void cleanCache() {
+    chatRoomsCache = [];
     chatMessagesCache = {};
     currentRoomIdCache = null;
   }

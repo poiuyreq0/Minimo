@@ -14,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
@@ -25,11 +27,6 @@ public class LetterService {
     private final ChatRepository chatRepository;
     private final ChatService chatService;
 
-    @Transactional(readOnly = true)
-    public Letter findLetter(Long letterId) {
-        return letterRepository.findLetter(letterId);
-    }
-
     public Long sendLetter(Long senderId, Letter letter) {
         User sender = userRepository.findUser(senderId);
         letter.updateSender(sender);
@@ -38,34 +35,36 @@ public class LetterService {
     }
 
     @Transactional(readOnly = true)
-    public List<SimpleLetterDto> findNewLettersByOption(Long userId, LetterOption letterOption, Integer count) {
-        User user = userRepository.findUser(userId);
-        return letterRepository.findNewLettersByOption(user, letterOption, count);
+    public Map<LetterOption, List<SimpleLetterDto>> getSimpleLetters(Long userId, Integer count) {
+        User findUser = userRepository.findUser(userId);
+        return letterRepository.getSimpleLetters(userId, findUser.getUserInfo(), count);
     }
 
     public Letter receiveLetter(Long receiverId, LetterOption letterOption) {
         User receiver = userRepository.findUser(receiverId);
-        Letter findLetter = letterRepository.findNewLetterByOption(receiver, letterOption);
+        Letter findLetter = letterRepository.getLetterByOption(receiverId, receiver.getUserInfo(), letterOption);
         validateLetterNotNull(findLetter);
 
         findLetter.updateReceiver(receiver);
-        letterRepository.saveReceivedRecord(LetterReceiveRecord.builder()
+        letterRepository.saveLetterReceiveRecord(LetterReceiveRecord.builder()
                         .letter(findLetter)
                         .receiverId(receiver.getId())
                         .build());
         return findLetter;
     }
 
-    public void sinkLetter(Long letterId) {
+    public void sinkLetter(Long letterId, Long userId, UserRole userRole) {
         Letter findLetter = letterRepository.findLetter(letterId);
         validateLetterNotNull(findLetter);
+        validateLetterOwner(findLetter, userId, userRole);
 
         letterRepository.deleteLetter(findLetter);
     }
 
-    public void returnLetter(Long letterId) {
+    public void returnLetter(Long letterId, Long userId, UserRole userRole) {
         Letter findLetter = letterRepository.findLetter(letterId);
         validateLetterNotNull(findLetter);
+        validateLetterOwner(findLetter, userId, userRole);
 
         findLetter.returnLetter();
         deleteLetterIfOwnerless(findLetter);
@@ -74,6 +73,7 @@ public class LetterService {
     public void disconnectLetter(Long letterId, Long userId, UserRole userRole) {
         Letter findLetter = letterRepository.findLetter(letterId);
         validateLetterNotNull(findLetter);
+        validateLetterOwner(findLetter, userId, userRole);
 
         // 편지 연결 끊기
         if (userRole == UserRole.SENDER) {
@@ -89,9 +89,11 @@ public class LetterService {
         }
     }
 
-    public Letter connectLetter(Long letterId) {
+    public Letter connectLetter(Long letterId, Long userId, UserRole userRole) {
         Letter findLetter = letterRepository.findLetter(letterId);
-        validateOwnersNotNull(findLetter);
+        validateLetterNotNull(findLetter);
+        validateLetterOwner(findLetter, userId, userRole);
+        validateLetterOwnersNotNull(findLetter);
 
         // 채팅방 생성 로직
         ChatRoom chatRoom = ChatRoom.builder().build();
@@ -111,14 +113,15 @@ public class LetterService {
     }
 
     @Transactional(readOnly = true)
-    public List<LetterDto> findLettersByUser(Long userId, UserRole userRole, LetterState letterState) {
-        return letterRepository.findLettersByUser(userId, userRole, letterState);
+    public List<LetterDto> getLettersByUserWithPaging(Long userId, UserRole userRole, LetterState letterState, Integer count, LocalDateTime lastDate) {
+        return letterRepository.getLettersByUserWithPaging(userId, userRole, letterState, count, lastDate);
     }
 
     @Transactional(readOnly = true)
-    public Letter findLetterByUser(Long letterId) {
+    public Letter getLetterByUser(Long letterId, Long userId, UserRole userRole) {
         Letter findLetter = letterRepository.findLetter(letterId);
         validateLetterNotNull(findLetter);
+        validateLetterOwner(findLetter, userId, userRole);
 
         return findLetter;
     }
@@ -135,7 +138,20 @@ public class LetterService {
         }
     }
 
-    private void validateOwnersNotNull(Letter letter) {
+    private void validateLetterOwner(Letter letter, Long userId, UserRole userRole) {
+        if (userRole == UserRole.SENDER && letter.getSender() != null) {
+            if (!letter.getSender().getId().equals(userId)) {
+                throw new LetterNotFoundException();
+            }
+        }
+        if ((userRole == UserRole.RECEIVER && letter.getReceiver() != null)) {
+            if (!letter.getReceiver().getId().equals(userId)) {
+                throw new LetterNotFoundException();
+            }
+        }
+    }
+
+    private void validateLetterOwnersNotNull(Letter letter) {
         if (letter.getSender() == null || letter.getReceiver() == null) {
             throw new UserNotFoundException();
         }

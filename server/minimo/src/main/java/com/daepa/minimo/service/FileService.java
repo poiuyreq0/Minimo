@@ -17,7 +17,7 @@ public class FileService {
 
     private final String DEFAULT_USER_IMAGE_PATH = USER_IMAGE_PATH + "icon_default_user.jpg";
 
-    public String findUserImagePath(ImageFile image) {
+    public String getUserImagePath(ImageFile image) {
         if (image == null) {
             return DEFAULT_USER_IMAGE_PATH;
         }

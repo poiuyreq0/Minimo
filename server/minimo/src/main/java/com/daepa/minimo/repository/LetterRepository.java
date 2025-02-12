@@ -1,5 +1,6 @@
 package com.daepa.minimo.repository;
 
+import com.daepa.minimo.common.embeddables.UserInfo;
 import com.daepa.minimo.common.enums.LetterOption;
 import com.daepa.minimo.common.enums.LetterState;
 import com.daepa.minimo.common.enums.UserRole;
@@ -8,20 +9,22 @@ import com.daepa.minimo.domain.LetterReceiveRecord;
 import com.daepa.minimo.domain.User;
 import com.daepa.minimo.dto.LetterDto;
 import com.daepa.minimo.dto.SimpleLetterDto;
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.core.types.dsl.DateTimePath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.daepa.minimo.domain.QLetter.letter;
 import static com.daepa.minimo.domain.QLetterReceiveRecord.letterReceiveRecord;
+import static com.daepa.minimo.domain.QUserBanRecord.userBanRecord;
 
 @RequiredArgsConstructor
 @Repository
@@ -33,7 +36,7 @@ public class LetterRepository {
         em.persist(letter);
     }
 
-    public void saveReceivedRecord(LetterReceiveRecord letterReceiveRecord) {
+    public void saveLetterReceiveRecord(LetterReceiveRecord letterReceiveRecord) {
         em.persist(letterReceiveRecord);
     }
 
@@ -42,48 +45,70 @@ public class LetterRepository {
     }
 
     // 새로운 편지 목록 조회
-    public List<SimpleLetterDto> findNewLettersByOption(User user, LetterOption letterOption, Integer count) {
-        BooleanExpression condition = matchNotReceivedLetter(user)
-                .and(matchUserInfoByOption(user, letterOption));
+    public Map<LetterOption, List<SimpleLetterDto>> getSimpleLetters(Long userId, UserInfo userInfo, Integer count) {
+        Map<LetterOption, List<SimpleLetterDto>> simpleLettersMap = new HashMap<>();
+        for (LetterOption letterOption: LetterOption.values()) {
+            BooleanExpression condition = matchUserInfoByOption(userId, userInfo, letterOption);
 
-        return queryFactory
-                .select(Projections.fields(
-                        SimpleLetterDto.class,
-                        letter.id,
-                        letter.sender.nickname.as("senderNickname"),
-                        letter.letterContent.title,
-                        letter.letterState
-                ))
-                .from(letter)
-                .where(condition)
-                .orderBy(letter.createdDate.desc())
-                .limit(count)
-                .fetch();
+            List<SimpleLetterDto> simpleLetters = queryFactory
+                    .select(Projections.fields(
+                            SimpleLetterDto.class,
+                            letter.id,
+                            letter.sender.nickname.as("senderNickname"),
+                            letter.letterContent.title,
+                            letter.letterState
+                    ))
+                    .from(letter)
+                    .leftJoin(letter.letterReceiveRecordList, letterReceiveRecord)
+                    .on(letterReceiveRecord.letter.id.eq(letter.id)
+                            .and(letterReceiveRecord.receiverId.eq(userId)))
+                    .leftJoin(userBanRecord)
+                    .on(userBanRecord.user.id.eq(userId)
+                            .and(userBanRecord.targetId.eq(letter.sender.id)))
+                    .where(condition)
+                    .where(letterReceiveRecord.id.isNull())
+                    .where(userBanRecord.id.isNull())
+                    .orderBy(letter.createdDate.desc())
+                    .limit(count)
+                    .fetch();
+
+            simpleLettersMap.put(letterOption, simpleLetters);
+        }
+
+        return simpleLettersMap;
     }
 
     // 새로운 편지 단건 조회
-    public Letter findNewLetterByOption(User user, LetterOption letterOption) {
-        BooleanExpression condition = matchNotReceivedLetter(user)
-                .and(matchUserInfoByOption(user, letterOption));
+    public Letter getLetterByOption(Long userId, UserInfo userInfo, LetterOption letterOption) {
+        BooleanExpression condition = matchUserInfoByOption(userId, userInfo, letterOption);
 
         return queryFactory
                 .selectFrom(letter)
+                .leftJoin(letter.letterReceiveRecordList, letterReceiveRecord)
+                .on(letterReceiveRecord.letter.id.eq(letter.id)
+                        .and(letterReceiveRecord.receiverId.eq(userId)))
+                .leftJoin(userBanRecord)
+                .on(userBanRecord.user.id.eq(userId)
+                        .and(userBanRecord.targetId.eq(letter.sender.id)))
                 .where(condition)
+                .where(letterReceiveRecord.id.isNull())
+                .where(userBanRecord.id.isNull())
                 .orderBy(letter.createdDate.desc())
                 .fetchFirst();
     }
 
     // 유저 편지 목록 조회
-    public List<LetterDto> findLettersByUser(Long userId, UserRole userRole, LetterState letterState) {
+    // 페이징: Letter createdDate, receivedDate, connectedDate
+    public List<LetterDto> getLettersByUserWithPaging(Long userId, UserRole userRole, LetterState letterState, Integer count, LocalDateTime lastDate) {
         BooleanExpression condition = userRole == UserRole.SENDER ? matchSender(userId, letterState) : matchReceiver(userId, letterState);
 
-        OrderSpecifier<?> orderBy;
+        DateTimePath<LocalDateTime> targetDate;
         if (letterState == LetterState.CONNECTED) {
-            orderBy = letter.connectedDate.desc();
+            targetDate = letter.connectedDate;
         } else if (userRole == UserRole.SENDER) {
-            orderBy = letter.createdDate.desc();
+            targetDate = letter.createdDate;
         } else {
-            orderBy = letter.receivedDate.desc();
+            targetDate = letter.receivedDate;
         }
 
         return queryFactory
@@ -107,7 +132,9 @@ public class LetterRepository {
                 .leftJoin(letter.sender)
                 .leftJoin(letter.receiver)
                 .where(condition)
-                .orderBy(orderBy)
+                .where(lastDate != null ? targetDate.lt(lastDate) : null)
+                .orderBy(targetDate.desc())
+                .limit(count)
                 .fetch();
     }
 
@@ -117,54 +144,35 @@ public class LetterRepository {
 
     // LetterScheduleService @Scheduled
     // 받은 편지 24시간 후 되돌리기
-    public void returnLetters(LocalDateTime current) {
-        queryFactory.update(letter)
+    public void returnLetters(LocalDateTime currentDate) {
+        queryFactory
+                .update(letter)
                 .set(letter.receiver, (User) null)
                 .set(letter.receivedDate, (LocalDateTime) null)
                 .set(letter.letterState, LetterState.SENT)
                 .where(letter.letterState.eq(LetterState.RECEIVED)
-                        .and(letter.receivedDate.lt(current.minusDays(1))))
+                        .and(letter.receivedDate.lt(currentDate.minusDays(1))))
                 .execute();
     }
 
-    private BooleanExpression matchNotReceivedLetter(User receiver) {
-        return letter.id.notIn(
-                JPAExpressions
-                        .select(letterReceiveRecord.letter.id)
-                        .from(letterReceiveRecord)
-                        .where(letterReceiveRecord.receiverId.eq(receiver.getId()))
-        );
-    }
-
-    private BooleanExpression matchUserInfoByOption(User user, LetterOption letterOption) {
-        BooleanExpression condition = letter.sender.id.ne(user.getId())
+    private BooleanExpression matchUserInfoByOption(Long userId, UserInfo userInfo, LetterOption letterOption) {
+        BooleanExpression condition = letter.sender.id.ne(userId)
                 .and(letter.letterState.eq(LetterState.SENT))
                 .and(letter.letterOption.eq(letterOption));
 
-        switch (letterOption) {
-            case LetterOption.ALL:
-                condition = condition
-                        .and(letter.userInfo.name.eq(user.getUserInfo().getName()))
-                        .and(letter.userInfo.mbti.eq(user.getUserInfo().getMbti()))
-                        .and(letter.userInfo.gender.eq(user.getUserInfo().getGender()))
-                        .and(letter.userInfo.birthday.eq(user.getUserInfo().getBirthday()));
-                break;
-            case LetterOption.NAME:
-                condition = condition
-                        .and(letter.userInfo.name.eq(user.getUserInfo().getName()));
-                break;
-            case LetterOption.MBTI:
-                condition = condition
-                        .and(letter.userInfo.mbti.eq(user.getUserInfo().getMbti()));
-                break;
-            case LetterOption.GENDER:
-                condition = condition
-                        .and(letter.userInfo.gender.eq(user.getUserInfo().getGender()));
-                break;
-            case LetterOption.NONE:
-                break;
-            default:
+        if (letterOption == LetterOption.ALL || letterOption == LetterOption.NAME) {
+            condition = condition.and(letter.userInfo.name.eq(userInfo.getName()));
         }
+        if (letterOption == LetterOption.ALL || letterOption == LetterOption.MBTI) {
+            condition = condition.and(letter.userInfo.mbti.eq(userInfo.getMbti()));
+        }
+        if (letterOption == LetterOption.ALL || letterOption == LetterOption.GENDER) {
+            condition = condition.and(letter.userInfo.gender.eq(userInfo.getGender()));
+        }
+        if (letterOption == LetterOption.ALL) {
+            condition = condition.and(letter.userInfo.birthday.eq(userInfo.getBirthday()));
+        }
+
         return condition;
     }
 

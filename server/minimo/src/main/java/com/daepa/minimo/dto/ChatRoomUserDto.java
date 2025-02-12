@@ -7,7 +7,8 @@ import lombok.*;
 @Builder
 @Getter
 @Setter
-public class ReadChatDto {
-    private Long roomId;
-    private Long messageId;
+public class ChatRoomUserDto {
+    private Long id;
+    private Long chatRoomId;
+    private String nickname;
 }
