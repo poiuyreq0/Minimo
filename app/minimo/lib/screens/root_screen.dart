@@ -5,6 +5,7 @@ import 'package:minimo/components/images/bottle_icon_component.dart';
 import 'package:minimo/components/images/net_icon_component.dart';
 import 'package:minimo/enums/bottom_navigation.dart';
 import 'package:minimo/enums/user_role.dart';
+import 'package:minimo/models/user_model.dart';
 import 'package:minimo/providers/chat_provider.dart';
 import 'package:minimo/providers/letter_provider.dart';
 import 'package:minimo/providers/post_provider.dart';
@@ -66,9 +67,9 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
   }
 
   void _moveChatRoom(GlobalKey<NavigatorState> navigatorKey, Map<String, dynamic> data) async {
-    int userId = navigatorKey.currentContext!.read<UserProvider>().userCache!.id;
-
     try {
+      final userId = navigatorKey.currentContext!.read<UserProvider>().userCache!.id;
+
       navigatorKey.currentState!.push(
           MaterialPageRoute(builder: (context) => ChatRoomScreen(roomId: int.parse(data['roomId']), userId: userId, otherUserId: int.parse(data['senderId']), otherUserNickname: data['senderNickname'],),)
       );
@@ -79,9 +80,8 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
   }
 
   void _moveLetterDetail(GlobalKey<NavigatorState> navigatorKey, Map<String, dynamic> data) async {
-    int userId = navigatorKey.currentContext!.read<UserProvider>().userCache!.id;
-
     try {
+      final userId = navigatorKey.currentContext!.read<UserProvider>().userCache!.id;
       final letter = await navigatorKey.currentContext!.read<LetterProvider>().getLetterByUser(letterId: int.parse(data['letterId']), userId: userId, userRole: UserRole.SENDER);
 
       navigatorKey.currentState!.push(
@@ -94,9 +94,8 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
   }
 
   void _movePostDetail(GlobalKey<NavigatorState> navigatorKey, Map<String, dynamic> data) async {
-    int userId = navigatorKey.currentContext!.read<UserProvider>().userCache!.id;
-
     try {
+      int userId = navigatorKey.currentContext!.read<UserProvider>().userCache!.id;
       final post = await navigatorKey.currentContext!.read<PostProvider>().getPost(postId: int.parse(data['postId']), userId: userId);
 
       navigatorKey.currentState!.push(
@@ -112,9 +111,10 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
     UserProvider userProvider = context.read<UserProvider>();
 
     FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
-      userProvider.updateFcmToken(fcmToken: fcmToken);
+      if (userProvider.userCache != null) {
+        userProvider.updateFcmToken(fcmToken: fcmToken);
+      }
       debugPrint('FCM Refresh Token: $fcmToken');
-
     }).onError((e) {
       debugPrint('FCM onTokenRefresh error: $e');
     });
@@ -388,14 +388,15 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) => screen,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          // 오른쪽에서 시작
-          const begin = Offset(1.0, 0.0);
-          const end = Offset.zero;
-          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: Curves.easeInOut));
-          var offsetAnimation = animation.drive(tween);
-
           return SlideTransition(
-            position: offsetAnimation,
+            position: animation.drive(
+              Tween(
+                begin: const Offset(1.0, 0.0),
+                end: Offset.zero,
+              ).chain(
+                CurveTween(curve: Curves.easeInOut),
+              ),
+            ),
             child: child,
           );
         },

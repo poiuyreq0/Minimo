@@ -153,12 +153,12 @@ class UserProvider extends ChangeNotifier {
   Future<void> deleteUser({
     required String password,
   }) async {
+    // 서버 데이터 삭제
+    await userRepository.deleteUser(userId: userCache!.id);
+
     // 파이어베이스 사용자 재인증
     final credential = EmailAuthProvider.credential(email: emailCache!, password: password);
     await _auth.currentUser!.reauthenticateWithCredential(credential);
-
-    // 서버 데이터 삭제
-    await userRepository.deleteUser(userId: userCache!.id);
 
     // 파이어베이스 회원 탈퇴
     await _auth.currentUser!.delete();
@@ -182,7 +182,6 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<void> logout() async {
-    await deleteFcmToken();
     await _auth.signOut();
     cleanCache();
   }

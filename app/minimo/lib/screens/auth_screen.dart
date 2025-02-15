@@ -36,15 +36,20 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('AuthScreen build start: ');
     UserProvider userProvider = context.read<UserProvider>();
 
     return StreamBuilder<User?>(
       stream: userProvider.userChanges(),
       builder: (context, snapshot) {
-        debugPrint('AuthScreen StreamBuilder start: ${snapshot.data}');
-
         // 로그인 및 이메일 인증 확인
-        if (!snapshot.hasData || (snapshot.hasData && !snapshot.data!.emailVerified)) {
+        if (snapshot.connectionState == ConnectionState.waiting || snapshot.hasError) {
+          debugPrint('AuthScreen StreamBuilder SplashScreen: ${snapshot.error}');
+          return SplashScreen();
+
+        } else if (!snapshot.hasData || (snapshot.hasData && !snapshot.data!.emailVerified)) {
+          debugPrint('AuthScreen SignInScreen start: ${snapshot.data}');
+
           return SignInScreen(
             resizeToAvoidBottomInset: true,
             actions: [
@@ -72,12 +77,13 @@ class _AuthScreenState extends State<AuthScreen> {
           );
 
         } else {
+          debugPrint('AuthScreen FutureBuilder start: ${snapshot.data}');
+
           return FutureBuilder<UserModel?>(
             future: userProvider.getUserByEmail(),
             builder: (context, snapshot) {
-              debugPrint('AuthScreen FutureBuilder start: ${snapshot.data}');
-
               if (snapshot.connectionState == ConnectionState.waiting || snapshot.hasError) {
+                debugPrint('AuthScreen FutureBuilder SplashScreen: ${snapshot.error}');
                 return SplashScreen();
               } else if (!snapshot.hasData) {
                 return IntroScreen();

@@ -19,7 +19,6 @@ class ChatProvider extends ChangeNotifier {
     required this.chatRepository,
   })  : super();
 
-  // FutureBuilder
   Future<List<ChatMessageModel>> enterChatRoom({
     required int roomId,
     required int userId,

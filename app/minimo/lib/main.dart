@@ -37,7 +37,7 @@ void main() async {
 }
 
 void runMinimoApp() {
-  debugPrint('runMinimoApp start');
+  debugPrint('main runMinimoApp start: ');
 
   final userRepository = UserRepository();
   final userProvider = UserProvider(userRepository: userRepository);

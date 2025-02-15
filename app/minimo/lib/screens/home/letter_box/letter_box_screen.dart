@@ -72,7 +72,7 @@ class LetterBoxScreen extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => LetterListScreen(
                         title: '고민 중인 편지',
-                        helpText: '연결을 기다리는 중입니다 :)\n편지는 24시간 후 다시 바다로 떠나게 됩니다.',
+                        helpText: '유리병을 연결하여 새로운 대화를 시작해보세요 :)\n편지는 24시간 후 다시 바다로 떠나게 됩니다.',
                         letterState: LetterState.RECEIVED,
                         userRole: UserRole.RECEIVER,
                       ),

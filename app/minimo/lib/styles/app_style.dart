@@ -19,9 +19,7 @@ class AppStyle {
   );
 
   TextTheme get mainTextTheme {
-    // return GoogleFonts.juaTextTheme().copyWith(
     return TextTheme(
-
       // Firebase UI Auth -> Sign in
       headlineSmall: mainTextStyle.copyWith(
         fontSize: 22,
@@ -102,6 +100,8 @@ class AppStyle {
   IconThemeData get mainIconThemeData => IconThemeData(
     color: mainColorScheme.secondary,
   );
+
+
 
   static BoxDecoration getMainBoxDecoration(BuildContext context) {
     return BoxDecoration(
