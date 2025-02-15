@@ -28,6 +28,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final LetterRepository letterRepository;
     private final ChatRepository chatRepository;
+    private final FileRepository fileRepository;
 
     @Transactional(readOnly = true)
     public User findUser(Long userId) {
@@ -57,23 +58,20 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public ImageFile getImage(Long userId) {
-        User findUser = userRepository.findUser(userId);
-        if (findUser == null) {
-            return null;
-        }
+    public String getImageFilePath(Long userId) {
+        ImageFile image = userRepository.getImage(userId);
 
-        return findUser.getProfileImage();
+        return fileRepository.getUserImagePath(image);
     }
 
-    public void updateImage(Long userId, ImageFile image) {
+    public void updateImage(Long userId, MultipartFile image) throws IOException {
         User findUser = userRepository.findUser(userId);
-        findUser.updateImage(image);
-    }
+        ImageFile previousImage = findUser.getProfileImage();
 
-    public void deleteImage(Long userId) {
-        User findUser = userRepository.findUser(userId);
-        findUser.updateImage(null);
+        ImageFile savedImage = fileRepository.saveUserImage(image);
+        findUser.updateImage(savedImage);
+
+        fileRepository.deleteUserImage(previousImage);
     }
 
     public void updateUserInfo(Long userId, UserInfo userInfo) {
@@ -131,8 +129,8 @@ public class UserService {
         }
     }
 
-    public void deleteUser(Long userId) {
-        User findUser = userRepository.findUser(userId);
+    public void deleteUser(Long userId) throws IOException {
+        ImageFile previousImage = userRepository.getImage(userId);
 
         userRepository.deleteUserWithRelations(userId);
 

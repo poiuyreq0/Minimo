@@ -26,7 +26,6 @@ import java.util.Map;
 @RequestMapping("/api-user")
 public class UserApiController {
     private final UserService userService;
-    private final FileService fileService;
 
     @GetMapping("/users/email")
     public ResponseEntity<UserDto> getUserByEmail(@RequestParam("email") String email) {
@@ -58,10 +57,7 @@ public class UserApiController {
 
     @GetMapping("/users/{id}/image")
     public ResponseEntity<Resource> getImage(@PathVariable("id") Long userId) throws IOException {
-        ImageFile image = userService.getImage(userId);
-
-        // image가 null일 때는 icon_default_user 이미지 경로 리턴
-        String filePath = fileService.getUserImagePath(image);
+        String filePath = userService.getImageFilePath(userId);
 
         MediaType mediaType = MediaType.parseMediaType(Files.probeContentType(Paths.get(filePath)));
         UrlResource resource = new UrlResource("file:" + filePath);
@@ -73,14 +69,13 @@ public class UserApiController {
 
     @PostMapping("/users/{id}/image/update")
     public ResponseEntity<Map<String, Long>> updateImage(@PathVariable("id") Long userId, @RequestParam("image") MultipartFile image) throws IOException {
-        ImageFile savedImage = fileService.saveUserImage(image);
-        userService.updateImage(userId, savedImage);
+        userService.updateImage(userId, image);
         return ResponseEntity.ok(Map.of("userId", userId));
     }
 
     @DeleteMapping("/users/{id}/image")
-    public ResponseEntity<Map<String, Long>> deleteImage(@PathVariable("id") Long userId) {
-        userService.deleteImage(userId);
+    public ResponseEntity<Map<String, Long>> deleteImage(@PathVariable("id") Long userId) throws IOException {
+        userService.updateImage(userId, null);
         return ResponseEntity.ok(Map.of("userId", userId));
     }
 
