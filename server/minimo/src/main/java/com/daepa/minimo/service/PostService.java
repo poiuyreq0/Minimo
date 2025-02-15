@@ -28,16 +28,12 @@ public class PostService {
     }
 
     public void deletePost(Long postId) {
-        Post findPost = postRepository.findPost(postId);
-        postRepository.deletePost(findPost);
+        postRepository.deletePost(postId);
     }
 
-    public Long sendComment(Long postId, Long parentCommentId, Long writerId, Comment comment) {
+    public Long sendComment(Long postId, Long parentCommentId, Comment comment) {
         Post findPost = postRepository.findPost(postId);
         comment.updatePost(findPost);
-
-        User writer = userRepository.findUser(writerId);
-        comment.updateWriter(writer);
 
         if (parentCommentId != null) {
             Comment parentComment = postRepository.findComment(parentCommentId);

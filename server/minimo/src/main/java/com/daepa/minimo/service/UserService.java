@@ -1,11 +1,9 @@
 package com.daepa.minimo.service;
 
 import com.daepa.minimo.common.embeddables.UserInfo;
-import com.daepa.minimo.common.enums.AccountRole;
 import com.daepa.minimo.common.enums.Item;
 import com.daepa.minimo.common.enums.ReportReason;
 import com.daepa.minimo.domain.*;
-import com.daepa.minimo.domain.Letter;
 import com.daepa.minimo.dto.UserBanRecordDto;
 import com.daepa.minimo.dto.UserDto;
 import com.daepa.minimo.exception.NicknameConflictException;
@@ -13,11 +11,13 @@ import com.daepa.minimo.exception.ReportConflictException;
 import com.daepa.minimo.repository.ChatRepository;
 import com.daepa.minimo.repository.LetterRepository;
 import com.daepa.minimo.repository.UserRepository;
+import com.daepa.minimo.util.FileRepository;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.query.sqm.produce.function.StandardFunctionReturnTypeResolvers;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -48,14 +48,12 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Integer getItemNum(Long userId, Item item) {
-        User findUser = userRepository.findUser(userId);
-        return findUser.getItemNum(item);
+        return userRepository.getItemNum(userId, item);
     }
 
     public Integer addItemNum(Long userId, Item item, Integer amount) {
-        User findUser = userRepository.findUser(userId);
-        findUser.increaseItemNum(item, amount);
-        return findUser.getItemNum(item);
+        userRepository.addItemNum(userId, item, amount);
+        return userRepository.getItemNum(userId, item);
     }
 
     @Transactional(readOnly = true)
@@ -79,22 +77,18 @@ public class UserService {
     }
 
     public void updateUserInfo(Long userId, UserInfo userInfo) {
-        User findUser = userRepository.findUser(userId);
-        findUser.updateUserInfo(userInfo);
+        userRepository.updateUserInfo(userId, userInfo);
     }
 
     public void updateNickname(Long userId, String nickname) {
         validateNicknameConflict(nickname);
 
-        User findUser = userRepository.findUser(userId);
-        findUser.updateNickname(nickname);
+        userRepository.updateNickname(userId, nickname);
     }
 
     public void updateFcmToken(Long userId, FcmToken fcmToken) {
         User findUser = userRepository.findUser(userId);
-        if (findUser.getFcmToken() == null || !findUser.getFcmToken().getToken().equals(fcmToken.getToken())) {
-            findUser.updateFcmToken(fcmToken);
-        }
+        findUser.updateFcmToken(fcmToken);
     }
 
     public void deleteFcmToken(Long userId) {
@@ -140,31 +134,9 @@ public class UserService {
     public void deleteUser(Long userId) {
         User findUser = userRepository.findUser(userId);
 
-        // 연관된 편지 연결 끊기
-        for (Letter letter: findUser.getSentLetters()) {
-            letter.removeSender();
-            if (letter.getReceiver() == null) {
-                letterRepository.deleteLetter(letter);
-            }
-        }
-        for (Letter letter: findUser.getReceivedLetters()) {
-            letter.removeReceiver();
-            if (letter.getSender() == null) {
-                letterRepository.deleteLetter(letter);
-            }
-        }
+        userRepository.deleteUserWithRelations(userId);
 
-        // 연관된 채팅방 나가기
-        for (ChatRoomUser chatRoomUser: findUser.getChatRoomUserList()) {
-            ChatRoom chatRoom = chatRoomUser.getChatRoom();
-
-            chatRoom.getChatRoomUserList().remove(chatRoomUser);
-            if (chatRoom.getChatRoomUserList().isEmpty()) {
-                chatRepository.deleteChatRoom(chatRoom);
-            }
-        }
-
-        userRepository.deleteUser(findUser);
+        fileRepository.deleteUserImage(previousImage);
     }
 
     private void validateNicknameConflict(String nickname) {

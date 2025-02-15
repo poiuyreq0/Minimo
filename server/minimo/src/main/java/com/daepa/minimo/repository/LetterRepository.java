@@ -47,16 +47,15 @@ public class LetterRepository {
     // 새로운 편지 목록 조회
     public Map<LetterOption, List<SimpleLetterDto>> getSimpleLetters(Long userId, UserInfo userInfo, Integer count) {
         Map<LetterOption, List<SimpleLetterDto>> simpleLettersMap = new HashMap<>();
-        for (LetterOption letterOption: LetterOption.values()) {
-            BooleanExpression condition = matchUserInfoByOption(userId, userInfo, letterOption);
 
+        for (LetterOption letterOption: LetterOption.values()) {
             List<SimpleLetterDto> simpleLetters = queryFactory
                     .select(Projections.fields(
                             SimpleLetterDto.class,
                             letter.id,
                             letter.sender.nickname.as("senderNickname"),
                             letter.letterContent.title,
-                            letter.letterState
+                            letter.createdDate
                     ))
                     .from(letter)
                     .leftJoin(letter.letterReceiveRecordList, letterReceiveRecord)
@@ -65,7 +64,9 @@ public class LetterRepository {
                     .leftJoin(userBanRecord)
                     .on(userBanRecord.user.id.eq(userId)
                             .and(userBanRecord.targetId.eq(letter.sender.id)))
-                    .where(condition)
+                    .where(letter.sender.id.ne(userId)
+                            .and(letter.letterState.eq(LetterState.SENT)))
+                    .where(matchUserInfoByOption(userInfo, letterOption))
                     .where(letterReceiveRecord.id.isNull())
                     .where(userBanRecord.id.isNull())
                     .orderBy(letter.createdDate.desc())
@@ -80,8 +81,6 @@ public class LetterRepository {
 
     // 새로운 편지 단건 조회
     public Letter getLetterByOption(Long userId, UserInfo userInfo, LetterOption letterOption) {
-        BooleanExpression condition = matchUserInfoByOption(userId, userInfo, letterOption);
-
         return queryFactory
                 .selectFrom(letter)
                 .leftJoin(letter.letterReceiveRecordList, letterReceiveRecord)
@@ -90,7 +89,9 @@ public class LetterRepository {
                 .leftJoin(userBanRecord)
                 .on(userBanRecord.user.id.eq(userId)
                         .and(userBanRecord.targetId.eq(letter.sender.id)))
-                .where(condition)
+                .where(letter.sender.id.ne(userId)
+                        .and(letter.letterState.eq(LetterState.SENT)))
+                .where(matchUserInfoByOption(userInfo, letterOption))
                 .where(letterReceiveRecord.id.isNull())
                 .where(userBanRecord.id.isNull())
                 .orderBy(letter.createdDate.desc())
@@ -150,15 +151,25 @@ public class LetterRepository {
                 .set(letter.receiver, (User) null)
                 .set(letter.receivedDate, (LocalDateTime) null)
                 .set(letter.letterState, LetterState.SENT)
+//                .where(letter.letterState.eq(LetterState.RECEIVED)
+//                        .and(letter.receivedDate.lt(currentDate.minusDays(1))))
                 .where(letter.letterState.eq(LetterState.RECEIVED)
-                        .and(letter.receivedDate.lt(currentDate.minusDays(1))))
+                        .and(letter.receivedDate.lt(currentDate.minusSeconds(30))))
                 .execute();
     }
 
-    private BooleanExpression matchUserInfoByOption(Long userId, UserInfo userInfo, LetterOption letterOption) {
-        BooleanExpression condition = letter.sender.id.ne(userId)
-                .and(letter.letterState.eq(LetterState.SENT))
-                .and(letter.letterOption.eq(letterOption));
+    public Letter getLetterForNotification(Long letterId) {
+        return queryFactory
+                .selectFrom(letter)
+                .leftJoin(letter.sender).fetchJoin()
+                .leftJoin(letter.receiver).fetchJoin()
+                .leftJoin(letter.sender.fcmToken).fetchJoin()
+                .where(letter.id.eq(letterId))
+                .fetchOne();
+    }
+
+    private BooleanExpression matchUserInfoByOption(UserInfo userInfo, LetterOption letterOption) {
+        BooleanExpression condition = letter.letterOption.eq(letterOption);
 
         if (letterOption == LetterOption.ALL || letterOption == LetterOption.NAME) {
             condition = condition.and(letter.userInfo.name.eq(userInfo.getName()));

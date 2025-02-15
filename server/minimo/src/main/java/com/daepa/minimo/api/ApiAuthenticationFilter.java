@@ -39,10 +39,10 @@ public class ApiAuthenticationFilter extends OncePerRequestFilter {
                 String email = decodedToken.getEmail();
                 log.info("Successfully firebase token verified: {}", email);
 
-                UserDto findUser = userRepository.getUserByEmail(email);
-                if (findUser != null) {
+                AccountRole accountRole = userRepository.getAccountRoleByUserEmail(email);
+                if (accountRole != null) {
                     SecurityContextHolder.getContext().setAuthentication(
-                            new UsernamePasswordAuthenticationToken(email, null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + findUser.getAccountRole().name())))
+                            new UsernamePasswordAuthenticationToken(email, null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + accountRole.name())))
                     );
                 } else {
                     SecurityContextHolder.getContext().setAuthentication(

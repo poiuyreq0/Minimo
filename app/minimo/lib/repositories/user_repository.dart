@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:minimo/enums/item.dart';
 import 'package:minimo/enums/report_reason.dart';
@@ -25,7 +26,7 @@ class UserRepository {
       },
     );
 
-    if (resp.data == null) {
+    if (resp.data == '') {
       return null;
     }
     return UserModel.fromJson(resp.data);

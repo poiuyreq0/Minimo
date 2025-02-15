@@ -37,7 +37,7 @@ public class PostApiController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/comments")
     public ResponseEntity<Map<String, Long>> sendComment(@RequestBody CommentDto commentDto) {
-        Long commentId = postService.sendComment(commentDto.getPostId(), commentDto.getParentCommentId(), commentDto.getWriterId(), commentDto.toComment());
+        Long commentId = postService.sendComment(commentDto.getPostId(), commentDto.getParentCommentId(), commentDto.toComment());
 
         fcmService.commentNotification(commentId);
 

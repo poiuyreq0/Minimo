@@ -69,24 +69,8 @@ public class User extends BaseTimeEntity {
         this.profileImage = image;
     }
 
-    public void updateUserInfo(UserInfo userInfo) {
-        this.userInfo = userInfo;
-    }
-
-    public void updateNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
     public void updateFcmToken(FcmToken fcmToken) {
         this.fcmToken = fcmToken;
-    }
-
-    public Integer getItemNum(Item item) {
-        if (item == Item.NET) {
-            return netNum;
-        } else {
-            return bottleNum;
-        }
     }
 
     public void decreaseItemNum(Item item) {
@@ -94,14 +78,6 @@ public class User extends BaseTimeEntity {
             netNum -= 1;
         } else if (item == Item.BOTTLE) {
             bottleNum -= 1;
-        }
-    }
-
-    public void increaseItemNum(Item item, Integer amount) {
-        if (item == Item.NET) {
-            netNum += amount;
-        } else if (item == Item.BOTTLE) {
-            bottleNum += amount;
         }
     }
 

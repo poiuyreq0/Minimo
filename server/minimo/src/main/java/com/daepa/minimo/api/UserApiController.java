@@ -3,9 +3,7 @@ package com.daepa.minimo.api;
 import com.daepa.minimo.common.enums.Item;
 import com.daepa.minimo.common.enums.ReportReason;
 import com.daepa.minimo.domain.ImageFile;
-import com.daepa.minimo.domain.User;
 import com.daepa.minimo.dto.*;
-import com.daepa.minimo.service.FileService;
 import com.daepa.minimo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,10 +31,8 @@ public class UserApiController {
     @GetMapping("/users/email")
     public ResponseEntity<UserDto> getUserByEmail(@RequestParam("email") String email) {
         UserDto user = userService.getUserByEmail(email);
-        log.info("test getUserByEmail: {}", user);
-
         if (user == null) {
-            return ResponseEntity.ok(null);
+            return ResponseEntity.noContent().build();
         }
 
         return ResponseEntity.ok(user);
@@ -131,7 +127,7 @@ public class UserApiController {
     }
 
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<Map<String, Long>> deleteUser(@PathVariable("id") Long userId) {
+    public ResponseEntity<Map<String, Long>> deleteUser(@PathVariable("id") Long userId) throws IOException {
         userService.deleteUser(userId);
         return ResponseEntity.ok(Map.of("userId", userId));
     }

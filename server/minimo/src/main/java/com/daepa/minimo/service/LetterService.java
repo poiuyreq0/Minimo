@@ -1,5 +1,6 @@
 package com.daepa.minimo.service;
 
+import com.daepa.minimo.common.embeddables.UserInfo;
 import com.daepa.minimo.common.enums.LetterOption;
 import com.daepa.minimo.common.enums.LetterState;
 import com.daepa.minimo.common.enums.UserRole;
@@ -36,8 +37,8 @@ public class LetterService {
 
     @Transactional(readOnly = true)
     public Map<LetterOption, List<SimpleLetterDto>> getSimpleLetters(Long userId, Integer count) {
-        User findUser = userRepository.findUser(userId);
-        return letterRepository.getSimpleLetters(userId, findUser.getUserInfo(), count);
+        UserInfo userInfo = userRepository.getUserInfo(userId);
+        return letterRepository.getSimpleLetters(userId, userInfo, count);
     }
 
     public Letter receiveLetter(Long receiverId, LetterOption letterOption) {
@@ -51,14 +52,6 @@ public class LetterService {
                         .receiverId(receiver.getId())
                         .build());
         return findLetter;
-    }
-
-    public void sinkLetter(Long letterId, Long userId, UserRole userRole) {
-        Letter findLetter = letterRepository.findLetter(letterId);
-        validateLetterNotNull(findLetter);
-        validateLetterOwner(findLetter, userId, userRole);
-
-        letterRepository.deleteLetter(findLetter);
     }
 
     public void returnLetter(Long letterId, Long userId, UserRole userRole) {
@@ -89,7 +82,7 @@ public class LetterService {
         }
     }
 
-    public Letter connectLetter(Long letterId, Long userId, UserRole userRole) {
+    public void connectLetter(Long letterId, Long userId, UserRole userRole) {
         Letter findLetter = letterRepository.findLetter(letterId);
         validateLetterNotNull(findLetter);
         validateLetterOwner(findLetter, userId, userRole);
@@ -108,8 +101,6 @@ public class LetterService {
         }
 
         findLetter.connectLetter(chatRoom.getId());
-
-        return findLetter;
     }
 
     @Transactional(readOnly = true)
@@ -144,7 +135,7 @@ public class LetterService {
                 throw new LetterNotFoundException();
             }
         }
-        if ((userRole == UserRole.RECEIVER && letter.getReceiver() != null)) {
+        if (userRole == UserRole.RECEIVER && letter.getReceiver() != null) {
             if (!letter.getReceiver().getId().equals(userId)) {
                 throw new LetterNotFoundException();
             }

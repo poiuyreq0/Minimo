@@ -12,10 +12,15 @@ class LetterProvider extends ChangeNotifier {
   bool homeScreenSelectorTrigger = true;
   bool letterListScreenNewLettersSelectorTrigger = true;
   bool letterListScreenPreviousLettersSelectorTrigger = true;
+  bool letterDetailScreenSelectorTrigger = true;
 
   LetterProvider({
     required this.letterRepository,
   })  : super();
+
+  void exitLetter() {
+    _refreshLetterListScreenNewLettersSelector();
+  }
 
   Future<void> sendLetter({
     required LetterModel letter,
@@ -42,24 +47,12 @@ class LetterProvider extends ChangeNotifier {
     return resp;
   }
 
-  Future<void> sinkLetter({
-    required int letterId,
-    required int userId,
-    required UserRole userRole,
-  }) async {
-    await letterRepository.sinkLetter(letterId: letterId, userId: userId, userRole: userRole);
-
-    _refreshLetterListScreenNewLettersSelector();
-  }
-
   Future<void> returnLetter({
     required int letterId,
     required int userId,
     required UserRole userRole,
   }) async {
     await letterRepository.returnLetter(letterId: letterId, userId: userId, userRole: userRole);
-
-    _refreshLetterListScreenNewLettersSelector();
   }
 
   Future<void> disconnectLetter({
@@ -68,19 +61,16 @@ class LetterProvider extends ChangeNotifier {
     required UserRole userRole,
   }) async {
     await letterRepository.disconnectLetter(letterId: letterId, userId: userId, userRole: userRole);
-
-    _refreshLetterListScreenNewLettersSelector();
   }
 
-  Future<int> connectLetter({
+  Future<void> connectLetter({
     required int letterId,
     required int userId,
     required UserRole userRole,
   }) async {
-    final resp = await letterRepository.connectLetter(letterId: letterId, userId: userId, userRole: userRole);
+    await letterRepository.connectLetter(letterId: letterId, userId: userId, userRole: userRole);
 
-    _refreshLetterListScreenNewLettersSelector();
-    return resp;
+    _refreshLetterDetailScreenSelector();
   }
 
   Future<List<LetterModel>> getLettersByUserWithPaging({
@@ -131,6 +121,15 @@ class LetterProvider extends ChangeNotifier {
     _refreshLetterListScreenNewLettersSelector();
   }
 
+  void refreshLetterDetailScreen() {
+    _refreshLetterDetailScreenSelector();
+  }
+
+  void _refreshHomeScreenSelector() {
+    homeScreenSelectorTrigger = !homeScreenSelectorTrigger;
+    notifyListeners();
+  }
+
   void _refreshLetterListScreenNewLettersSelector() {
     letterListScreenNewLettersSelectorTrigger = !letterListScreenNewLettersSelectorTrigger;
     notifyListeners();
@@ -141,8 +140,8 @@ class LetterProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _refreshHomeScreenSelector() {
-    homeScreenSelectorTrigger = !homeScreenSelectorTrigger;
+  void _refreshLetterDetailScreenSelector() {
+    letterDetailScreenSelectorTrigger = !letterDetailScreenSelectorTrigger;
     notifyListeners();
   }
 

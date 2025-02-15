@@ -15,7 +15,9 @@ import java.util.List;
 @Entity
 public class Comment extends BaseTimeEntity {
     @Builder
-    public Comment(@NonNull String content) {
+    public Comment(@NonNull Long writerId, @NonNull String writerNickname, @NonNull String content) {
+        this.writerId = writerId;
+        this.writerNickname = writerNickname;
         this.content = content;
     }
 
@@ -28,15 +30,15 @@ public class Comment extends BaseTimeEntity {
     @JoinColumn(name = "post_id")
     private Post post;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "writer_id")
-    private User writer;
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_comment_id")
     private Comment parentComment;
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> childComments = new ArrayList<>();
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommentLikeRecord> commentLikeRecordList = new ArrayList<>();
+
+    private Long writerId;
+    private String writerNickname;
 
     @Lob
     private String content;
@@ -51,10 +53,6 @@ public class Comment extends BaseTimeEntity {
     public void updateParentComment(Comment parentComment) {
         this.parentComment = parentComment;
         parentComment.childComments.add(this);
-    }
-
-    public void updateWriter(User writer) {
-        this.writer = writer;
     }
 
     public void decreaseLikeNum() {

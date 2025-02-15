@@ -32,7 +32,7 @@ public class ChatApiController {
                 ChatMessageDto.fromChatMessage(chatMessage)
         );
 
-        fcmService.chatNotification(chatMessage);
+        fcmService.chatNotification(chatMessage.getId());
 
         return ResponseEntity.ok(Map.of("messageId", chatMessage.getId()));
     }

@@ -28,6 +28,8 @@ public class CommentDto {
 
     public Comment toComment() {
         return Comment.builder()
+                .writerId(writerId)
+                .writerNickname(writerNickname)
                 .content(content)
                 .build();
     }

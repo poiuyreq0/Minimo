@@ -21,6 +21,7 @@ import static com.daepa.minimo.domain.QComment.comment;
 import static com.daepa.minimo.domain.QCommentLikeRecord.commentLikeRecord;
 import static com.daepa.minimo.domain.QPost.post;
 import static com.daepa.minimo.domain.QPostLikeRecord.postLikeRecord;
+import static com.daepa.minimo.domain.QUser.user;
 import static com.daepa.minimo.domain.QUserBanRecord.userBanRecord;
 
 @RequiredArgsConstructor
@@ -39,10 +40,6 @@ public class PostRepository {
 
     public void savePost(Post post) {
         em.persist(post);
-    }
-
-    public void deletePost(Post post) {
-        em.remove(post);
     }
 
     public void saveComment(Comment comment) {
@@ -97,7 +94,7 @@ public class PostRepository {
     // 페이징: Post createdDate
     public List<PostDto> getPostsByUserCommentWithPaging(Long userId, Integer count, LocalDateTime lastDate) {
         return queryFactory
-                .selectDistinct(Projections.fields(
+                .select(Projections.fields(
                         PostDto.class,
                         post.id,
                         post.writer.id.as("writerId"),
@@ -108,14 +105,16 @@ public class PostRepository {
                         post.createdDate
                 ))
                 .from(post)
+                .join(post.comments, comment)
+                .on(comment.post.id.eq(post.id)
+                        .and(comment.writerId.eq(userId)))
                 .leftJoin(userBanRecord)
                 .on(userBanRecord.user.id.eq(userId)
                         .and(userBanRecord.targetId.eq(post.writer.id)))
-                .join(post.comments, comment)
-                .on(comment.writer.id.eq(userId))
-                .where(lastDate != null ? post.createdDate.lt(lastDate) : null)
                 .where(userBanRecord.id.isNull())
-                .orderBy(post.createdDate.desc())
+                .groupBy(post.id)
+                .having(lastDate != null ? comment.createdDate.max().lt(lastDate) : null)
+                .orderBy(comment.createdDate.max().desc())
                 .limit(count)
                 .fetch();
     }
@@ -128,8 +127,8 @@ public class PostRepository {
                         comment.id,
                         comment.post.id.as("postId"),
                         comment.parentComment.id.as("parentCommentId"),
-                        comment.writer.id.as("writerId"),
-                        comment.writer.nickname.as("writerNickname"),
+                        comment.writerId.as("writerId"),
+                        comment.writerNickname.as("writerNickname"),
                         comment.content,
                         comment.likeNum,
                         comment.isVisible,
@@ -239,5 +238,30 @@ public class PostRepository {
 
     public void saveCommentLikeRecord(CommentLikeRecord commentLikeRecord) {
         em.persist(commentLikeRecord);
+    }
+
+    public void deleteComment(Long commentId) {
+        queryFactory
+                .update(comment)
+                .set(comment.isVisible, false)
+                .where(comment.id.eq(commentId))
+                .execute();
+    }
+
+    public void deletePost(Long postId) {
+        queryFactory
+                .delete(post)
+                .where(post.id.eq(postId))
+                .execute();
+    }
+
+    public Comment getCommentForNotification(Long commentId) {
+        return queryFactory
+                .selectFrom(comment)
+                .leftJoin(comment.post, post).fetchJoin()
+                .leftJoin(post.writer, user).fetchJoin()
+                .leftJoin(user.fcmToken).fetchJoin()
+                .where(comment.id.eq(commentId))
+                .fetchOne();
     }
 }

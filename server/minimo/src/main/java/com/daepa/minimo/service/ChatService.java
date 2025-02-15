@@ -31,40 +31,24 @@ public class ChatService {
     }
 
     public void readMessage(Long messageId) {
-        ChatMessage findChatMessage = chatRepository.findChatMessage(messageId);
-        findChatMessage.updateIsRead();
+        chatRepository.readMessage(messageId);
     }
 
     public List<ChatMessageDto> getMessagesByRoomWithPaging(Long roomId, Long userId, Integer count, LocalDateTime lastDate) {
+        // 처음 채팅방 입장 시 메시지 읽음 표시
+        if (lastDate == null) {
+            chatRepository.readMessages(roomId, userId);
+        }
+
         return chatRepository.getMessagesByRoomWithPaging(roomId, userId, lastDate, count);
     }
 
     public void disconnectChatRoom(Long roomId, Long userId) {
-        ChatRoom findChatRoom = chatRepository.findChatRoom(roomId);
-        User findUser = userRepository.findUser(userId);
-
-        List<ChatRoomUser> chatRoomUsers = findUser.getChatRoomUserList();
-        Iterator<ChatRoomUser> iterator = chatRoomUsers.iterator();
-        while (iterator.hasNext()) {
-            ChatRoomUser chatRoomUser = iterator.next();
-            if (chatRoomUser.getChatRoom().getId().equals(roomId)) {
-                iterator.remove();
-                findChatRoom.getChatRoomUserList().remove(chatRoomUser);
-                break;
-            }
-        }
-
-        deleteChatRoomIfOwnerless(findChatRoom);
+        chatRepository.disconnectChatRoom(roomId, userId);
     }
 
     @Transactional(readOnly = true)
     public List<ChatRoomDto> getChatRoomsByUserWithPaging(Long userId, Integer count, LocalDateTime lastDate) {
         return chatRepository.getChatRoomsByUserWithPaging(userId, count, lastDate);
-    }
-
-    private void deleteChatRoomIfOwnerless(ChatRoom chatRoom) {
-        if (chatRoom.getChatRoomUserList().isEmpty()) {
-            chatRepository.deleteChatRoom(chatRoom);
-        }
     }
 }

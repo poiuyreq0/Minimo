@@ -1,9 +1,6 @@
 package com.daepa.minimo.repository;
 
-import com.daepa.minimo.domain.ChatMessage;
-import com.daepa.minimo.domain.ChatRoom;
-import com.daepa.minimo.domain.ChatRoomUser;
-import com.daepa.minimo.domain.QChatMessage;
+import com.daepa.minimo.domain.*;
 import com.daepa.minimo.dto.ChatMessageDto;
 import com.daepa.minimo.dto.ChatRoomDto;
 import com.daepa.minimo.dto.ChatRoomUserDto;
@@ -23,6 +20,8 @@ import java.util.Map;
 import static com.daepa.minimo.domain.QChatMessage.chatMessage;
 import static com.daepa.minimo.domain.QChatRoom.chatRoom;
 import static com.daepa.minimo.domain.QChatRoomUser.chatRoomUser;
+import static com.daepa.minimo.domain.QLetter.letter;
+import static com.daepa.minimo.domain.QUser.user;
 
 @RequiredArgsConstructor
 @Repository
@@ -46,10 +45,6 @@ public class ChatRepository {
         return em.find(ChatRoom.class, roomId);
     }
 
-    public ChatMessage findChatMessage(Long messageId) {
-        return em.find(ChatMessage.class, messageId);
-    }
-
     // 페이징: ChatMessage createdDate, ChatRoom createdDate
     public List<ChatRoomDto> getChatRoomsByUserWithPaging(Long userId, Integer count, LocalDateTime lastDate) {
         List<ChatRoomDto> chatRoomDtos = queryFactory
@@ -69,8 +64,9 @@ public class ChatRepository {
                 ))
                 .from(chatRoom)
                 .join(chatRoom.chatRoomUserList, chatRoomUser)
+                .on(chatRoomUser.chatRoom.id.eq(chatRoom.id)
+                        .and(chatRoomUser.user.id.eq(userId)))
                 .leftJoin(chatRoom.messages, chatMessage)
-                .where(chatRoomUser.user.id.eq(userId))
                 .groupBy(chatRoom.id)
                 .having(lastDate != null ? chatMessage.createdDate.max().coalesce(chatRoom.createdDate).lt(lastDate) : null)
                 .orderBy(chatMessage.createdDate.max().coalesce(chatRoom.createdDate).desc())
@@ -98,7 +94,7 @@ public class ChatRepository {
             chatRoomDto.getUserNicknames().add(chatRoomUserDto);
         }
 
-        QChatMessage subChatMessage = new QChatMessage("subChatMessage");
+        QChatMessage subqueryChatMessage = new QChatMessage("subqueryChatMessage");
         List<ChatMessageDto> lastMessages = queryFactory
                 .select(Projections.fields(
                         ChatMessageDto.class,
@@ -113,9 +109,9 @@ public class ChatRepository {
                 .where(chatMessage.chatRoom.id.in(chatRoomDtoMap.keySet()))
                 .where(chatMessage.createdDate.eq(
                         JPAExpressions
-                                .select(subChatMessage.createdDate.max())
-                                .from(subChatMessage)
-                                .where(subChatMessage.chatRoom.id.eq(chatMessage.chatRoom.id))
+                                .select(subqueryChatMessage.createdDate.max())
+                                .from(subqueryChatMessage)
+                                .where(subqueryChatMessage.chatRoom.id.eq(chatMessage.chatRoom.id))
                 ))
                 .fetch();
 
@@ -129,11 +125,6 @@ public class ChatRepository {
 
     // 페이징: ChatMessage createdDate
     public List<ChatMessageDto> getMessagesByRoomWithPaging(Long roomId, Long userId, LocalDateTime lastDate, Integer count) {
-        // 처음 채팅방 입장 시 메시지 읽음 표시
-        if (lastDate == null) {
-            readMessages(roomId, userId);
-        }
-
         return queryFactory
                 .select(Projections.fields(
                         ChatMessageDto.class,
@@ -152,7 +143,15 @@ public class ChatRepository {
                 .fetch();
     }
 
-    private void readMessages(Long roomId, Long userId) {
+    public void readMessage(Long messageId) {
+        queryFactory
+                .update(chatMessage)
+                .set(chatMessage.isRead, true)
+                .where(chatMessage.id.eq(messageId))
+                .execute();
+    }
+
+    public void readMessages(Long roomId, Long userId) {
         queryFactory
                 .update(chatMessage)
                 .set(chatMessage.isRead, true)
@@ -162,7 +161,29 @@ public class ChatRepository {
                 .execute();
     }
 
-    public void deleteChatRoom(ChatRoom chatRoom) {
-        em.remove(chatRoom);
+    public void disconnectChatRoom(Long roomId, Long userId) {
+        // 채팅방 나가기
+        queryFactory
+                .delete(chatRoomUser)
+                .where(chatRoomUser.chatRoom.id.eq(roomId)
+                        .and(chatRoomUser.user.id.eq(userId)))
+                .execute();
+
+        // 주인 없는 채팅방 삭제
+        queryFactory
+                .delete(chatRoom)
+                .where(chatRoom.chatRoomUserList.isEmpty())
+                .execute();
+    }
+
+    public ChatMessage getMessageForNotification(Long messageId) {
+        return queryFactory
+                .selectFrom(chatMessage)
+                .leftJoin(chatMessage.chatRoom, chatRoom).fetchJoin()
+                .leftJoin(chatRoom.chatRoomUserList, chatRoomUser).fetchJoin()
+                .leftJoin(chatRoomUser.user, user).fetchJoin()
+                .leftJoin(user.fcmToken).fetchJoin()
+                .where(chatMessage.id.eq(messageId))
+                .fetchOne();
     }
 }

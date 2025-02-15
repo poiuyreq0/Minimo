@@ -41,15 +41,9 @@ public class LetterApiController {
     public ResponseEntity<LetterDto> receiveLetter(@RequestParam("receiverId") Long receiverId, @RequestParam("letterOption") LetterOption letterOption) {
         Letter letter = letterService.receiveLetter(receiverId, letterOption);
 
-        fcmService.letterNotification(letter);
+        fcmService.letterNotification(letter.getId());
 
         return ResponseEntity.ok(LetterDto.fromLetter(letter));
-    }
-
-    @PostMapping("/letters/{id}/sink")
-    public ResponseEntity<Map<String, Long>> sinkLetter(@PathVariable("id") Long letterId, @RequestParam("userId") Long userId, @RequestParam("userRole") UserRole userRole) {
-        letterService.sinkLetter(letterId, userId, userRole);
-        return ResponseEntity.ok(Map.of("letterId", letterId));
     }
 
     @PostMapping("/letters/{id}/return")
@@ -66,11 +60,11 @@ public class LetterApiController {
 
     @PostMapping("/letters/{id}/connect")
     public ResponseEntity<Map<String, Long>> connectLetter(@PathVariable("id") Long letterId, @RequestParam("userId") Long userId, @RequestParam("userRole") UserRole userRole) {
-        Letter letter = letterService.connectLetter(letterId, userId, userRole);
+        letterService.connectLetter(letterId, userId, userRole);
 
-        fcmService.letterNotification(letter);
+        fcmService.letterNotification(letterId);
 
-        return ResponseEntity.ok(Map.of("chatRoomId", letter.getChatRoomId()));
+        return ResponseEntity.ok(Map.of("letterId", letterId));
     }
 
     @GetMapping("/letters/user")

@@ -16,12 +16,14 @@ public class ScheduleService {
     private final UserRepository userRepository;
     private final LetterRepository letterRepository;
 
-    @Scheduled(cron = "0 0 * * * *")
+//    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "30 * * * * *")
     public void returnLetters() {
         letterRepository.returnLetters(LocalDateTime.now());
     }
 
-    @Scheduled(cron = "0 0 * * * *")
+//    @Scheduled(cron = "0 30 * * * *")
+    @Scheduled(cron = "30 * * * * *")
     public void reinstateAccountRole() {
         userRepository.reinstateAccountRole(LocalDateTime.now());
     }

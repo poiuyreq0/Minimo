@@ -61,21 +61,6 @@ class LetterRepository {
     return LetterModel.fromJson(resp.data);
   }
 
-  Future<int> sinkLetter({
-    required int letterId,
-    required int userId,
-    required UserRole userRole,
-  }) async {
-    final resp = await _dio.post(
-      '$_letterApiUrl/letters/$letterId/sink',
-      queryParameters: {
-        'userId': userId,
-        'userRole': userRole.name,
-      },
-    );
-    return resp.data['letterId'];
-  }
-
   Future<int> returnLetter({
     required int letterId,
     required int userId,
@@ -118,7 +103,7 @@ class LetterRepository {
         'userRole': userRole.name,
       },
     );
-    return resp.data['chatRoomId'];
+    return resp.data['letterId'];
   }
 
   Future<List<LetterModel>> getLettersByUserWithPaging({
