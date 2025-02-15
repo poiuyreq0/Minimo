@@ -122,9 +122,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                   content: '사라진 채팅방입니다.',
                   negativeText: '닫기',
                   onNegativePressed: () {
-                    Navigator.of(context).popUntil(
-                          (route) => route.isFirst,
-                    );
+                    Navigator.of(context)..pop()..pop();
                   },
                 );
               });
@@ -153,88 +151,91 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                             // createdDate 내림차순 리스트를 오름차순으로 바꿈으로써 최신 메시지를 뒤(아래)로 이동
                             final chatMessages = chatProvider.chatMessagesCache[widget.roomId]!..reversed.toList();
 
-                            return ListView.separated(
-                              controller: scrollController,
-                              reverse: true,  // 스크롤 방향만 변환
-                              shrinkWrap: true,
-                              itemCount: chatMessages.length,
-                              itemBuilder: (context, index) {
-                                final isMine = widget.userId == chatMessages[index].senderId;
+                            return Align(
+                              alignment: Alignment.topCenter,
+                              child: ListView.separated(
+                                controller: scrollController,
+                                reverse: true,  // 스크롤 방향만 변환
+                                shrinkWrap: true,
+                                itemCount: chatMessages.length,
+                                itemBuilder: (context, index) {
+                                  final isMine = widget.userId == chatMessages[index].senderId;
 
-                                late final bool isShowTimeStamp;
-                                if (index == 0) {
-                                  isShowTimeStamp = true;
-                                } else {
-                                  final isSameNextMinute = TimeStampUtil.isSameMinute(chatMessages[index].createdDate, chatMessages[index-1].createdDate);
-                                  final isSameNextUser = chatMessages[index].senderId == chatMessages[index-1].senderId;
-                                  if (!isSameNextMinute) {
-                                    isShowTimeStamp = true;
-                                  } else if (!isSameNextUser) {
+                                  late final bool isShowTimeStamp;
+                                  if (index == 0) {
                                     isShowTimeStamp = true;
                                   } else {
-                                    isShowTimeStamp = false;
+                                    final isSameNextMinute = TimeStampUtil.isSameMinute(chatMessages[index].createdDate, chatMessages[index-1].createdDate);
+                                    final isSameNextUser = chatMessages[index].senderId == chatMessages[index-1].senderId;
+                                    if (!isSameNextMinute) {
+                                      isShowTimeStamp = true;
+                                    } else if (!isSameNextUser) {
+                                      isShowTimeStamp = true;
+                                    } else {
+                                      isShowTimeStamp = false;
+                                    }
                                   }
-                                }
 
-                                late final bool isShowFirst;
-                                if (index == chatMessages.length - 1) {
-                                  isShowFirst = true;
-                                } else {
-                                  final isSamePreviousMinute = TimeStampUtil.isSameMinute(chatMessages[index].createdDate, chatMessages[index+1].createdDate);
-                                  final isSamePreviousUser = chatMessages[index].senderId == chatMessages[index+1].senderId;
-                                  if (!isSamePreviousMinute) {
-                                    isShowFirst = true;
-                                  } else if (!isSamePreviousUser) {
+                                  late final bool isShowFirst;
+                                  if (index == chatMessages.length - 1) {
                                     isShowFirst = true;
                                   } else {
-                                    isShowFirst = false;
+                                    final isSamePreviousMinute = TimeStampUtil.isSameMinute(chatMessages[index].createdDate, chatMessages[index+1].createdDate);
+                                    final isSamePreviousUser = chatMessages[index].senderId == chatMessages[index+1].senderId;
+                                    if (!isSamePreviousMinute) {
+                                      isShowFirst = true;
+                                    } else if (!isSamePreviousUser) {
+                                      isShowFirst = true;
+                                    } else {
+                                      isShowFirst = false;
+                                    }
                                   }
-                                }
 
-                                return Column(
-                                  children: [
-                                    if (index == chatMessages.length - 1)
-                                      Padding(
-                                        padding: const EdgeInsets.all(16),
+                                  return Column(
+                                    children: [
+                                      if (index == chatMessages.length - 1)
+                                        Padding(
+                                          padding: const EdgeInsets.all(16),
+                                          child: Text(
+                                            TimeStampUtil.getRoomTimeStamp(chatMessages[index].createdDate),
+                                            style: Theme.of(context).textTheme.displaySmall,
+                                          ),
+                                        ),
+                                      ChatMessageComponent(
+                                        otherUserId: widget.otherUserId,
+                                        otherUserNickname: widget.otherUserNickname,
+                                        chatMessage: chatMessages[index],
+                                        isMine: isMine,
+                                        isShowFirst: isShowFirst,
+                                        isShowTimeStamp: isShowTimeStamp,
+                                      ),
+                                      if (index == 0)
+                                        const SizedBox(height: 10),
+                                    ],
+                                  );
+                                },
+                                separatorBuilder: (context, index) {
+                                  late final bool isSameDay;
+                                  if (index < chatMessages.length - 1) {
+                                    isSameDay = TimeStampUtil.isSameDay(chatMessages[index].createdDate, chatMessages[index+1].createdDate);
+                                  } else {
+                                    isSameDay = false;
+                                  }
+                                  if (!isSameDay) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(left: 16, right: 16, top: 36, bottom: 16),
+                                      child: Center(
                                         child: Text(
                                           TimeStampUtil.getRoomTimeStamp(chatMessages[index].createdDate),
                                           style: Theme.of(context).textTheme.displaySmall,
                                         ),
                                       ),
-                                    ChatMessageComponent(
-                                      otherUserId: widget.otherUserId,
-                                      otherUserNickname: widget.otherUserNickname,
-                                      chatMessage: chatMessages[index],
-                                      isMine: isMine,
-                                      isShowFirst: isShowFirst,
-                                      isShowTimeStamp: isShowTimeStamp,
-                                    ),
-                                    if (index == 0)
-                                      const SizedBox(height: 10),
-                                  ],
-                                );
-                              },
-                              separatorBuilder: (context, index) {
-                                late final bool isSameDay;
-                                if (index < chatMessages.length - 1) {
-                                  isSameDay = TimeStampUtil.isSameDay(chatMessages[index].createdDate, chatMessages[index+1].createdDate);
-                                } else {
-                                  isSameDay = false;
-                                }
-                                if (!isSameDay) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(left: 16, right: 16, top: 36, bottom: 16),
-                                    child: Center(
-                                      child: Text(
-                                        TimeStampUtil.getRoomTimeStamp(chatMessages[index].createdDate),
-                                        style: Theme.of(context).textTheme.displaySmall,
-                                      ),
-                                    ),
-                                  );
-                                } else {
-                                  return const SizedBox(height: 6);
-                                }
-                              },
+                                    );
+                                  } else {
+                                    return const SizedBox(height: 6);
+                                  }
+                                },
+                              ),
                             );
                           },
                         ),

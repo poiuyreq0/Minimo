@@ -28,22 +28,36 @@ class CommentElementComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _comment(
-          context: context,
-          comment: comment,
-          isSubComment: false,
-        ),
-        if (comment.comments!.isNotEmpty)
-          ...comment.comments!.map(
-            (subComment) => _comment(
-              context: context,
-              comment: subComment,
-              isSubComment: true,
-            ),
-          ).toList(),
-      ],
+    return Builder(
+      builder: (context) {
+        if (comment.isVisible || !comment.isVisible && comment.comments!.isNotEmpty) {
+          return Column(
+            children: [
+              _comment(
+                context: context,
+                comment: comment,
+                isSubComment: false,
+              ),
+              if (comment.comments!.isNotEmpty)
+                ...comment.comments!.map(
+                      (subComment) {
+                    if (subComment.isVisible) {
+                      return _comment(
+                        context: context,
+                        comment: subComment,
+                        isSubComment: true,
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  },
+                ).toList(),
+            ],
+          );
+        } else {
+          return const SizedBox.shrink();
+        }
+      }
     );
   }
 

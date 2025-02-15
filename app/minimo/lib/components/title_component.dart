@@ -33,7 +33,6 @@ class TitleComponent extends StatelessWidget {
               ),
               if (helpText.isNotEmpty)
                 IconButton(
-                  iconSize: 16,
                   icon: FaIcon(
                     FontAwesomeIcons.circleQuestion,
                     color: Theme.of(context).colorScheme.tertiary,
@@ -50,7 +49,7 @@ class TitleComponent extends StatelessWidget {
                       },
                     );
                   },
-                )
+                ),
             ],
           ),
           Row(

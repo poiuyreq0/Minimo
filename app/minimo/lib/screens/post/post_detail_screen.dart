@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:minimo/components/ads/banner_ad_component.dart';
 import 'package:minimo/components/bottom_text_form_component.dart';
 import 'package:minimo/components/comment_element_component.dart';
 import 'package:minimo/components/images/user_network_image_component.dart';
@@ -229,9 +230,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       content: '사라진 게시글입니다.',
                       negativeText: '닫기',
                       onNegativePressed: () {
-                        Navigator.of(context).popUntil(
-                              (route) => route.isFirst,
-                        );
+                        Navigator.of(context)..pop()..pop();
                       },
                     );
                   });
@@ -370,6 +369,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                     indent: 16,
                                     endIndent: 16,
                                   ),
+                                  BannerAdComponent(
+                                    padding: 16,
+                                  ),
+                                  const SizedBox(height: 4),
                                   Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                     child: ListView.builder(

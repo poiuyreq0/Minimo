@@ -175,8 +175,8 @@ class NotificationUtil {
         _showChatNotification(message);
 
       } else if (message.data['tag'] == letterTag) {
-        // 편지 화면 추가 필요
         letterProvider.refreshLetterListScreenNewLetters();
+        letterProvider.refreshLetterDetailScreen();
         _showLetterNotification(message);
 
       } else if (message.data['tag'] == commentTag || message.data['tag'] == subCommentTag) {
