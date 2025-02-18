@@ -340,8 +340,7 @@ public class UserRepository {
         queryFactory
                 .update(user)
                 .set(user.accountRole, AccountRole.USER)
-//                .where(user.suspendedDate.lt(currentDate.minusDays(30)))
-                .where(user.suspendedDate.lt(currentDate.minusSeconds(30)))
+                .where(user.suspendedDate.lt(currentDate.minusDays(30)))
                 .execute();
     }
 }

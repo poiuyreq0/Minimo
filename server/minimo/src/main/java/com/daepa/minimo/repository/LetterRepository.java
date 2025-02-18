@@ -151,10 +151,8 @@ public class LetterRepository {
                 .set(letter.receiver, (User) null)
                 .set(letter.receivedDate, (LocalDateTime) null)
                 .set(letter.letterState, LetterState.SENT)
-//                .where(letter.letterState.eq(LetterState.RECEIVED)
-//                        .and(letter.receivedDate.lt(currentDate.minusDays(1))))
                 .where(letter.letterState.eq(LetterState.RECEIVED)
-                        .and(letter.receivedDate.lt(currentDate.minusSeconds(30))))
+                        .and(letter.receivedDate.lt(currentDate.minusDays(1))))
                 .execute();
     }
 

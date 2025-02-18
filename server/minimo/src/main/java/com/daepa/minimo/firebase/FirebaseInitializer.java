@@ -14,7 +14,7 @@ import java.io.IOException;
 @Slf4j
 @Component
 public class FirebaseInitializer {
-    @Value("${fcm.firebase_config_path}")
+    @Value("${fcm.firebase-config-path}")
     private String firebaseConfigPath;
 
     @PostConstruct

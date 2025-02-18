@@ -1,4 +1,4 @@
-package com.daepa.minimo.util;
+package com.daepa.minimo.repository;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,21 +7,21 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 import com.daepa.minimo.domain.ImageFile;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
 @Repository
 public class FileRepository {
-    private final String USER_IMAGE_PATH = "C:/Users/poiuyreq0/Downloads/Minimo/minimo_storage/user_image/"; // 윈도우
-//    private static final String USER_IMAGE_PATH = "/home/ec2-user/minimo_storage/user_image/"; // 리눅스
-
-    private final String DEFAULT_USER_IMAGE_PATH = USER_IMAGE_PATH + "icon_default_user.jpg";
+    @Value("${file.user-image-path}")
+    private String USER_IMAGE_PATH;
+    @Value("${file.default-user-image}")
+    private String DEFAULT_USER_IMAGE_NAME;
 
     // image가 null일 때는 icon_default_user 이미지 경로 리턴
     public String getUserImagePath(ImageFile image) {
         if (image == null) {
-            return DEFAULT_USER_IMAGE_PATH;
+            return USER_IMAGE_PATH + DEFAULT_USER_IMAGE_NAME;
         }
         return image.getFilePath();
     }

@@ -11,7 +11,7 @@ import com.daepa.minimo.exception.ReportConflictException;
 import com.daepa.minimo.repository.ChatRepository;
 import com.daepa.minimo.repository.LetterRepository;
 import com.daepa.minimo.repository.UserRepository;
-import com.daepa.minimo.util.FileRepository;
+import com.daepa.minimo.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -124,7 +124,8 @@ public class UserService {
                         .build();
         userRepository.saveUserReportRecord(userReportRecord);
 
-        if (userReportRecordList.size() + 1 >= 1) {
+        // 정지 기준
+        if (userReportRecordList.size() + 1 >= 3) {
             findUser.suspendAccount(userReportRecord.getCreatedDate());
         }
     }
