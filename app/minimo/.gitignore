@@ -49,6 +49,10 @@ GoogleService-Info.plist
 ## freezed
 *.freezed.dart
 *.g.dart
+## key
+key.properties
+*.keystore
+*.jks
 
 
 
