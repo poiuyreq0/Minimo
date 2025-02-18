@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:minimo/models/post_model.dart';
 import 'package:minimo/screens/post/post_detail_screen.dart';
+import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/time_stamp_util.dart';
 
 class PostElementComponent extends StatelessWidget {
@@ -30,14 +31,14 @@ class PostElementComponent extends StatelessWidget {
               post.postContent.title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.displayLarge,
+              style: AppStyle.getLargeTextStyle(context, 16),
             ),
             const SizedBox(height: 5),
             Text(
               post.postContent.content,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.displayMedium,
+              style: AppStyle.getMediumTextStyle(context, 14),
             ),
             const SizedBox(height: 5),
             IntrinsicHeight(
@@ -52,7 +53,7 @@ class PostElementComponent extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     '${post.likeNum}',
-                    style: Theme.of(context).textTheme.displaySmall,
+                    style:AppStyle.getSmallTextStyle(context, 12),
                   ),
                   const VerticalDivider(
                     thickness: 1.2,
@@ -67,7 +68,7 @@ class PostElementComponent extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     '${post.commentNum}',
-                    style: Theme.of(context).textTheme.displaySmall,
+                    style:AppStyle.getSmallTextStyle(context, 12),
                   ),
                   const VerticalDivider(
                     thickness: 1.2,
@@ -76,7 +77,7 @@ class PostElementComponent extends StatelessWidget {
                   ),
                   Text(
                     '${post.writerNickname}',
-                    style: Theme.of(context).textTheme.displaySmall,
+                    style:AppStyle.getSmallTextStyle(context, 12),
                   ),
                   const VerticalDivider(
                     thickness: 1.2,
@@ -85,7 +86,7 @@ class PostElementComponent extends StatelessWidget {
                   ),
                   Text(
                     TimeStampUtil.getElementTimeStamp(post.createdDate),
-                    style: Theme.of(context).textTheme.displaySmall,
+                    style:AppStyle.getSmallTextStyle(context, 12),
                   ),
                 ],
               ),

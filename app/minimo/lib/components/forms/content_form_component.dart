@@ -30,9 +30,7 @@ class ContentFormComponent extends StatelessWidget {
         hintText: hintText,
         counterText: null,
       ),
-      style: Theme.of(context).textTheme.titleSmall!.copyWith(
-        fontSize: 16,
-      ),
+      style: AppStyle.getInputTextStyle(context),
       onChanged: onChanged,
       validator: validator,
     );

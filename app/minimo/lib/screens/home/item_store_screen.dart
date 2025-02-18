@@ -32,10 +32,17 @@ class ItemStoreScreen extends StatelessWidget {
                       Selector<UserProvider, int>(
                         selector: (context, userProvider) => userProvider.userCache!.netNum,
                         builder: (context, netNum, child) {
-                          return Text(
-                            '$netNum',
-                            style: Theme.of(context).textTheme.titleMedium,
-                          );
+                          if (netNum < 100) {
+                            return Text(
+                              '$netNum',
+                              style: AppStyle.getMediumTextStyle(context),
+                            );
+                          } else {
+                            return Text(
+                              '99+',
+                              style: AppStyle.getMediumTextStyle(context),
+                            );
+                          }
                         },
                       ),
                       const SizedBox(width: 8),
@@ -44,10 +51,17 @@ class ItemStoreScreen extends StatelessWidget {
                       Selector<UserProvider, int>(
                         selector: (context, userProvider) => userProvider.userCache!.bottleNum,
                         builder: (context, bottleNum, child) {
-                          return Text(
-                            '$bottleNum',
-                            style: Theme.of(context).textTheme.titleMedium,
-                          );
+                          if (bottleNum < 100) {
+                            return Text(
+                              '$bottleNum',
+                              style: AppStyle.getMediumTextStyle(context),
+                            );
+                          } else {
+                            return Text(
+                              '99+',
+                              style: AppStyle.getMediumTextStyle(context),
+                            );
+                          }
                         },
                       ),
                     ],

@@ -41,6 +41,7 @@ class LittleLetterListComponent extends StatelessWidget {
               return DividedElementComponent(
                 title: letters[index].senderNickname,
                 content: letters[index].title,
+                fontSize: 14,
               );
             },
             separatorBuilder: (context, index) => const SizedBox(height: 16),

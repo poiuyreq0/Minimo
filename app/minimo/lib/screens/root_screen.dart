@@ -234,12 +234,12 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
                             if (netNum < 100) {
                               return Text(
                                 '$netNum',
-                                style: Theme.of(context).textTheme.titleMedium,
+                                style: AppStyle.getMediumTextStyle(context),
                               );
                             } else {
                               return Text(
                                 '99+',
-                                style: Theme.of(context).textTheme.titleMedium,
+                                style: AppStyle.getMediumTextStyle(context),
                               );
                             }
                           },
@@ -253,12 +253,12 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
                             if (bottleNum < 100) {
                               return Text(
                                 '$bottleNum',
-                                style: Theme.of(context).textTheme.titleMedium,
+                                style: AppStyle.getMediumTextStyle(context),
                               );
                             } else {
                               return Text(
                                 '99+',
-                                style: Theme.of(context).textTheme.titleMedium,
+                                style: AppStyle.getMediumTextStyle(context),
                               );
                             }
                           },
@@ -310,14 +310,14 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
                         value: '작성한 게시글',
                         child: Text(
                           '작성한 게시글',
-                          style: Theme.of(context).textTheme.titleSmall,
+                          style: AppStyle.getLittleButtonTextStyle(context, isPositive: false),
                         ),
                       ),
                       PopupMenuItem<String>(
                         value: '댓글 단 게시글',
                         child: Text(
                           '댓글 단 게시글',
-                          style: Theme.of(context).textTheme.titleSmall,
+                          style: AppStyle.getLittleButtonTextStyle(context, isPositive: false),
                         ),
                       ),
                     ];
@@ -334,7 +334,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
             child: Text(
               '고민 게시판',
               maxLines: 1,
-              style: Theme.of(context).textTheme.titleLarge,
+              style: AppStyle.getLargeTextStyle(context),
             ),
           ),
         ),
@@ -348,7 +348,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
             child: Text(
               '채팅',
               maxLines: 1,
-              style: Theme.of(context).textTheme.titleLarge,
+              style: AppStyle.getLargeTextStyle(context),
             ),
           ),
         ),

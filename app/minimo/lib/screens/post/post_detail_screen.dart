@@ -13,6 +13,7 @@ import 'package:minimo/models/post_model.dart';
 import 'package:minimo/models/user_model.dart';
 import 'package:minimo/providers/post_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
+import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/dialog_util.dart';
 import 'package:minimo/utils/notification_util.dart';
 import 'package:minimo/utils/snack_bar_util.dart';
@@ -189,7 +190,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       value: '삭제',
                       child: Text(
                         '삭제',
-                        style: Theme.of(context).textTheme.titleSmall,
+                        style: AppStyle.getLittleButtonTextStyle(context, isPositive: false),
                       ),
                     ),
                   if (widget.post.writerId != userId)
@@ -197,7 +198,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       value: '신고',
                       child: Text(
                         '신고',
-                        style: Theme.of(context).textTheme.titleSmall,
+                        style: AppStyle.getLittleButtonTextStyle(context, isPositive: false),
                       ),
                     ),
                   if (widget.post.writerId != userId)
@@ -205,7 +206,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       value: '차단',
                       child: Text(
                         '차단',
-                        style: Theme.of(context).textTheme.titleSmall,
+                        style: AppStyle.getLittleButtonTextStyle(context, isPositive: false),
                       ),
                     ),
                 ];
@@ -269,12 +270,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                           children: [
                                             Text(
                                               snapshot.data!.writerNickname,
-                                              style: Theme.of(context).textTheme.displayLarge,
+                                              style: AppStyle.getLargeTextStyle(context, 16),
                                             ),
                                             const SizedBox(width: 4),
                                             Text(
                                               TimeStampUtil.getDetailTimeStamp(snapshot.data!.createdDate),
-                                              style: Theme.of(context).textTheme.displaySmall,
+                                              style:AppStyle.getSmallTextStyle(context, 12),
                                             ),
                                           ],
                                         ),
@@ -286,7 +287,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                     padding: const EdgeInsets.symmetric(horizontal: 24),
                                     child: Text(
                                       snapshot.data!.postContent.title,
-                                      style: Theme.of(context).textTheme.titleLarge,
+                                      style: AppStyle.getLargeTextStyle(context),
                                     ),
                                   ),
                                   const SizedBox(height: 8),
@@ -294,11 +295,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                     padding: const EdgeInsets.symmetric(horizontal: 24),
                                     child: Text(
                                       snapshot.data!.postContent.content,
-                                      style: Theme.of(context).textTheme.titleMedium,
+                                      style: AppStyle.getMediumTextStyle(context),
                                     ),
                                   ),
+                                  const SizedBox(height: 8),
                                   const Divider(
-                                    height: 32,
+                                    height: 24,
                                     indent: 16,
                                     endIndent: 16,
                                   ),
@@ -328,9 +330,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                                   const SizedBox(width: 8),
                                                   Text(
                                                     '$likeNum',
-                                                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                                                      fontSize: 16,
-                                                    ),
+                                                    style: AppStyle.getLittleButtonTextStyle(context),
                                                   ),
                                                 ],
                                               ),
@@ -354,9 +354,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                             const SizedBox(width: 8),
                                             Text(
                                               '${snapshot.data!.commentNum}',
-                                              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                                                fontSize: 16,
-                                              ),
+                                              style: AppStyle.getLittleButtonTextStyle(context),
                                             ),
                                           ],
                                         ),
@@ -365,10 +363,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                   ),
                                   const SizedBox(height: 8),
                                   const Divider(
-                                    height: 16,
+                                    height: 8,
                                     indent: 16,
                                     endIndent: 16,
                                   ),
+                                  const SizedBox(height: 4),
                                   BannerAdComponent(
                                     padding: 16,
                                   ),
@@ -385,7 +384,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                         return CommentElementComponent(
                                           comment: comment,
                                           postWriterId: snapshot.data!.writerId,
-                                          onCommentButtonTap: () {
+                                          onCommentButtonPressed: () {
                                             selectedParentCommentId = comment.id;
                                             postProvider.refreshPostDetailScreenBottomTextForm();
                                             FocusScope.of(context).requestFocus(focusNode);

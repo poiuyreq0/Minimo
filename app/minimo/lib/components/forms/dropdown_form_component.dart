@@ -35,9 +35,7 @@ class DropdownFormComponent<T> extends StatelessWidget {
           value: value,
           child: Text(
             item,
-            style: Theme.of(context).textTheme.titleSmall!.copyWith(
-              fontSize: 16,
-            ),
+            style: AppStyle.getInputTextStyle(context),
           ),
         );
       }).toList(),

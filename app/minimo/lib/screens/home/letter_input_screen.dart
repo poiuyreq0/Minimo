@@ -199,7 +199,7 @@ class _LetterInputScreenState extends State<LetterInputScreen> {
               WidgetSpan(child: BottleIconComponent()),
               TextSpan(
                 text: '를 하나 소모합니다.',
-                style: Theme.of(context).textTheme.titleMedium,
+                style: AppStyle.getMediumTextStyle(context),
               ),
             ],
           ),

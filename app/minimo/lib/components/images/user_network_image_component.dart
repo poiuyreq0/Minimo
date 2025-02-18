@@ -42,7 +42,7 @@ class UserNetworkImageComponent extends StatelessWidget {
                     height: size,
                     child: Padding(
                       padding: EdgeInsets.all(sizeBasedValue),
-                      child: const SizedBox.shrink(),
+                      child: const CircularProgressIndicator(),
                     ),
                   );
                 } else {
@@ -61,7 +61,7 @@ class UserNetworkImageComponent extends StatelessWidget {
                       if (state.extendedImageLoadState == LoadState.loading || state.extendedImageInfo == null) {
                         return Padding(
                           padding: EdgeInsets.all(sizeBasedValue),
-                          child: const SizedBox.shrink(),
+                          child: const CircularProgressIndicator(),
                         );
                       }
                     },

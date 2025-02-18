@@ -79,7 +79,10 @@ class _BottomTextFormComponentState extends State<BottomTextFormComponent> {
                   hintText: widget.hintText,
                   counterText: '',
                   suffixIcon: isShowIconButton ? IconButton(
-                    icon: Icon(Icons.send),
+                    icon: Icon(
+                      Icons.send,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                     onPressed: widget.onPressed,
                   ) : null,
                 ),

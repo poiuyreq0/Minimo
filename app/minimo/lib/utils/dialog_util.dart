@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:minimo/styles/app_style.dart';
 
 class DialogUtil {
   static Future<void> showCustomDialog({
@@ -20,20 +21,18 @@ class DialogUtil {
         return AlertDialog(
           title: Text(
             title,
-            style: Theme.of(context).textTheme.titleLarge,
+            style: AppStyle.getLargeTextStyle(context),
           ),
           content: content != null ? Text(
             content,
-            style: Theme.of(context).textTheme.titleMedium,
+            style: AppStyle.getMediumTextStyle(context),
           ) : widgetContent,
           actions: [
             TextButton(
               onPressed: onNegativePressed,
               child: Text(
                 negativeText,
-                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color: Theme.of(context).colorScheme.tertiary,
-                ),
+                style: AppStyle.getLittleButtonTextStyle(context, isPositive: false),
               ),
             ),
             if (positiveText != null)
@@ -41,9 +40,7 @@ class DialogUtil {
                 onPressed: onPositivePressed,
                 child: Text(
                   positiveText,
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                  style: AppStyle.getLittleButtonTextStyle(context),
                 ),
               ),
           ],

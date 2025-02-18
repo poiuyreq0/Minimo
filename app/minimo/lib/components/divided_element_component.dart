@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:minimo/styles/app_style.dart';
 
 class DividedElementComponent extends StatelessWidget {
   final String title;
   final String content;
+  final double fontSize;
 
   const DividedElementComponent({
     required this.title,
     required this.content,
+    required this.fontSize,
     super.key
   });
 
@@ -20,7 +23,7 @@ class DividedElementComponent extends StatelessWidget {
             title,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleMedium,
+            style: AppStyle.getDividedElementTextStyle(context, fontSize, isTitle: true),
           ),
         ),
         const SizedBox(width: 16),
@@ -30,7 +33,7 @@ class DividedElementComponent extends StatelessWidget {
             content,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleSmall,
+            style: AppStyle.getDividedElementTextStyle(context, fontSize, isTitle: false),
           ),
         ),
       ],

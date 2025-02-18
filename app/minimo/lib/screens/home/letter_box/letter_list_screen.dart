@@ -8,6 +8,7 @@ import 'package:minimo/enums/user_role.dart';
 import 'package:minimo/models/letter_model.dart';
 import 'package:minimo/providers/letter_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
+import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/dialog_util.dart';
 import 'package:provider/provider.dart';
 
@@ -86,7 +87,7 @@ class LetterListScreen extends StatelessWidget {
                         } else if (snapshot.data!.isEmpty) {
                           return Text(
                             '아직 편지가 없습니다.',
-                            style: Theme.of(context).textTheme.titleSmall,
+                            style: AppStyle.getHintTextStyle(context),
                           );
                         } else {
                           return Selector<LetterProvider, bool>(

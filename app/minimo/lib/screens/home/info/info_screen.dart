@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:minimo/components/divided_element_component.dart';
-import 'package:minimo/components/divided_little_title_component.dart';
 import 'package:minimo/components/images/user_network_image_component.dart';
 import 'package:minimo/components/little_title_component.dart';
 import 'package:minimo/components/title_component.dart';
@@ -85,7 +84,7 @@ class InfoScreen extends StatelessWidget {
                                 user.nickname,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.titleMedium,
+                                style: AppStyle.getMediumTextStyle(context),
                               ),
                             ),
                           ],
@@ -125,21 +124,25 @@ class InfoScreen extends StatelessWidget {
                             DividedElementComponent(
                               title: '이름',
                               content: user.userInfo.name!,
+                              fontSize: 16,
                             ),
                             const SizedBox(height: 12),
                             DividedElementComponent(
                               title: 'MBTI',
                               content: user.userInfo.mbti!.name,
+                              fontSize: 16,
                             ),
                             const SizedBox(height: 12),
                             DividedElementComponent(
                               title: '성별',
                               content: user.userInfo.gender! == Gender.MALE ? '남성' : '여성',
+                              fontSize: 16,
                             ),
                             const SizedBox(height: 12),
                             DividedElementComponent(
                               title: '생일',
                               content: TimeStampUtil.getBirthdayTimeStamp(user.userInfo.birthday!),
+                              fontSize: 16,
                             ),
                           ],
                         ),
@@ -153,8 +156,8 @@ class InfoScreen extends StatelessWidget {
                   indent: 16,
                   endIndent: 16,
                 ),
-                DividedLittleTitleComponent(
-                  title: 'Email',
+                LittleTitleComponent(
+                  title: '이메일',
                   content: userProvider.emailCache!,
                 ),
                 LittleTitleComponent(

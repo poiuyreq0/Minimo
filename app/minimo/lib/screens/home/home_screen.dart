@@ -12,6 +12,7 @@ import 'package:minimo/models/simple_letter_model.dart';
 import 'package:minimo/providers/letter_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/home/letter_box/letter_detail_screen.dart';
+import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/dialog_util.dart';
 import 'package:minimo/utils/snack_bar_util.dart';
 import 'package:minimo/utils/url_util.dart';
@@ -121,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
             WidgetSpan(child: NetIconComponent()),
             TextSpan(
               text: '를 하나 소모합니다.',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: AppStyle.getMediumTextStyle(context),
             ),
           ],
         ),

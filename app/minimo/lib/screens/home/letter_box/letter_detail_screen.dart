@@ -143,14 +143,14 @@ class _LetterDetailScreenState extends State<LetterDetailScreen> {
                       value: '신고',
                       child: Text(
                         '신고',
-                        style: Theme.of(context).textTheme.titleSmall,
+                        style: AppStyle.getLittleButtonTextStyle(context, isPositive: false),
                       ),
                     ),
                     PopupMenuItem<String>(
                       value: '차단',
                       child: Text(
                         '차단',
-                        style: Theme.of(context).textTheme.titleSmall,
+                        style: AppStyle.getLittleButtonTextStyle(context, isPositive: false),
                       ),
                     ),
                   ];
@@ -203,7 +203,7 @@ class _LetterDetailScreenState extends State<LetterDetailScreen> {
                                 children: [
                                   Text(
                                     'To. ${snapshot.data!.receiverNickname ?? '(알 수 없음)'}',
-                                    style: Theme.of(context).textTheme.titleMedium,
+                                    style: AppStyle.getMediumTextStyle(context),
                                   ),
                                   const SizedBox(width: 8),
                                   UserNetworkImageComponent(
@@ -216,14 +216,12 @@ class _LetterDetailScreenState extends State<LetterDetailScreen> {
                               const SizedBox(height: 24),
                               Text(
                                 snapshot.data!.letterContent.title,
-                                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                                  fontSize: 18,
-                                ),
+                                style: AppStyle.getLargeTextStyle(context),
                               ),
                               const SizedBox(height: 12),
                               Text(
                                 snapshot.data!.letterContent.content,
-                                style: Theme.of(context).textTheme.titleMedium,
+                                style: AppStyle.getMediumTextStyle(context),
                               ),
                               const SizedBox(height: 24),
                               Row(
@@ -231,7 +229,7 @@ class _LetterDetailScreenState extends State<LetterDetailScreen> {
                                 children: [
                                   Text(
                                     'From. ${snapshot.data!.senderNickname ?? '(알 수 없음)'}',
-                                    style: Theme.of(context).textTheme.titleMedium,
+                                    style: AppStyle.getMediumTextStyle(context),
                                   ),
                                   const SizedBox(width: 8),
                                   UserNetworkImageComponent(
@@ -247,9 +245,7 @@ class _LetterDetailScreenState extends State<LetterDetailScreen> {
                               if (snapshot.data!.createdDate != null)
                                 Text(
                                   '발신일: ${TimeStampUtil.getDetailTimeStamp(snapshot.data!.createdDate!)}',
-                                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                                    fontSize: 14,
-                                  ),
+                                  style: AppStyle.getSmallTextStyle(context),
                                 ),
                               if (snapshot.data!.receivedDate != null)
                                 Column(
@@ -258,9 +254,7 @@ class _LetterDetailScreenState extends State<LetterDetailScreen> {
                                     const SizedBox(height: 8),
                                     Text(
                                       '수신일: ${TimeStampUtil.getDetailTimeStamp(snapshot.data!.receivedDate!)}',
-                                      style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                                        fontSize: 14,
-                                      ),
+                                      style: AppStyle.getSmallTextStyle(context),
                                     ),
                                   ],
                                 ),
@@ -271,9 +265,7 @@ class _LetterDetailScreenState extends State<LetterDetailScreen> {
                                     const SizedBox(height: 8),
                                     Text(
                                       '연결일: ${TimeStampUtil.getDetailTimeStamp(snapshot.data!.connectedDate!)}',
-                                      style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                                        fontSize: 14,
-                                      ),
+                                      style: AppStyle.getSmallTextStyle(context),
                                     ),
                                   ],
                                 ),

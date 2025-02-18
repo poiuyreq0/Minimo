@@ -5,6 +5,7 @@ import 'package:minimo/enums/user_role.dart';
 import 'package:minimo/models/letter_model.dart';
 import 'package:minimo/providers/user_provider.dart';
 import 'package:minimo/screens/home/letter_box/letter_detail_screen.dart';
+import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/time_stamp_util.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
@@ -58,7 +59,7 @@ class LetterElementComponent extends StatelessWidget {
                         result,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.displayLarge,
+                        style: AppStyle.getLargeTextStyle(context, 16),
                       );
                     }
                   ),
@@ -67,7 +68,7 @@ class LetterElementComponent extends StatelessWidget {
                     letter.letterContent.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.displayMedium,
+                    style: AppStyle.getMediumTextStyle(context, 14),
                   ),
                 ],
               ),
@@ -91,7 +92,7 @@ class LetterElementComponent extends StatelessWidget {
                     return Text(
                       result,
                       maxLines: 1,
-                      style: Theme.of(context).textTheme.displaySmall,
+                      style:AppStyle.getSmallTextStyle(context, 12),
                     );
                   },
                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/dialog_util.dart';
 
 class TitleComponent extends StatelessWidget {
@@ -29,7 +30,7 @@ class TitleComponent extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: Theme.of(context).textTheme.titleLarge,
+                style: AppStyle.getLargeTextStyle(context),
               ),
               if (helpText.isNotEmpty)
                 IconButton(
@@ -57,7 +58,7 @@ class TitleComponent extends StatelessWidget {
             children: [
               Text(
                 buttonText,
-                style: Theme.of(context).textTheme.titleSmall,
+                style: AppStyle.getSmallTextStyle(context),
               ),
               if (buttonTextIcon != null)
                 buttonTextIcon!,

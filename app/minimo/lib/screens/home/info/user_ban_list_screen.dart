@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:minimo/components/user_ban_record_element_component.dart';
 import 'package:minimo/models/user_ban_record_model.dart';
 import 'package:minimo/providers/user_provider.dart';
+import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/dialog_util.dart';
 import 'package:minimo/utils/snack_bar_util.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +29,7 @@ class UserBanListScreen extends StatelessWidget {
                   if (userBanRecords.isEmpty) {
                     return Text(
                       '차단된 사용자가 없습니다.',
-                      style: Theme.of(context).textTheme.titleSmall,
+                      style: AppStyle.getHintTextStyle(context),
                     );
                   } else {
                     return ListView.builder(

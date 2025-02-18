@@ -67,9 +67,7 @@ class _RewardAdComponentState extends State<RewardAdComponent> {
                       icon,
                       Text(
                         ' x ${widget.count} ',
-                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          fontSize: 18,
-                        ),
+                        style: AppStyle.getLargeTextStyle(context),
                       ),
                     ],
                   ),
@@ -83,11 +81,14 @@ class _RewardAdComponentState extends State<RewardAdComponent> {
                       TextSpan(
                         children: [
                           WidgetSpan(
-                            child: Icon(Icons.live_tv),
+                            child: Icon(
+                              Icons.live_tv,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
                           ),
                           TextSpan(
                             text: '  AD',
-                            style: Theme.of(context).textTheme.titleMedium,
+                            style: AppStyle.getLittleButtonTextStyle(context),
                           ),
                         ],
                       ),

@@ -32,9 +32,7 @@ class TextFormComponent extends StatelessWidget {
         label: label,
         hintText: hintText,
       ),
-      style: Theme.of(context).textTheme.titleSmall!.copyWith(
-        fontSize: 16,
-      ),
+      style: AppStyle.getInputTextStyle(context),
       inputFormatters: inputFormatters,
       initialValue: initialValue,
       onChanged: onChanged,

@@ -4,6 +4,7 @@ import 'package:minimo/components/post_element_component.dart';
 import 'package:minimo/models/post_model.dart';
 import 'package:minimo/providers/post_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
+import 'package:minimo/styles/app_style.dart';
 import 'package:provider/provider.dart';
 
 class PostListScreen extends StatefulWidget {
@@ -53,7 +54,7 @@ class _PostListScreenState extends State<PostListScreen> {
                         } else if (snapshot.data!.isEmpty) {
                           return Text(
                             '아직 게시글이 없습니다.',
-                            style: Theme.of(context).textTheme.titleSmall,
+                            style: AppStyle.getHintTextStyle(context),
                           );
                         } else {
                           return Selector<PostProvider, bool>(

@@ -9,6 +9,7 @@ import 'package:minimo/models/comment_model.dart';
 import 'package:minimo/models/user_ban_record_model.dart';
 import 'package:minimo/providers/post_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
+import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/dialog_util.dart';
 import 'package:minimo/utils/snack_bar_util.dart';
 import 'package:minimo/utils/time_stamp_util.dart';
@@ -17,12 +18,12 @@ import 'package:provider/provider.dart';
 class CommentElementComponent extends StatelessWidget {
   final CommentModel comment;
   final int postWriterId;
-  final GestureTapCallback? onCommentButtonTap;
+  final VoidCallback? onCommentButtonPressed;
 
   const CommentElementComponent({
     required this.comment,
     required this.postWriterId,
-    required this.onCommentButtonTap,
+    required this.onCommentButtonPressed,
     super.key
   });
 
@@ -97,31 +98,26 @@ class CommentElementComponent extends StatelessWidget {
                               comment.writerNickname,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                                fontSize: 14,
-                              ),
+                              style: AppStyle.getLargeTextStyle(context, 14),
                             ),
                             if (comment.writerId == postWriterId)
                               Text(
                                 ' (글쓴이)',
-                                style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                                  fontSize: 14,
-                                ),
+                                style: AppStyle.getLargeTextStyle(context, 14),
                               ),
                           ],
                         ),
                       ),
                       const SizedBox(width: 12),
                       if (!isSubComment)
-                        GestureDetector(
-                          onTap: onCommentButtonTap,
-                          child: FaIcon(
+                        IconButton(
+                          onPressed: onCommentButtonPressed,
+                          icon: FaIcon(
                             FontAwesomeIcons.comment,
                             color: Theme.of(context).colorScheme.tertiary,
                             size: 16,
                           ),
                         ),
-                      const SizedBox(width: 4),
                       PopupMenuButton<String>(
                         iconSize: 16,
                         onSelected: (value) async {
@@ -236,7 +232,7 @@ class CommentElementComponent extends StatelessWidget {
                                 value: '삭제',
                                 child: Text(
                                   '삭제',
-                                  style: Theme.of(context).textTheme.titleSmall,
+                                  style: AppStyle.getLittleButtonTextStyle(context, isPositive: false),
                                 ),
                               ),
                             if (comment.writerId != userId)
@@ -244,7 +240,7 @@ class CommentElementComponent extends StatelessWidget {
                                 value: '신고',
                                 child: Text(
                                   '신고',
-                                  style: Theme.of(context).textTheme.titleSmall,
+                                  style: AppStyle.getLittleButtonTextStyle(context, isPositive: false),
                                 ),
                               ),
                             if (comment.writerId != userId)
@@ -252,7 +248,7 @@ class CommentElementComponent extends StatelessWidget {
                                 value: '차단',
                                 child: Text(
                                   '차단',
-                                  style: Theme.of(context).textTheme.titleSmall,
+                                  style: AppStyle.getLittleButtonTextStyle(context, isPositive: false),
                                 ),
                               ),
                           ];
@@ -264,7 +260,7 @@ class CommentElementComponent extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
                     child: Text(
                       comment.content,
-                      style: Theme.of(context).textTheme.displayMedium,
+                      style: AppStyle.getMediumTextStyle(context, 14),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -294,9 +290,7 @@ class CommentElementComponent extends StatelessWidget {
                                       const SizedBox(width: 4),
                                       Text(
                                         '$likeNum',
-                                        style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                                          fontSize: 13,
-                                        ),
+                                        style: AppStyle.getLargeTextStyle(context, 13),
                                       ),
                                       const VerticalDivider(
                                         thickness: 1.2,
@@ -311,7 +305,7 @@ class CommentElementComponent extends StatelessWidget {
                         ),
                         Text(
                           TimeStampUtil.getSimpleTimeStamp(comment.createdDate),
-                          style: Theme.of(context).textTheme.displaySmall,
+                          style:AppStyle.getSmallTextStyle(context, 12),
                         ),
                       ],
                     ),
@@ -340,9 +334,7 @@ class CommentElementComponent extends StatelessWidget {
                                 '(알 수 없음)',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                                  fontSize: 14,
-                                ),
+                                style: AppStyle.getLargeTextStyle(context, 14),
                               ),
                             ],
                           ),
@@ -352,12 +344,12 @@ class CommentElementComponent extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(
                       !comment.isVisible ? '삭제된 댓글입니다.' : '차단된 사용자입니다.',
-                      style: Theme.of(context).textTheme.displayMedium,
+                      style: AppStyle.getMediumTextStyle(context, 14),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       TimeStampUtil.getSimpleTimeStamp(comment.createdDate),
-                      style: Theme.of(context).textTheme.displaySmall,
+                      style:AppStyle.getSmallTextStyle(context, 12),
                     ),
                   ],
                 ),

@@ -47,9 +47,7 @@ class _PasswordFormComponentState extends State<PasswordFormComponent> {
           },
         ),
       ),
-      style: Theme.of(context).textTheme.titleSmall!.copyWith(
-        fontSize: 16,
-      ),
+      style: AppStyle.getInputTextStyle(context),
       inputFormatters: widget.inputFormatters,
       onChanged: widget.onChanged,
       validator: widget.validator,

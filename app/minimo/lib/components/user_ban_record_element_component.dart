@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:minimo/components/images/user_network_image_component.dart';
 import 'package:minimo/models/user_ban_record_model.dart';
+import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/time_stamp_util.dart';
 
 class UserBanRecordElementComponent extends StatelessWidget {
@@ -32,14 +33,14 @@ class UserBanRecordElementComponent extends StatelessWidget {
                 userBanRecord.targetNickname,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.displayLarge,
+                style: AppStyle.getLargeTextStyle(context, 16),
               ),
             ),
             const SizedBox(width: 24),
             Text(
               TimeStampUtil.getElementTimeStamp(userBanRecord.createdDate),
               maxLines: 1,
-              style: Theme.of(context).textTheme.displaySmall,
+              style:AppStyle.getSmallTextStyle(context, 12),
             ),
           ],
         ),

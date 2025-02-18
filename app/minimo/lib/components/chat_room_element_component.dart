@@ -3,6 +3,7 @@ import 'package:minimo/components/images/user_network_image_component.dart';
 import 'package:minimo/models/chat_room_model.dart';
 import 'package:minimo/models/chat_room_user_model.dart';
 import 'package:minimo/screens/chat/chat_room_screen.dart';
+import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/time_stamp_util.dart';
 import 'package:tuple/tuple.dart';
 
@@ -47,7 +48,7 @@ class ChatRoomElementComponent extends StatelessWidget {
                     otherUserNickname ?? '(알 수 없음)',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.displayLarge,
+                    style: AppStyle.getLargeTextStyle(context, 16),
                   ),
                   const SizedBox(height: 5),
                   Builder(
@@ -63,7 +64,7 @@ class ChatRoomElementComponent extends StatelessWidget {
                         result,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.displayMedium,
+                        style: AppStyle.getMediumTextStyle(context, 14),
                       );
                     },
                   ),
@@ -87,7 +88,7 @@ class ChatRoomElementComponent extends StatelessWidget {
                     return Text(
                       result,
                       maxLines: 1,
-                      style: Theme.of(context).textTheme.displaySmall,
+                      style:AppStyle.getSmallTextStyle(context, 12),
                     );
                   },
                 ),
@@ -105,7 +106,7 @@ class ChatRoomElementComponent extends StatelessWidget {
                     child: Text(
                       '${chatRoom.readNum}',
                       maxLines: 1,
-                      style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                      style:AppStyle.getSmallTextStyle(context, 12).copyWith(
                         color: Colors.white,
                       ),
                     ),

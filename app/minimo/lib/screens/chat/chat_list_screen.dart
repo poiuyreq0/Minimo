@@ -4,6 +4,7 @@ import 'package:minimo/components/chat_room_element_component.dart';
 import 'package:minimo/models/chat_room_model.dart';
 import 'package:minimo/providers/chat_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
+import 'package:minimo/styles/app_style.dart';
 import 'package:provider/provider.dart';
 
 class ChatListScreen extends StatelessWidget {
@@ -43,7 +44,7 @@ class ChatListScreen extends StatelessWidget {
                       } else if (snapshot.data!.isEmpty) {
                         return Text(
                           '아직 채팅방이 없습니다.',
-                          style: Theme.of(context).textTheme.titleSmall,
+                          style: AppStyle.getHintTextStyle(context),
                         );
                       } else {
                         return Selector<ChatProvider, bool>(

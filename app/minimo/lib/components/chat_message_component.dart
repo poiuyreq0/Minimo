@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minimo/models/chat_message_model.dart';
+import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/time_stamp_util.dart';
 
 import 'images/user_network_image_component.dart';
@@ -41,16 +42,12 @@ class ChatMessageComponent extends StatelessWidget {
             if (!chatMessage.isRead)
               Text(
                 '1',
-                style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                  fontSize: 10,
-                ),
+                style: AppStyle.getLargeTextStyle(context, 10),
               ),
             if (isShowTimeStamp)
               Text(
                 TimeStampUtil.getMessageTimeStamp(chatMessage.createdDate),
-                style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                  fontSize: 10,
-                ),
+                style:AppStyle.getSmallTextStyle(context, 10),
               ),
           ],
         ),
@@ -85,7 +82,7 @@ class ChatMessageComponent extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 4, bottom: 4),
                     child: Text(
                       otherUserNickname,
-                      style: Theme.of(context).textTheme.displaySmall,
+                      style:AppStyle.getSmallTextStyle(context, 12),
                     ),
                   ),
                 Row(
@@ -96,9 +93,7 @@ class ChatMessageComponent extends StatelessWidget {
                     if (isShowTimeStamp)
                       Text(
                         TimeStampUtil.getMessageTimeStamp(chatMessage.createdDate),
-                        style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                          fontSize: 10,
-                        ),
+                        style:AppStyle.getSmallTextStyle(context, 10),
                       ),
                   ],
                 ),
@@ -130,9 +125,7 @@ class ChatMessageComponent extends StatelessWidget {
       ),
       child: Text(
         chatMessage.content,
-        style: Theme.of(context).textTheme.displayMedium!.copyWith(
-          fontSize: 15,
-        ),
+        style: AppStyle.getMediumTextStyle(context, 15),
       ),
     );
   }

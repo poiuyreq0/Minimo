@@ -28,9 +28,7 @@ class TitleFormComponent extends StatelessWidget {
         label: label,
         hintText: hintText,
       ),
-      style: Theme.of(context).textTheme.titleSmall!.copyWith(
-        fontSize: 16,
-      ),
+      style: AppStyle.getInputTextStyle(context),
       onChanged: onChanged,
       validator: validator,
     );

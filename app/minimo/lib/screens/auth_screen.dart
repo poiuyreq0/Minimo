@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:minimo/enums/bottom_navigation.dart';
 import 'package:minimo/utils/navigator_util.dart';
 import 'package:minimo/utils/notification_util.dart';
 import 'package:minimo/utils/url_util.dart';
@@ -71,7 +70,7 @@ class _AuthScreenState extends State<AuthScreen> {
               );
             },
             subtitleBuilder: (context, action) {
-              return Text('미니모에 오신 것을 환영합니다 \u{1F389}');
+              return Text('미니모에 오신 것을 환영합니다 :)');
             },
             showPasswordVisibilityToggle: true,
           );

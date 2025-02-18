@@ -28,7 +28,7 @@ class AppStyle {
 
       // Firebase UI Auth -> Register, Forgotten password?, Sign in Button
       labelLarge: mainTextStyle.copyWith(
-        fontSize: 18,
+        fontSize: 16,
         color: mainColorScheme.primary,
       ),
 
@@ -50,45 +50,67 @@ class AppStyle {
         color: mainColorScheme.tertiary,
       ),
 
-
-      // TitleComponent title
-      titleLarge: mainTextStyle.copyWith(
-        fontSize: 18,
-        color: mainColorScheme.primary,
-      ),
-
       // AppBar
-      // AlertDialog
-      // DividedElementComponent title
-      // TextFormComponent label
-      // DropdownFormComponent label
       titleMedium: mainTextStyle.copyWith(
         fontSize: 16,
         color: mainColorScheme.secondary,
       ),
+    );
+  }
 
-      // TitleComponent buttonText
-      // DividedElementComponent content
-      // TextFormComponent content
-      // DropdownFormComponent content
-      titleSmall: mainTextStyle.copyWith(
-        fontSize: 15,
-        color: mainColorScheme.tertiary,
-      ),
+  static TextStyle getLargeTextStyle(BuildContext context, [double? fontSize]) {
+    return TextStyle(
+      fontFamily: 'KCC-Ganpan',
+      fontSize: fontSize ?? 18,
+      color: Theme.of(context).colorScheme.primary,
+    );
+  }
 
-      // List Screen
-      displayLarge: mainTextStyle.copyWith(
-        fontSize: 16,
-        color: mainColorScheme.primary,
-      ),
-      displayMedium: mainTextStyle.copyWith(
-        fontSize: 14,
-        color: mainColorScheme.secondary,
-      ),
-      displaySmall: mainTextStyle.copyWith(
-        fontSize: 12,
-        color: mainColorScheme.tertiary,
-      ),
+  static TextStyle getMediumTextStyle(BuildContext context, [double? fontSize]) {
+    return TextStyle(
+      fontFamily: 'KCC-Ganpan',
+      fontSize: fontSize ?? 16,
+      color: Theme.of(context).colorScheme.secondary,
+    );
+  }
+
+  static TextStyle getSmallTextStyle(BuildContext context, [double? fontSize]) {
+    return TextStyle(
+      fontFamily: 'KCC-Ganpan',
+      fontSize: fontSize ?? 14,
+      color: Theme.of(context).colorScheme.tertiary,
+    );
+  }
+
+  static TextStyle getDividedElementTextStyle(BuildContext context, double fontSize, {bool isTitle = true}) {
+    return TextStyle(
+      fontFamily: 'KCC-Ganpan',
+      fontSize: fontSize,
+      color: isTitle ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.tertiary,
+    );
+  }
+
+  static TextStyle getLittleButtonTextStyle(BuildContext context, {bool isPositive = true}) {
+    return TextStyle(
+      fontFamily: 'KCC-Ganpan',
+      fontSize: 15,
+      color: isPositive ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.tertiary,
+    );
+  }
+
+  static TextStyle getHintTextStyle(BuildContext context) {
+    return TextStyle(
+      fontFamily: 'KCC-Ganpan',
+      fontSize: 16,
+      color: Theme.of(context).colorScheme.tertiary,
+    );
+  }
+
+  static TextStyle getInputTextStyle(BuildContext context, {bool isHint = false}) {
+    return TextStyle(
+      fontFamily: 'KCC-Ganpan',
+      fontSize: 16,
+      color: Theme.of(context).colorScheme.tertiary,
     );
   }
 
@@ -100,8 +122,6 @@ class AppStyle {
   IconThemeData get mainIconThemeData => IconThemeData(
     color: mainColorScheme.secondary,
   );
-
-
 
   static BoxDecoration getMainBoxDecoration(BuildContext context) {
     return BoxDecoration(
@@ -135,10 +155,10 @@ class AppStyle {
     return InputDecoration(
       label: Text(
         label,
-        style: Theme.of(context).textTheme.titleMedium,
+        style: AppStyle.getMediumTextStyle(context),
       ),
       hintText: hintText,
-      hintStyle: Theme.of(context).textTheme.titleSmall,
+      hintStyle: AppStyle.getInputTextStyle(context, isHint: true),
       counterText: counterText,
       contentPadding: const EdgeInsets.only(top: 8),
       suffixIcon: suffixIcon,
@@ -147,7 +167,7 @@ class AppStyle {
 
   static ButtonStyle getPositiveElevatedButtonStyle(BuildContext context) {
     return ElevatedButton.styleFrom(
-      textStyle: Theme.of(context).textTheme.titleMedium,
+      textStyle: AppStyle.getMediumTextStyle(context),
       backgroundColor: Theme.of(context).colorScheme.primary,
       foregroundColor: Theme.of(context).colorScheme.onPrimary,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -156,7 +176,7 @@ class AppStyle {
 
   static ButtonStyle getNegativeElevatedButtonStyle(BuildContext context) {
     return ElevatedButton.styleFrom(
-      textStyle: Theme.of(context).textTheme.titleMedium,
+      textStyle: AppStyle.getMediumTextStyle(context),
       backgroundColor: Theme.of(context).colorScheme.tertiary,
       foregroundColor: Theme.of(context).colorScheme.onTertiary,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

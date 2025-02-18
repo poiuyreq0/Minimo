@@ -6,6 +6,7 @@ import 'package:minimo/models/chat_message_model.dart';
 import 'package:minimo/models/user_model.dart';
 import 'package:minimo/providers/chat_provider.dart';
 import 'package:minimo/providers/user_provider.dart';
+import 'package:minimo/styles/app_style.dart';
 import 'package:minimo/utils/dialog_util.dart';
 import 'package:minimo/utils/notification_util.dart';
 import 'package:minimo/utils/snack_bar_util.dart';
@@ -101,7 +102,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                     value: '나가기',
                     child: Text(
                       '나가기',
-                      style: Theme.of(context).textTheme.titleSmall,
+                      style: AppStyle.getLittleButtonTextStyle(context, isPositive: false),
                     ),
                   ),
                 ];
@@ -198,7 +199,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                                           padding: const EdgeInsets.all(16),
                                           child: Text(
                                             TimeStampUtil.getRoomTimeStamp(chatMessages[index].createdDate),
-                                            style: Theme.of(context).textTheme.displaySmall,
+                                            style:AppStyle.getSmallTextStyle(context, 12),
                                           ),
                                         ),
                                       ChatMessageComponent(
@@ -227,7 +228,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                                       child: Center(
                                         child: Text(
                                           TimeStampUtil.getRoomTimeStamp(chatMessages[index].createdDate),
-                                          style: Theme.of(context).textTheme.displaySmall,
+                                          style:AppStyle.getSmallTextStyle(context, 12),
                                         ),
                                       ),
                                     );

@@ -28,7 +28,7 @@ class UserFileImageComponent extends StatelessWidget {
         if (state.extendedImageLoadState == LoadState.loading || state.extendedImageInfo == null) {
           return Padding(
             padding: EdgeInsets.all(sizeBasedValue),
-            child: const SizedBox.shrink(),
+            child: const CircularProgressIndicator(),
           );
         }
       },
