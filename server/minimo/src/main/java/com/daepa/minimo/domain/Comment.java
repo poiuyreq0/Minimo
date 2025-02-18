@@ -13,6 +13,11 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Entity
+@Table(
+    indexes = {
+            @Index(name = "idx_created_date", columnList = "created_date"),
+    }
+)
 public class Comment extends BaseTimeEntity {
     @Builder
     public Comment(@NonNull Long writerId, @NonNull String writerNickname, @NonNull String content) {
