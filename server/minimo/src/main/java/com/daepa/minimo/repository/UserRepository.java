@@ -8,6 +8,7 @@ import com.daepa.minimo.domain.*;
 import com.daepa.minimo.dto.UserBanRecordDto;
 import com.daepa.minimo.dto.UserDto;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -88,9 +89,11 @@ public class UserRepository {
     }
 
     public void addItemNum(Long userId, Item item, Integer amount) {
+        NumberPath<Integer> target = item == Item.NET ? user.netNum : user.bottleNum;
+
         queryFactory
                 .update(user)
-                .set(item == Item.NET ? user.netNum : user.bottleNum, amount)
+                .set(target, target.add(amount))
                 .where(user.id.eq(userId))
                 .execute();
     }
