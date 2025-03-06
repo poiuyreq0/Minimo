@@ -34,7 +34,6 @@ class _PostInputScreenState extends State<PostInputScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text('게시글 쓰기'),
       ),

@@ -19,7 +19,7 @@ class UserImageScreen extends StatelessWidget {
       body: Stack(
         children: [
           Container(
-            height: MediaQuery.of(context).size.height,
+            height: MediaQuery.sizeOf(context).height,
             child: Builder(
               builder: (context) {
                 if (userId != null) {

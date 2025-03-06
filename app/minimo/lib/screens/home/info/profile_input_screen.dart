@@ -45,7 +45,6 @@ class _ProfileInputScreenState extends State<ProfileInputScreen> {
     UserModel user = context.read<UserProvider>().userCache!;
 
     return Scaffold(
-      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text('프로필 변경'),
       ),

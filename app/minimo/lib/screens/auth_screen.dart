@@ -50,7 +50,6 @@ class _AuthScreenState extends State<AuthScreen> {
           debugPrint('AuthScreen SignInScreen start: ${snapshot.data}');
 
           return SignInScreen(
-            resizeToAvoidBottomInset: true,
             actions: [
               AuthStateChangeAction<AuthState>((context, state) async {
                 await _handleError(context, state);

@@ -63,7 +63,6 @@ class _LetterInputScreenState extends State<LetterInputScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text('편지 쓰기'),
       ),

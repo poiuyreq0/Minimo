@@ -57,7 +57,6 @@ class _InfoInputScreenState extends State<InfoInputScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text('내 정보 변경'),
       ),

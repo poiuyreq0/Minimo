@@ -54,7 +54,6 @@ class _IntroInputScreenState extends State<IntroInputScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text('사용자 정보 입력'),
       ),
