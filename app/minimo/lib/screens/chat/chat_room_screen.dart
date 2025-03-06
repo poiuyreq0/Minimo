@@ -34,6 +34,7 @@ class ChatRoomScreen extends StatefulWidget {
 class _ChatRoomScreenState extends State<ChatRoomScreen> {
   late final TextEditingController textEditingController;
   late final ScrollController scrollController;
+  late final FocusNode focusNode;
 
   @override
   void initState() {
@@ -42,12 +43,14 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
 
     textEditingController = TextEditingController(text: '',);
     scrollController = ScrollController();
+    focusNode = FocusNode();
   }
 
   @override
   void dispose() {
     textEditingController.dispose();
     scrollController.dispose();
+    focusNode.dispose();
     super.dispose();
   }
 
@@ -62,7 +65,6 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         }
       },
       child: Scaffold(
-        resizeToAvoidBottomInset: true,
         appBar: AppBar(
           title: Text(widget.otherUserNickname),
           actions: [
@@ -135,7 +137,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                     child: GestureDetector(
                       behavior: HitTestBehavior.translucent,
                       onTap: () {
-                        FocusScope.of(context).unfocus();
+                        focusNode.unfocus();
                       },
                       child: NotificationListener<ScrollNotification>(
                         onNotification: (scrollNotification) {
@@ -244,6 +246,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                     ),
                   ),
                   BottomTextFormComponent(
+                    focusNode: focusNode,
                     hintText: '메시지 입력',
                     controller: textEditingController,
                     onPressed: () {

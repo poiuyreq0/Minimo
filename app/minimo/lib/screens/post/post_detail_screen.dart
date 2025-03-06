@@ -250,7 +250,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                             child: GestureDetector(
                               behavior: HitTestBehavior.translucent,
                               onTap: () {
-                                FocusScope.of(context).unfocus();
+                                focusNode.unfocus();
                               },
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -449,7 +449,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       textEditingController.text = '';
       selectedParentCommentId = null;
       postProvider.refreshPostDetailScreenBottomTextForm();
-      FocusScope.of(context).unfocus();
+      focusNode.unfocus();
 
 
       if (isParentComment) {
