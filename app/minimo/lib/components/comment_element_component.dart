@@ -210,6 +210,7 @@ class CommentElementComponent extends StatelessWidget {
                                           (route) => route.isFirst,
                                     );
                                   } else {
+                                    postProvider.refreshPostDetailScreen();
                                     Navigator.of(context).pop();
                                   }
 
