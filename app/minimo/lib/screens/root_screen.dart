@@ -49,21 +49,23 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    // 알림 클릭 시 넘어온 데이터에 따라 화면 이동
-    if (widget.data != null) {
-      if (widget.data!['tag'] == 'chat') {
-        currentIndex.value = BottomNavigation.CHAT.index;
-        _moveChatRoom(NavigatorUtil.navigatorKey, widget.data!);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // 알림 클릭 시 넘어온 데이터에 따라 화면 이동
+      if (widget.data != null) {
+        if (widget.data!['tag'] == 'chat') {
+          currentIndex.value = BottomNavigation.CHAT.index;
+          _moveChatRoom(NavigatorUtil.navigatorKey, widget.data!);
 
-      } else if (widget.data!['tag'] == 'letter') {
-        currentIndex.value = BottomNavigation.HOME.index;
-        _moveLetterDetail(NavigatorUtil.navigatorKey, widget.data!);
+        } else if (widget.data!['tag'] == 'letter') {
+          currentIndex.value = BottomNavigation.HOME.index;
+          _moveLetterDetail(NavigatorUtil.navigatorKey, widget.data!);
 
-      } else if (widget.data!['tag'] == 'comment' || widget.data!['tag'] == 'subComment') {
-        currentIndex.value = BottomNavigation.POST.index;
-        _movePostDetail(NavigatorUtil.navigatorKey, widget.data!);
+        } else if (widget.data!['tag'] == 'comment' || widget.data!['tag'] == 'subComment') {
+          currentIndex.value = BottomNavigation.POST.index;
+          _movePostDetail(NavigatorUtil.navigatorKey, widget.data!);
+        }
       }
-    }
+    });
 
     _synchronizeFcmToken(NavigatorUtil.navigatorKey.currentContext!);
   }
