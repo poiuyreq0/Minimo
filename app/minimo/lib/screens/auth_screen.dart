@@ -29,6 +29,7 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   @override
   void initState() {
+    debugPrint('AuthScreen initState start: ');
     super.initState();
     NotificationUtil.fcmForegroundHandler(NavigatorUtil.navigatorKey);
   }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -158,8 +159,11 @@ class NotificationUtil {
     }
   }
 
+  static StreamSubscription<RemoteMessage>? _fcmSubscription;
   static void fcmForegroundHandler(GlobalKey<NavigatorState> navigatorKey) async {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+    _fcmSubscription?.cancel();
+
+    _fcmSubscription = FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       debugPrint('FCM | 포그라운드 메시지 수신: ${message.data}');
 
       LetterProvider letterProvider = navigatorKey.currentContext!.read<LetterProvider>();

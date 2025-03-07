@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -107,16 +109,16 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
     }
   }
 
+  StreamSubscription<String>? _fcmSubscription;
   void _synchronizeFcmToken(BuildContext context) async {
+    _fcmSubscription?.cancel();
     UserProvider userProvider = context.read<UserProvider>();
 
-    FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
+    _fcmSubscription = FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
       if (userProvider.userCache != null) {
         userProvider.updateFcmToken(fcmToken: fcmToken);
       }
       debugPrint('FCM Refresh Token: $fcmToken');
-    }).onError((e) {
-      debugPrint('FCM onTokenRefresh error: $e');
     });
 
     final fcmToken = await FirebaseMessaging.instance.getToken();
