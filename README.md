@@ -1,11 +1,13 @@
 # Minimo
-<img src="https://github.com/user-attachments/assets/0ea42641-b934-4ac7-bb51-3a37aa5f693f" width="24%"/>
-<img src="https://github.com/user-attachments/assets/1eb009d9-88d9-4df0-956b-1eed0b3575d2" width="24%"/>
-<img src="https://github.com/user-attachments/assets/5fa8edec-0a8f-48e9-813a-04ed6bc1cda8" width="24%"/>
-<img src="https://github.com/user-attachments/assets/9d11c520-3f5e-4bdf-bddf-1b736bc1cca4" width="24%"/>
+<img src="https://github.com/user-attachments/assets/11838466-6c00-4589-976a-aaf8a57d8c22" width="24%"/>
+<img src="https://github.com/user-attachments/assets/28d8f9c8-212c-4711-b49d-9a22ee82c95c" width="24%"/>
+<img src="https://github.com/user-attachments/assets/57e6ee40-ac3b-4e1e-abe7-5f20581e3f7a" width="24%"/>
+<img src="https://github.com/user-attachments/assets/4fd9a553-a45c-4589-9c2d-0100feae41de" width="24%"/>
 
 # ERD
-<img src="https://github.com/user-attachments/assets/c6ded9be-192f-4e59-98d9-a7d0ad86ce4c" width="100%"/>
+<img src="https://github.com/user-attachments/assets/bba49ffe-c7b4-4a5d-82fb-84fac0a4b699" width="100%"/>
 
 # Architecture
-<img src="https://github.com/user-attachments/assets/a9b9beae-2951-486a-bf8f-43fa09019acc" width="100%"/>
+<img src="https://github.com/user-attachments/assets/777d1721-c5ed-4982-a9d7-fa03b8c78f81" width="100%"/>
+
+
