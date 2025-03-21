@@ -1,5 +1,5 @@
 # Minimo
-<p align="center">
+<p align="left">
   <img src="https://github.com/user-attachments/assets/280a5037-7919-44f5-8b3b-46ef3d4b1462" width="30%">
   <img src="https://github.com/user-attachments/assets/864b22ad-066f-4c2b-9354-708e53038f6f" width="30%">
   <img src="https://github.com/user-attachments/assets/70e6d0bf-82ba-4b8c-a474-2b802c92fa3b" width="30%">
